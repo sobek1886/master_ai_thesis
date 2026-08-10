@@ -6,8 +6,8 @@ formal framing of signer appearance as an intervenable nuisance factor
 together with two synthesis routes that realise them
 (\S\ref{sec:method-diffusion}), and training objectives that consume the
 counterfactuals either as additional data or as explicit positives
-(\S\ref{sec:method-objectives}). The concrete instantiation --- datasets,
-backbones, training configurations, and evaluation protocols --- is
+(\S\ref{sec:method-objectives}). The concrete instantiation (datasets,
+backbones, training configurations, and evaluation protocols) is
 collected in \S\ref{sec:setup-datasets}--\ref{sec:eval-protocols}.
 
 \section{Problem formulation}
@@ -54,13 +54,13 @@ f_\theta : \mathcal{X} \to \mathbb{R}^{d},
 \qquad z \;=\; f_\theta(x),
 \end{equation}
 mapping a video clip to one embedding vector, where $\theta$ collects the
-trainable parameters --- a video--text head over frozen backbone features,
+trainable parameters: a video--text head over frozen backbone features,
 the fine-tuned backbone itself, or the view-contrastive encoder; the
 instantiations, and the dimension $d$ each uses, are given in
 \S\ref{sec:setup-training}. Whether $z$ is $\ell_2$-normalised is a
 property of the objective and is stated with each loss. After training,
-$\theta$ is frozen and every analysis in this thesis --- retrieval,
-probing, feature geometry --- operates on the embeddings $z$ alone.
+$\theta$ is frozen and every analysis in this thesis (retrieval,
+probing, feature geometry) operates on the embeddings $z$ alone.
 
 \paragraph{Appearance counterfactual operator.}
 The interventions of this thesis are appearance edits: maps
@@ -76,8 +76,8 @@ content intact,
 \label{eq:motion-preservation}
 y\bigl(T_a(x)\bigr) \;=\; y(x) \qquad \text{for all } a \in \mathcal{A},
 \end{equation}
-while the appearance --- and, for identity-changing edits, the apparent
-signer --- differs. Whether Eq.~\eqref{eq:motion-preservation} actually
+while the appearance (and, for identity-changing edits, the apparent
+signer) differs. Whether Eq.~\eqref{eq:motion-preservation} actually
 holds is a property of the synthesis route, not an assumption we grant
 ourselves: the mocap-driven avatar renders satisfy it by construction,
 because every render is driven by the same captured motion, whereas the
@@ -110,8 +110,8 @@ where $\sim$ is the positive-defining equivalence of the run: membership
 of one counterfactual set $\mathcal{T}(x)$ (an original and its edits;
 counterfactual-contrastive), a shared gloss in $\mathcal{G}$ (gloss-level
 contrast across signers), or a shared recording identity (the view-contrastive setting,
-where all $K$ views of one recording --- real cameras and synthetic
-renders alike --- are positives). Everything in the batch outside $P(u)$
+where all $K$ views of one recording, real cameras and synthetic
+renders alike, are positives). Everything in the batch outside $P(u)$
 acts as a negative.
 
 \paragraph{Cross-signer retrieval.}
@@ -130,9 +130,9 @@ highest-ranked items:
 \end{equation}
 where $\mathcal{R}_k(q) \subseteq \mathcal{R}$ are the $k$ gallery items
 most similar to $q$. The protocols of \S\ref{sec:eval-protocols}
-instantiate $\mathcal{Q}$ and $\mathcal{R}$ per corpus --- including a
+instantiate $\mathcal{Q}$ and $\mathcal{R}$ per corpus, including a
 video-to-text variant in which the gallery holds text prototypes rather
-than videos --- and share one structural property: evaluation signers are
+than videos, and share one structural property: evaluation signers are
 unseen during training, and in the continuous-corpus protocol query and
 gallery are
 additionally produced by disjoint signers, making the retrieval itself
@@ -149,10 +149,10 @@ image editor; the model, compute, and the statistics of the edited
 subset are given in \S\ref{sec:setup-generation}. Rather than
 augmenting a uniform sample, targets are chosen worst-first
 at the class level: every gloss is ranked by its number of distinct training
-signers (ascending), with ties broken by a difficulty proxy --- per-class
+signers (ascending), with ties broken by a difficulty proxy (per-class
 nearest-centroid gloss accuracy computed on the from-scratch contrastive
 baseline's test embeddings, a clustering measure that degrades precisely when
-embeddings organise by signer rather than by sign --- and entire classes are
+embeddings organise by signer rather than by sign), and entire classes are
 taken in rank order until the budget fills.
 \todome{REWRITE PROPOSAL (03.08): the opener above binds the diffusion
 route to ``the isolated-benchmark corpus'', but Setup and Results apply
@@ -168,7 +168,7 @@ where. Same issue in the avatar subsection below.}
 We propose a taxonomy of four independent appearance edit types
 (Fig.~\ref{fig:aug_examples}); for each
 selected source video we generate up to four edits, applied frame-by-frame:
-\emph{shirt} (a clothing swap, the lowest-risk edit --- the video backbone's own training
+\emph{shirt} (a clothing swap, the lowest-risk edit: the video backbone's own training
 augmentations already include colour jitter, so this edit's marginal value
 over standard colour augmentation is itself an open question), \emph{glasses}
 (addition/removal, with some risk of altering facial expression near the
@@ -183,8 +183,8 @@ route: the captured 3D motion of a real signer is retargeted onto
 synthetic avatars and re-rendered under multiple camera viewpoints
 (\S\ref{sec:setup-generation}). Because this route starts from
 ground-truth motion rather than a 2D image edit, the signing motion is
-preserved by construction --- the renders are \emph{motion-locked} ---
-and the route can vary camera viewpoint as well as appearance --- an axis a 2D edit cannot reach from a single
+preserved by construction (the renders are \emph{motion-locked}),
+and the route can vary camera viewpoint as well as appearance, an axis a 2D edit cannot reach from a single
 input view.
 \todome{REWRITE PROPOSAL (03.08), same corpus-binding issue as above:
 ``For the continuous corpus'' ties the avatar route to NGT by
@@ -195,7 +195,7 @@ only where capture is controlled.''}
 
 \section{Counterfactual-aware training objectives}
 \label{sec:method-objectives}
-We train encoders with these counterfactuals in three settings ---
+We train encoders with these counterfactuals in three settings:
 two on an isolated, gloss-labelled benchmark and one on a continuous
 corpus without a gloss vocabulary; their concrete configurations
 (datasets, backbones, dimensions) are given in
@@ -209,8 +209,8 @@ cover both mechanisms.
 Three distinct model components are trained in this thesis, and each has
 its own objective; Table~\ref{tab:objective_map} maps components to
 objectives before the formulations are given. The \emph{video--text
-head} trains only its own parameters on top of frozen backbone features
---- the backbone receives no gradient. The \emph{backbone fine-tuning}
+head} trains only its own parameters on top of frozen backbone features;
+the backbone receives no gradient. The \emph{backbone fine-tuning}
 runs do the opposite: they update the video backbone itself, with a
 disposable linear gloss head on top. The \emph{view-contrastive encoder}
 of the continuous corpus again trains only its own parameters over
@@ -243,7 +243,7 @@ positives} \\
 \end{tabular}
 \caption{Which objective trains which component. The SupCon form of
 Eq.~\eqref{eq:supcon} is shared by two components; what differs is the
-positive-defining equivalence of Eq.~\eqref{eq:positive-set} ---
+positive-defining equivalence of Eq.~\eqref{eq:positive-set}:
 counterfactual instance for the head and backbone runs,
 recording identity for the view-contrastive encoder.}
 \label{tab:objective_map}
@@ -269,8 +269,8 @@ embeddings $(v_i, t_i)$,
 where the text side is the gloss rendered as a caption; following
 VideoCLIP, the embeddings are not $\ell_2$-normalised and no temperature is
 applied. Synthetic counterfactuals enter in one of two ways: as additional
-$(v, t)$ pairs carrying their source video's gloss (aug-as-data), or --- in
-the pair-SupCon configurations --- by replacing the video--text loss with
+$(v, t)$ pairs carrying their source video's gloss (aug-as-data), or, in
+the pair-SupCon configurations, by replacing the video--text loss with
 the supervised-contrastive form of Eq.~\eqref{eq:supcon} below, computed
 over video embeddings alone with an original and its edits sharing one
 instance label (counterfactual-contrastive). 
@@ -320,8 +320,8 @@ to make $z$ invariant to the edited appearance attribute.
 A stronger variant that replaces the pull by adapting the SupCon
 objective~\cite{khosla2020supervised}: we keep its loss form over
 $\ell_2$-normalised tokens but redefine the positives so that an
-original and all its augmentations --- the counterfactual set
-$\mathcal{T}(x)$ --- share one \emph{instance} label (the positive set
+original and all its augmentations, the counterfactual set
+$\mathcal{T}(x)$, share one \emph{instance} label (the positive set
 $P(u)$ of Eq.~\eqref{eq:positive-set}), and every other clip in the
 batch is a negative,
 \begin{equation}
@@ -359,7 +359,7 @@ originals from appearance-edited copies.
 Architecturally, the view-contrastive encoder is the \emph{video tower}
 of the same contrastive model used for the head experiments
 (Table~\ref{tab:objective_map}), consuming frozen backbone features
-through the identical input projection --- but trained from the standard
+through the identical input projection, but trained from the standard
 language-model initialisation rather than from any text-aligned
 checkpoint, and with the text tower never called: the continuous corpus
 has no vocabulary to align against. It is trained
@@ -386,7 +386,7 @@ real-world conditions rather than in a single studio.
 (\S\ref{sec:results-diagnosis}). \textbf{NGT} is a unreleased Dutch Sign
 Language corpus: real signers performing
 a fixed set of sentences in mocap suits (VisLab studio, three camera
-angles) --- the \emph{train} set --- evaluated against a held-out \emph{test}
+angles), the \emph{train} set, evaluated against a held-out \emph{test}
 set of unseen signers (recorded at the Bushuis studio, one camera angle),
 giving a genuine low-data, cross-signer,
 cross-studio evaluation setting. The train set comprises 775 unique
@@ -457,8 +457,8 @@ the gloss classifier during backbone fine-tuning and as the probing
 instrument of the signer-decoding analyses.
 
 \subsection{Backbone fine-tuning (ASL Citizen)}
-Our primary \emph{backbone} --- the pretrained video network that heads
-are trained on top of and that the fine-tuning experiments update --- is
+Our primary \emph{backbone} (the pretrained video network that heads
+are trained on top of and that the fine-tuning experiments update) is
 \textbf{Logos}~\cite{ovodovLogosWellTemperedPretrain2025}, an MViTv2-S
 video transformer~\cite{liMViTv2ImprovedMultiscale2022} pretrained on
 Logos+AUTSL+WLASL. We fine-tune it with a gloss cross-entropy objective,
@@ -482,7 +482,7 @@ variant resumes a
 converged CE-only checkpoint (backbone and head) and continues at
 $100\times$ lower learning rate with the consistency term switched on. Note
 that with $k \leq 6$ the invariance losses only ever reach the top,
-semantic blocks --- never the early high-resolution stages where
+semantic blocks, never the early high-resolution stages where
 appearance is encoded.
 
 Independent of our fine-tuning choices, one design choice of the Logos
@@ -499,7 +499,7 @@ rewarded for placing look-alike signs close together: form-organised
 structure in its feature space is trained in, not incidental.
 
 Logos is also the thesis's workhorse feature extractor: its frozen
-features --- form-organised structure included --- feed the video--text
+features, form-organised structure included, feed the video--text
 heads of the next subsection, the signer probes, and the NGT encoder.
 
 \subsection{SignCLIP-head training (ASL Citizen)}
@@ -510,29 +510,29 @@ VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021} (12-layer BERT
 video encoder, 12-layer BERT text encoder, video--text InfoNCE),
 adapted to take video features other than its original MediaPipe pose
 input by swapping the first linear layer of its video-token projection
-MLP. SignCLIP is pose-based by design --- its authors evaluated an RGB
+MLP. SignCLIP is pose-based by design; its authors evaluated an RGB
 alternative (I3D) only on the simpler fingerspelling task before
-committing to pose input --- so this adaptation lets us run the
+committing to pose input, so this adaptation lets us run the
 RGB-versus-pose comparison they left open, within one architecture, on
 full-vocabulary isolated recognition. Synthetic counterfactuals enter
 either purely as additional training data or, in some configurations,
-matched to their source video as positive pairs --- a
+matched to their source video as positive pairs, a
 counterfactual-contrastive strategy in the same spirit as recent work
 using causal image synthesis to build robust positive
 pairs~\cite{roschewitzCounterfactualContrastiveLearning2025}.
 We train this head on three families of input features:
-(i) \textbf{Logos} --- the frozen original backbone and, in the cross
+(i) \textbf{Logos}, the frozen original backbone and, in the cross
 experiments, the fine-tuned variants (CE-FT, aug-FT, SDDA-FT) produced
 by the backbone experiments above; (ii)
 \textbf{I3D}~\cite{carreiraQuoVadisAction2017}, a 3D-CNN fine-tuned on
-WLASL and always frozen here --- the older-generation RGB reference
+WLASL and always frozen here (the older-generation RGB reference
 point, retained because it is the RGB baseline in SignCLIP's own
-comparison, while no longer the strongest available RGB backbone; and
+comparison, while no longer the strongest available RGB backbone); and
 (iii) \textbf{MediaPipe} Holistic pose
 keypoints~\cite{lugaresiMediaPipeFrameworkBuilding2019}, on which we do
 not train ourselves: the pose-input rows of our retrieval tables are the
 published results of the original SignCLIP model, and our own use of
-pose is analytic --- the raw keypoint features (a 609-dimensional
+pose is analytic; the raw keypoint features (a 609-dimensional
 mean-pooled or 1218-dimensional mean+std-pooled per-video vector; for
 ASL Citizen root-centred at the shoulder midpoint and scale-normalised
 to shoulder width per frame, so they carry body proportions, posture,
@@ -545,9 +545,9 @@ The same SignCLIP-style
 video encoder (12 BERT layers over frozen 768-d Logos features) is
 trained \emph{without a text tower}: NGT has no gloss vocabulary, so the
 unit of supervision is the sign-recording identity itself. Each training
-item bundles the $K$ views of one sign --- the real front camera plus,
+item bundles the $K$ views of one sign (the real front camera plus,
 depending on the arm, real side cameras, Unreal avatar renders, or Flux
-appearance edits --- and a supervised contrastive loss pulls all $K$
+appearance edits), and a supervised contrastive loss pulls all $K$
 views of a sign together while pushing other signs apart (video-only
 InfoNCE at $K{=}1$, where no positive pairs exist). The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
@@ -556,9 +556,9 @@ sentence-recordings and the signer-count ablation on 180 per condition,
 $K$ views each. Loss details are given in \S\ref{sec:method-losses}.
 
 The single-view ladder and the signer-count ablations hold the
-\emph{contrastive batch} constant at 64 items for every arm ---
-equal in-batch negatives at every $K$, with encoder compute scaling
-with $K$ --- and set the learning-rate schedule length to each
+\emph{contrastive batch} constant at 64 items for every arm
+(equal in-batch negatives at every $K$, with encoder compute scaling
+with $K$), and set the learning-rate schedule length to each
 dataset tier's actual update count, so that no arm's schedule is cut
 short or left mostly in warmup.
 
@@ -574,8 +574,8 @@ For ASL Citizen we generate appearance counterfactuals with
 FLUX.2-klein-9B~\cite{blackforestlabsFLUX2Klein2026}, an open
 rectified-flow transformer image editor, run on a single 48\,GB L40S GPU
 (or, when available, a shared H100 partition). We augment a targeted subset
-of the training data --- $6{,}000$ source videos ($14.9\%$ of the 40k-video
-training set) yielding $24{,}000$ augmented clips --- rather than the full
+of the training data, $6{,}000$ source videos ($14.9\%$ of the 40k-video
+training set) yielding $24{,}000$ augmented clips, rather than the full
 corpus. The primary reason is the generation compute budget:
 frame-by-frame editing of all 40k source videos was beyond the GPU
 allocation available to this thesis, so a subset had to be selected.
@@ -589,7 +589,7 @@ against a corpus median of $14$) and below-average baseline separability
 (mean proxy accuracy $0.81$ vs.\ $0.88$ corpus-wide). Two properties of this
 selection matter later. It concentrates the augmentation where real signer
 diversity is thinnest and invariance is hardest to learn from real data
-alone --- though ASL Citizen has no truly signer-starved classes (minimum
+alone, though ASL Citizen has no truly signer-starved classes (minimum
 $8$ signers), which bounds the headroom any signer-diversity intervention
 can have in this corpus. And it makes the augmented pairs a deliberately
 biased, hard-class sample, which is why the feature-geometry analysis
@@ -631,7 +631,7 @@ augmented with original frames.
 \caption{The same Flux-edited frame generated at 224, 512, and 1024\,px
 longest side (top row), with a zoom inset on the face-and-hand region
 (bottom row). At 224\,px the editor visibly degrades face and glasses
-detail --- detail the 224-input downstream model still depends on ---
+detail (detail the 224-input downstream model still depends on),
 whereas the 512\,px output is visually indistinguishable from 1024\,px;
 512\,px was therefore selected as the smallest safe generation
 resolution.}
@@ -645,7 +645,7 @@ Engine under three camera angles, giving six synthetic views per sentence in
 addition to the three real camera views ($K=9$ views total per sign, versus
 $K=3$ for the real-only baseline). Because this route starts from ground-truth
 3D motion rather than a 2D image edit, it can vary camera viewpoint as well
-as appearance --- a capability the 2D generative-edit route does not have from a
+as appearance, a capability the 2D generative-edit route does not have from a
 single input view. Fig.~\ref{fig:unreal_examples} shows one training
 sentence through this pipeline: the same mocap take as the real
 front-camera recording and as both avatar renders, together with the
@@ -662,7 +662,7 @@ the mocap-suited signer, and the two rows below show the ``Palmer'' and
 ``Digits'' avatars driven by the motion captured in that same take.
 Because the avatars are animated by retargeting the recorded mocap onto
 the avatar skeleton, the signing motion is identical across rows by
-construction --- unlike the Flux edits of Fig.~\ref{fig:aug_examples},
+construction, unlike the Flux edits of Fig.~\ref{fig:aug_examples},
 whose motion preservation is an empirical property that must be verified. Bottom strip: the same avatar and
 frame rendered from the three camera positions, the viewpoint axis that
 this route adds and that a 2D image edit cannot reach from a single input

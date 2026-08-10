@@ -1,7 +1,7 @@
 \chapter{Appendix}
 \section{Full augmentation-geometry grid}
 \label{app:aug_geometry_grid}
-Tables~\ref{tab:aug_geometry_grid_train} and~\ref{tab:aug_geometry_grid_test} report every cell of the \S\ref{sec:results-aug-geometry} analysis --- all five feature spaces $\times$ four edit types $\times$ both evaluation samples --- with uncertainty estimates for the quantities the main-text tables report as point values.
+Tables~\ref{tab:aug_geometry_grid_train} and~\ref{tab:aug_geometry_grid_test} report every cell of the \S\ref{sec:results-aug-geometry} analysis (all five feature spaces $\times$ four edit types $\times$ both evaluation samples) with uncertainty estimates for the quantities the main-text tables report as point values.
 
 \begin{table}[H]
 \centering
@@ -135,8 +135,8 @@ $\ell_2$-normalised centroid of gloss $g$ and
 $\hat{z}=c_{\mathrm{KING}}-c_{\mathrm{MAN}}+c_{\mathrm{WOMAN}}$. We report
 (i) the rank of $\mathrm{QUEEN}$ by $\cos(\hat{z},\cdot)$ over all $2{,}731$
 gloss centroids (operands excluded), and (ii) the offset gain
-$\Delta_{\cos}=\cos(\hat{z},c_{\mathrm{QUEEN}})-\cos(c_{\mathrm{KING}},c_{\mathrm{QUEEN}})$
---- whether adding the gender offset moves \emph{closer} to QUEEN than KING
+$\Delta_{\cos}=\cos(\hat{z},c_{\mathrm{QUEEN}})-\cos(c_{\mathrm{KING}},c_{\mathrm{QUEEN}})$:
+whether adding the gender offset moves \emph{closer} to QUEEN than KING
 already was. The gain is the crucial control: KING and QUEEN are visually
 similar signs, so proximity alone is ambiguous between visual form
 (predicting $\Delta_{\cos}\!\approx\!0$) and relational semantics
@@ -144,13 +144,13 @@ similar signs, so proximity alone is ambiguous between visual form
 pairs). We propose a transfer battery: it transfers the offset
 $\delta=c_{\mathrm{WOMAN}}-c_{\mathrm{MAN}}$ across gendered pairs
 (KING/QUEEN, BOY/GIRL, MAN/WOMAN variants; PRINCE/PRINCESS where present)
-and measures its cross-pair consistency, repeated per space --- raw frozen
-features and each SignCLIP head --- so any growth of $\Delta_{\cos}$ with
+and measures its cross-pair consistency, repeated per space (raw frozen
+features and each SignCLIP head), so any growth of $\Delta_{\cos}$ with
 text alignment is directly visible. As a complementary lens on
 form--meaning coupling, we intersect ASL-LEX iconicity
 ratings~\cite{sehyrASLLEX2021} with the ASL Citizen vocabulary and test
 whether highly iconic signs cluster by visual form more than matched
-low-iconicity signs (\S\ref{sec:results-iconicity}) --- iconic signs are
+low-iconicity signs (\S\ref{sec:results-iconicity}); iconic signs are
 where a visual space and a semantic space should agree most.
 The enlarged battery (rerun 2026-07-19 after the spelling fix) covers all
 four gendered pairs in both transfer directions ($12$ transfer
@@ -187,9 +187,9 @@ paragraph and the VSSign paragraph together.}
 and into
 every head trained on top of them, since all our SignCLIP and SupCon
 spaces consume these features). KING/QUEEN is exactly the
-near-minimal-pair configuration the VSSign construct describes ---
-handshape contrast on an otherwise shared articulation, the basis of
-our ``visually-similar'' tag --- so QUEEN sitting at rank~1 from KING
+near-minimal-pair configuration the VSSign construct describes
+(handshape contrast on an otherwise shared articulation, the basis of
+our ``visually-similar'' tag), so QUEEN sitting at rank~1 from KING
 with $\cos 0.65$ in the raw space is the trained-in VSSign prior
 speaking, not the royal relation. The same prior accounts for the full
 result pattern, because it predicts \emph{proximity without direction}:
@@ -210,7 +210,7 @@ The flip side is a falsifiable
 reading of the SignCLIP illustration: under the VSSign prior,
 visual-form neighbours should dominate embedding neighbourhoods
 across the \emph{whole} vocabulary, whether or not the neighbours are
-semantically related --- a claim the four hand-tagged pairs cannot fully
+semantically related, a claim the four hand-tagged pairs cannot fully
 test, but the vocabulary-wide form measures of
 \S\ref{sec:results-iconicity} now do: the form-dose analysis reported
 there finds centroid similarity rising steadily with the number of
@@ -230,10 +230,10 @@ is close in all spaces ($\cos 0.65$ raw, up to $0.85$ text-aligned,
 $0.67$--$0.73$ pair-trained), while the visually dissimilar BOY/GIRL
 starts orthogonal in the raw space ($\cos 0.01$) and MAN/WOMAN1 and
 MAN/WOMAN2 (also tagged visually-dissimilar) sit at $\cos 0.52$--$0.53$
-raw --- lower than KING/QUEEN but not orthogonal, unlike BOY/GIRL. The
+raw (lower than KING/QUEEN but not orthogonal, unlike BOY/GIRL). The
 pair-trained heads pull BOY/GIRL slightly negative instead of orthogonal
 ($-0.07$ at $K{=}3$, $+0.13$ at $K{=}5$) while MAN/WOMAN1 and MAN/WOMAN2
-drop sharply ($0.26$--$0.37$) relative to raw --- the opposite direction
+drop sharply ($0.26$--$0.37$) relative to raw, the opposite direction
 from the SignCLIP heads, which pull BOY/GIRL up to $\cos\!\approx\!0.68$--$0.70$
 and MAN/WOMAN up to $0.78$--$0.82$. \todo{This SignCLIP-vs-pair-trained
 divergence on the categorical similarities is itself worth a sentence
@@ -249,7 +249,7 @@ person and kinship signs (BOY, MAN, FATHER) articulate near the
 forehead, continuing the hat-tipping etymon of the French \emph{homme}
 family, while their female counterparts (GIRL, WOMAN, MOTHER)
 articulate near the chin, continuing the bonnet-string etymon of
-\emph{femme}~\cite{shawHistoricalEtymologicalDictionary2015} --- BOY
+\emph{femme}~\cite{shawHistoricalEtymologicalDictionary2015}; BOY
 and GIRL themselves show the split.
 % Citation verified 2026-07-28 against the dictionary's full text (boy,
 % girl, man, mother, father, woman, and sex/gender entries): forehead
@@ -262,8 +262,8 @@ and GIRL themselves show the split.
 % with available access. If that holds in our data, a ``gender direction'' exists in
 visual form alone, and even a successful gendered analogy would not be
 evidence of semantics. The probe builds a location direction $u$ from
-ASL-LEX annotations --- the mean centroid of Forehead-located signs
-($n{=}54$) minus that of Chin/UnderChin-located signs ($n{=}59$) ---
+ASL-LEX annotations, the mean centroid of Forehead-located signs
+($n{=}54$) minus that of Chin/UnderChin-located signs ($n{=}59$),
 and measures $\cos(u,\,\delta)$ for each pair's offset $\delta$
 (female $-$ male) against a null band from random same-space centroid
 offsets (\texttt{--gender\_probe} in the same script). The result is
@@ -291,9 +291,9 @@ they look; iconicity is a property of a \emph{single} sign: how much its
 form resembles its meaning. ASL-LEX 2.0 rates iconicity for 2{,}723 signs
 on a 1--7 scale, separately for deaf signers and hearing
 non-signers~\cite{sehyrASLLEX2021,caselliASLLEX2017}. At the top of the
-deaf-signer scale are signs that depict their referent --- EYEGLASSES
-(6.77), TREE (6.32), SCISSORS (6.03), MONKEY (5.94), BOOK (5.63) --- and
-at the bottom signs whose form is conventional --- NEPHEW (1.14), DOG1
+deaf-signer scale are signs that depict their referent: EYEGLASSES
+(6.77), TREE (6.32), SCISSORS (6.03), MONKEY (5.94), BOOK (5.63). At
+the bottom are signs whose form is conventional: NEPHEW (1.14), DOG1
 (1.71), COMPUTER (1.84), NIGHT1 (2.19); all nine are in the ASL Citizen
 vocabulary. We use the deaf-signer ratings (D.Iconicity) as primary: the
 two groups can disagree substantially (TREE is 6.32 for deaf raters but
@@ -303,7 +303,7 @@ form--meaning mappings; the hearing ratings serve as a robustness check.
 Iconicity matters for our evaluation for a simple reason. For a highly
 iconic sign, looking alike and meaning alike are the same thing, so even
 a purely visual embedding space will appear semantic on iconic
-vocabulary --- whatever clusters HAMMER with hammering-like motion needs
+vocabulary: whatever clusters HAMMER with hammering-like motion needs
 no concept of hammering. Only on arbitrary signs, where form and meaning
 come apart, can we tell whether a space encodes meaning or just
 appearance. The KING/QUEEN versus BOY/GIRL contrast above was a
@@ -330,7 +330,7 @@ cross-model picture is consistent: backbone fine-tuning \emph{flattens}
 the form organisation ($\rho$ drops from $.06$ to $.00$--$.03$), the
 SignCLIP heads keep it near the frozen level, SignCLIP heads trained on
 fine-tuned backbones inherit the flattening, and the pair-SupCon heads
-\emph{amplify} it ($\rho = .09$ at $K{=}3$, $.16$ at $K{=}5$) ---
+\emph{amplify} it ($\rho = .09$ at $K{=}3$, $.16$ at $K{=}5$):
 training with appearance counterfactuals as positives makes the space
 more form-organised, not less.
 

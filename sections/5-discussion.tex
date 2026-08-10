@@ -4,11 +4,11 @@
 \section{Two regimes, two answers}
 \label{sec:discussion-regimes}
 Our central empirical pattern is a contrast between regimes. In-domain on
-ASL Citizen~\cite{aslcitizen} --- a large, signer-independent benchmark
+ASL Citizen~\cite{aslcitizen}, a large, signer-independent benchmark
 (crowdsourced, 52 signers) whose training split already exposes the model
 to many signers, and whose participant demographics have since been
 documented and released for bias-mitigation
-research~\cite{atwellStudyingMitigatingBiases2024} --- appearance
+research~\cite{atwellStudyingMitigatingBiases2024}, appearance
 interventions bought
 little: +1.1 R@1 on a frozen-feature head, nothing at the backbone. In the
 low-data NGT setting, where the model must bridge a real signer gap from a
@@ -18,7 +18,7 @@ property a model has or lacks in the abstract; it is relative to the
 diversity already present in training. The Logos checkpoint we
 use~\cite{ovodovLogosWellTemperedPretrain2025} is trained jointly on three
 isolated-sign corpora (Logos, AUTSL, and WLASL); the Logos dataset alone
-contributes roughly 200{,}000 videos from 305 signers --- and the other two corpora add 36 and 119 further signers on top, respectively. A
+contributes roughly 200{,}000 videos from 305 signers, and the other two corpora add 36 and 119 further signers on top, respectively. A
 backbone with that exposure has already
 consumed the invariance that our in-domain augmentations could have
 provided; the NGT model, seeing four signers, had not.
@@ -36,7 +36,7 @@ todo stub --- either fill that section or re-anchor this claim to the
 retrieval table directly}
 makes sense once the pretraining recipe is considered: Logos is trained
 jointly with WLASL, and WLASL and ASL Citizen share a large fraction of
-their vocabulary --- both are American Sign Language isolated-sign corpora
+their vocabulary: both are American Sign Language isolated-sign corpora
 drawn from an overlapping sign inventory, so the backbone has effectively
 already seen much of what ASL Citizen asks of it. The shift to NGT removes
 that overlap on three independent axes at once: NGT is a different sign
@@ -53,8 +53,8 @@ the full synthetic-appearance intervention to bridge the NGT signer gap.
 This reading also explains why our ASL Citizen null differs from SDDA's positive
 result~\cite{fuSignerDiversitydrivenData2024b} on Phoenix2014T: their
 diffusion-augmented contrastive setup operates on a studio-recorded corpus
-with far less signer variety than ASL Citizen --- PHOENIX-2014T contains nine signers in
-total~\cite{fuSignerDiversitydrivenData2024b} ---  i.e.\ closer to our NGT
+with far less signer variety than ASL Citizen (PHOENIX-2014T contains nine signers in
+total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT
 % Nine signers verified 2026-07-12 in three independent sources: Camgoz et
 % al. 2018 §4 (primary; no bib entry yet — optional to add), the SDDA paper
 % itself ("includes data from only nine different signers"), and the Isharah
@@ -64,7 +64,7 @@ regime than to our ASL Citizen regime.
 Notably, the SDDA authors themselves
 flag the low visual realism of their synthesized signers as a limitation;
 our generative editing pipeline produces markedly more realistic edits,
-yet realism alone did not rescue the in-domain intervention --- evidence
+yet realism alone did not rescue the in-domain intervention: evidence
 that the binding constraint is the regime, not image quality.
 % Piotr's question (2026-07-12): "could we directly compare to SDDA by
 % training the model on Phoenix?" Answer, per the resolution report: not as
@@ -77,7 +77,8 @@ that the binding constraint is the regime, not image quality.
 
 SDDA~\cite{fuSignerDiversitydrivenData2024b} is evaluated exclusively on
 PHOENIX-2014T, and not on that corpus's standard split: following the signer-independent protocol introduced for
-this corpus by Jin and Zhao, the data are re-partitioned into four settings
+this corpus by Jin and
+Zhao~\cite{jinContrastiveDisentangledMetaLearning2021}, the data are re-partitioned into four settings
 in which one of signers 3, 4, 7 and 8 is held out as the test set, the three
 data-poor signers 2, 6 and 9 form the validation set, and the remaining five
 signers supply the training data (their Appendix~B, Table~7).
@@ -92,8 +93,8 @@ What separates their setting from ours is the diversity available during trainin
 signers places SDDA far closer to our NGT regime than to ASL
 Citizen.
 
-Recording conditions are held fixed --- one studio, one camera
-setup, one weather-forecast register --- so the shift their augmentation has
+Recording conditions are held fixed (one studio, one camera
+setup, one weather-forecast register), so the shift their augmentation has
 to bridge is signer appearance and signing style alone, narrower than the
 corpus and viewpoint changes our NGT evaluation layers on top of it. How
 much the held-out-signer choice matters on this corpus is documented
@@ -161,8 +162,8 @@ and the head also tightens the gloss geometry that the backbone leaves
 loose: on the phonologically confusable t-SNE families, every head sits
 at silhouette $s{=}0.50$--$0.51$ against $0.31$ for the frozen backbone
 alone. % lines 1989-1994 (fig:tsne_grid caption)
-None of this is a large effect on an already-strong backbone --- the
-gains are one to three R@1 points --- but the direction is consistently
+None of this is a large effect on an already-strong backbone (the
+gains are one to three R@1 points), but the direction is consistently
 positive, and nothing in the retrieval tables suggests that adding a
 text tower costs accuracy.
 
@@ -182,8 +183,8 @@ geometry, if anything, stretches. Which of the two readouts one
 privileges decides whether text alignment ``helped'' with signer
 invariance, and \S\ref{sec:results-ft-probes} argues neither should be
 read as a proxy for the other. What can be said flatly is that text
-alignment did not remove signer structure --- no objective in this
-thesis did --- it moved where that structure is measurable.
+alignment did not remove signer structure (no objective in this
+thesis did); it moved where that structure is measurable.
 
 The clearest ``hurt'' is not the text alignment itself but what happens
 when the counterfactuals are pushed into the head as explicit
@@ -195,8 +196,8 @@ for the same edits used as plain additional data, and $K{=}5$ falls
 further to
 0.414. % line 1850 (K=5 pair-SupCon; note the checkpoint caveat todo at line 1873)
 The same synthetic videos therefore help or hurt depending purely on
-the objective through which they enter --- as data, a small gain; as
-forced positives, a large loss --- mirroring the high-$K$ degradation
+the objective through which they enter (as data, a small gain; as
+forced positives, a large loss), mirroring the high-$K$ degradation
 in the NGT ladder (\S\ref{sec:future-work} discusses the candidate
 discriminative fix). Our overall answer is accordingly narrow: a
 SignCLIP-style text-aligned head on frozen features is a cheap,
@@ -244,9 +245,9 @@ readouts: their inter/intra distance ratio is
 $29.9\times$ [$28.4$, $32.0$] % table line 1360 (tab:raw_feature_l2_probe)
 against
 $22.7\times$ and $22.2\times$ % lines 1361-1362 (Logos, I3D)
-for the two RGB backbones --- confidence intervals overlapping
-neither's % prose lines 1372-1374
---- and a linear head recovers the signer at
+for the two RGB backbones (confidence intervals overlapping
+neither's), % prose lines 1372-1374
+and a linear head recovers the signer at
 $98.7\%$ % line 1360 (MediaPipe decoding; chance 3.0%, caption line 1354
 % and prose lines 1370-1371)
 against $94.2\%$ (I3D) and $65.9\%$ (Logos), an ordering unchanged on
@@ -254,15 +255,15 @@ the signer-disjoint test split
 ($99.4\%$/$95.2\%$/$74.3\%$, chance $9.1\%$). % lines 1374-1376
 Camera framing cannot carry this: the keypoints are root-centred at the
 shoulder midpoint and scale-normalised to shoulder width, so what
-identifies the signer is shoulder-normalised geometry --- body
+identifies the signer is shoulder-normalised geometry: body
 proportions, habitual posture, movement style. % prose lines 1376-1381
 Nor is it gloss content in disguise: in the leave-one-gloss-out WLASL
 probe, raw MediaPipe features still retrieve the correct signer at
 $0.207$ top-1 (chance $0.013$), % line 1296 (tab:cross_gloss_signer_probe)
 and the original pose-based SignCLIP model's own embedding space does so
 \emph{more} strongly, at $0.302$. % line 1295
-Pose discards pixels; on this evidence it retains --- and arguably
-distills --- precisely the person-specific signal the modality is
+Pose discards pixels; on this evidence it retains, and arguably
+distills, precisely the person-specific signal the modality is
 assumed to remove.
 
 This lands on the same side as the fairness literature the Introduction
@@ -284,8 +285,8 @@ Our probes add the complementary caveat about the \emph{representation}:
 even when extraction succeeds and coordinates are normalised, the
 resulting features are more signer-identifying than either RGB space we
 compare against. Together the two caveats suggest that treating pose
-distribution as an appearance-bias or privacy fix --- as in the
-pose-only challenge protocol above --- deserves the same scrutiny as
+distribution as an appearance-bias or privacy fix (as in the
+pose-only challenge protocol above) deserves the same scrutiny as
 any other debiasing claim: the appearance axis a pose skeleton removes
 (clothing, background, skin pixels) is not the only axis along which
 signers are identifiable, and by our measurements not the dominant one.
@@ -297,20 +298,39 @@ Table~\ref{tab:asl_citizen_retrieval} are the published results of the
 original SignCLIP model), % setup lines 1058-1061
 so we make no claim about whether pose-based \emph{models} exploit this
 identity signal, how much it costs them under signer shift, or how the
-modalities compare at matched training --- questions the recent
+modalities compare at matched training: questions the recent
 RGB-versus-pose results
 cited in \S\ref{sec:related-work-modality}~\cite{minCloserLookSkeletonbased2025,
 wongSignRepEnhancingSelfSupervised2025} % keys as used at lines 419, 240
 address from the accuracy side. The comparison is also asymmetric in
 pretraining: the MediaPipe features are untrained coordinates while the
 RGB features come from supervised backbones, and the Logos column shows
-exactly what such supervision does --- gloss-supervised pretraining
+exactly what such supervision does: gloss-supervised pretraining
 sheds linearly accessible identity ($65.9\%$ against I3D's $94.2\%$)
 while leaving the distance geometry untouched. % prose lines 1382-1390
 What the probes do establish is the narrower, assumption-level point:
 signer identity is not removed by pose extraction by construction, and
 a pipeline that adopts pose \emph{for} invariance or privacy inherits
 an unexamined assumption rather than a guarantee.
+
+If neither pose input nor unconstrained RGB is satisfactory, the
+constructive direction is the one
+SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} takes
+(\S\ref{sec:related-work-modality}): keep RGB as the input, import the
+skeleton's inductive bias as pretraining supervision, and suppress
+residual appearance with an adversarial style loss. Our findings support
+both halves of that design and sharpen the second. The diagnosis
+supports its premise: pose is no invariance guarantee, and SignRep
+itself normalises its pose targets to a canonical body shape for
+exactly the reason our probes surface, namely that skeletons carry
+person-specific signal. The intervention results bear on its style
+loss: an adversarial objective must infer what counts as appearance
+from style statistics of unpaired videos, whereas a motion-locked
+re-render or a generative edit supplies a content-controlled pair, the
+same signing under a changed appearance, so invariance can be trained
+against the nuisance factor directly rather than inferred. Testing our
+counterfactual objectives on a SignRep-style self-supervised encoder is
+a natural continuation (\S\ref{sec:future-work}).
 
 \todome{DRAFT END: caveats. (i) The WLASL cross-gloss probe prose
 (lines 1315-1319) itself hedges that vocabulary bias may inflate those
@@ -331,7 +351,7 @@ first and last sentences.}
 trimmed: each begins with a lengthy idle segment in which the signer
 stands watching the reference video before starting to sign, and ends
 with a reach toward the foot pedal used to stop the recording. Both add
-frames unrelated to signing --- idle standing and extraneous motion ---
+frames unrelated to signing (idle standing and extraneous motion),
 and because the idle portion differs in length per signer, no trivial
 automated trim existed; we judged manual cleaning not worth thesis time.
 The reported NGT numbers therefore include this noise floor.
@@ -359,7 +379,7 @@ kept the per-frame pipeline and report the resulting flicker as a
 limitation rather than a solved problem.
 
 \textbf{Occasional generative hallucinations.} The editing model
-occasionally hallucinates content that was not in the source frame ---
+occasionally hallucinates content that was not in the source frame:
 most visibly, adding a spurious or malformed handshape to a frame whose
 original signer was not making that shape, or to a frame that did not
 contain a visible hand at all. This risk is highest for the skin-tone and
@@ -367,8 +387,8 @@ signer-swap edit types (\S\ref{sec:method-diffusion}), and is a direct
 consequence of editing each frame independently rather than conditioning
 on the sign actually being performed.
 \todo{example frames:  source frames from nano\_banana/output/flux-aug} A more heavily
-constrained editing pipeline --- for instance, conditioning the editor
-on the source pose via ControlNet --- could reduce these hallucinations
+constrained editing pipeline (for instance, conditioning the editor
+on the source pose via ControlNet) could reduce these hallucinations
 further, but their prevalence was not high enough to justify the added
 complexity.\todome{sentence added 04.08 from your todo}
 
@@ -384,7 +404,7 @@ than authored assets, enabling appearance sweeps at scale. Diffusion-based
 sign production directly in SMPL-X pose
 space~\cite{baltatzisNeuralSignActors2024a} and large 3D sign
 corpora~\cite{yuSignAvatarsLargeScale3D2025} make this increasingly
-practical --- though driving avatars from estimated or generated SMPL-X
+practical, though driving avatars from estimated or generated SMPL-X
 parameters remains harder than working directly with recorded motion
 capture, as our pipeline does.
 
@@ -404,11 +424,11 @@ remain visibly present in the render. This is not only a probe result
 knowledge of sign language, when looking at individual frames of our
 synthetic-signer renders I can still tell which of the real NGT signers
 supplied the motion capture for a given avatar. The synthetic-signer
-intervention changes surface appearance --- body model, clothing, skin
-tone --- without fully removing the motion-level signature of the source
+intervention changes surface appearance (body model, clothing, skin
+tone) without fully removing the motion-level signature of the source
 signer, a distinction the retrieval-based evaluation in this thesis does
-not separate out. Measuring that motion-level signature directly --- a
-signer-identity probe on the rendered views themselves --- would be a
+not separate out. Measuring that motion-level signature directly (a
+signer-identity probe on the rendered views themselves) would be a
 cheap first step, and motion retargeting that also perturbs kinematic
 style the harder follow-up.
 
@@ -420,7 +440,7 @@ saturate, or invert as synthetic appearance diversity increases?
 \textbf{Augmenting the full ASL Citizen training set, not just a targeted
 subset.} Our generative augmentation covers a deliberately targeted subset
 of the ASL Citizen training set, chosen worst-first by signer scarcity and
-baseline difficulty (\S\ref{sec:method-diffusion}) --- a choice guided in
+baseline difficulty (\S\ref{sec:method-diffusion}), a choice guided in
 part by evidence that targeted synthetic augmentation at smaller scale can
 outperform augmenting everything~\cite{nguyenDoWeNeedSynthetic2025}.
 Whether that finding transfers to our setting is untested: it remains an
@@ -437,8 +457,8 @@ relaxed to test this directly.
 \textbf{End-to-end training for the NGT encoder.} All NGT results come
 from an encoder trained on pre-extracted, frozen Logos clip features
 (\S\ref{sec:results-crossdomain}). An end-to-end variant that prepends
-the MViTv2-S backbone itself --- a frozen-backbone control and a fully
-fine-tuned configuration --- was implemented and configured but never
+the MViTv2-S backbone itself (a frozen-backbone control and a fully
+fine-tuned configuration) was implemented and configured but never
 run. Running both would show whether the cross-domain gain from
 synthetic views survives, grows, or shrinks once gradients can reach the
 visual backbone, giving the low-data regime its own counterpart to the
@@ -480,7 +500,7 @@ signs. The expected insight bears on the form-dose result: explicit
 motion-discrimination pressure would test whether the form organisation
 that pair-trained heads currently \emph{amplify}
 (\S\ref{sec:results-iconicity}, Fig.~\ref{fig:form_dose}) recedes once
-negatives, and not only positives, are appearance-controlled --- or
+negatives, and not only positives, are appearance-controlled, or
 sharpens further as the space reorganises around
 motion.\todo{framing check}
 
@@ -491,16 +511,27 @@ is directly testable: train the same MViTv2-S from random initialisation
 on ASL Citizen, with cross-entropy alone and with the synthetic
 augmentations added, and compare against the pretrained baseline. If the
 from-scratch model lands well below the pretrained one and the
-augmentations now help it, pretraining diversity --- not a saturated
-recipe --- explains the null; if augmentation still adds nothing, the
+augmentations now help it, pretraining diversity, not a saturated
+recipe, explains the null; if augmentation still adds nothing, the
 in-domain ceiling is not a pretraining artifact. 
+
+\textbf{Counterfactual supervision for a self-supervised RGB backbone.}
+SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} learns its sign
+representation without gloss labels, using pose-derived pretraining
+targets plus an adversarial style loss to hold appearance at bay. Our
+counterfactuals could replace that inferred style signal with direct
+supervision: an original and its motion-locked or generative
+counterpart form an explicit invariance pair during pretraining. This
+would also test the two-regime reading on a backbone whose pretraining
+has not already consumed the invariance the way Logos's gloss-supervised,
+signer-diverse pretraining has.
 
 \textbf{Fine-tuning I3D as a second backbone for the embedding-space
 analyses.} Throughout this thesis I3D is used only as a frozen,
 off-the-shelf feature extractor (\S\ref{sec:results-diagnosis},
 \S\ref{sec:results-indomain}), never fine-tuned the way the Logos/MViTv2-S
 backbone is. Repeating the fine-tuning runs and the embedding-space
-analyses --- signer-separability probes, form-dose geometry --- with a
+analyses (signer-separability probes, form-dose geometry) with a
 fine-tuned I3D would show whether this thesis's diagnostic findings are
 specific to the MViTv2-S/Logos backbone or hold across RGB architectures
 more generally.

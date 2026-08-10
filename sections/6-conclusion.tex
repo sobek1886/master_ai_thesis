@@ -1,8 +1,8 @@
 \chapter{Conclusion}
 \todome{DRAFT START (Claude 04.08): conclusion chapter, five paragraphs --- restate, diagnosis, NGT, ASL Citizen, two-regime takeaway + outlook; no numbers beyond those already in the body}
 This thesis asked whether sign language recognition models lean on the
-incidental appearance of the recorded signers --- clothing, skin tone,
-body shape, environment --- rather than the signing itself, and whether
+incidental appearance of the recorded signers (clothing, skin tone,
+body shape, environment) rather than the signing itself, and whether
 synthetic appearance counterfactuals, edited copies of training videos in
 which appearance changes while the performed sign is preserved, can
 remove that bias. We pursued the question through one diagnosis and two
@@ -19,8 +19,8 @@ The diagnosis came back positive everywhere we looked. Signer identity is
 recoverable from every feature space we test, including pose-based ones:
 on ASL Citizen the raw spaces separate signers at fixed sign content by a
 distance ratio of $22$--$30\times$, and a linear head recovers the signer
-far above chance in all three spaces, with the MediaPipe pose features
---- often adopted precisely to escape appearance --- the most
+far above chance in all three spaces, with the MediaPipe pose features,
+often adopted precisely to escape appearance, the most
 signer-separable of all, at $98.7\%$ decoding accuracy.
 % "recoverable from every feature space we test, including pose-based
 % ones" from the abstract, lines 82-84; "$22$--$30\times$" and "a linear
@@ -29,15 +29,15 @@ signer-separable of all, at $98.7\%$ decoding accuracy.
 % from lines 1359-1360.
 
 The two interventions returned two different answers. In the
-low-diversity NGT setting --- four training signers, one studio
-environment at train time --- synthetic signers more than double
+low-diversity NGT setting (four training signers, one studio
+environment at train time), synthetic signers more than double
 cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train; $0.25 \to
 0.70$ train$\to$test, 3 seeds), a gain that a real-multiview control at
 the same view count does not reproduce: appearance and identity
 diversity, not extra viewpoints, is what drives it. At matched view
 count, content, and viewpoint, the generative edits retain roughly
 $65$--$80\%$ of the avatar gain, and as real signer diversity is added
-at a fixed data budget, the full-strength synthetic gain shrinks ---
+at a fixed data budget, the full-strength synthetic gain shrinks,
 consistent with synthetic appearance variety substituting for real
 diversity that is absent.
 % NGT headline numbers and "more than double" from the abstract, lines
@@ -51,8 +51,8 @@ diversity that is absent.
 
 On the large, signer-diverse ASL Citizen benchmark the same idea leaves
 recognition essentially unchanged across every objective family we try
---- augmentation-as-data, cosine consistency, supervised contrast, and
-adversarial invariance --- with one modest exception: adding the
+(augmentation-as-data, cosine consistency, supervised contrast, and
+adversarial invariance), with one modest exception: adding the
 counterfactuals to a frozen-feature contrastive head is worth $+1.1$
 R@1, while backbone fine-tuning gains nothing over plain cross-entropy.
 % "essentially unchanged" + family list from the abstract, lines 93-95;
@@ -64,15 +64,15 @@ cannot. The counterfactuals themselves are faithful: local edits move an
 embedding about half as far as a genuine signer change, the signer swap
 exactly as far as one, and although the augments are near-perfectly
 linearly separable from real video, that entire linear signature
-collapses to a single shared offset per edit type --- a direction a
+collapses to a single shared offset per edit type, a direction a
 classifier can trivially factor out.
 % n.disp 0.44--0.53 local / 1.04--1.05 swap paraphrased from lines
 % 2286-2290; "near-perfectly linearly separable" (AUC 0.96--1.00) from
 % lines 2305-2310; de-shift collapse to chance (0.48--0.51) and "a
 % direction a classifier can trivially factor out" from lines 2311-2323.
 And the invariance objectives are not inert: fine-tuning measurably
-erodes the linearly decodable component of signer identity ---
-consistency training most of all --- yet that erosion does not translate
+erodes the linearly decodable component of signer identity,
+consistency training most of all, yet that erosion does not translate
 into better retrieval, so removing decodable signer information and
 improving in-domain accuracy are dissociable outcomes here.
 % Decoding erosion (75.3% frozen -> 64.2% CE -> 56.3% consistency) and
@@ -82,8 +82,8 @@ improving in-domain accuracy are dissociable outcomes here.
 The two regimes together give the thesis its answer. Appearance
 invariance is not a property a model has or lacks in the abstract; it is
 relative to the diversity already present in training. Where real signer
-diversity is scarce --- our four-signer NGT corpus, and the
-few-signer studio corpora of prior positive results --- synthetic
+diversity is scarce, as in our four-signer NGT corpus and the
+few-signer studio corpora of prior positive results, synthetic
 appearance counterfactuals earn their cost, and motion-locked
 re-renders earn the most; where hundreds of pretraining signers and diverse
 recording conditions have already bought the invariance, the same

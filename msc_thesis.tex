@@ -85,8 +85,8 @@ Sign language recognition (SLR) models struggle under test domain shift:
 unseen signers and new recording conditions. Appearance-bias findings in action
 recognition motivate asking whether SLR models key on incidental visual
 properties of the recorded signers rather than the signing itself. This thesis asks
-whether \emph{synthetic appearance counterfactuals} --- edited training
-videos that change appearance while preserving the performed sign --- can
+whether \emph{synthetic appearance counterfactuals}, edited training
+videos that change appearance while preserving the performed sign, can
 remove this bias. We first diagnose the problem: signer
 identity is recoverable from every feature space we test, including
 pose-based ones. We then intervene with two synthesis pipelines:
@@ -97,11 +97,11 @@ In the low-diversity NGT setting (4 training signers, one studio
 environment), synthetic signers more than double cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train;
 $0.25 \to 0.70$ train$\to$test, 3 seeds). On the large, signer- and
 environment-diverse ASL Citizen benchmark, the counterfactuals leave
-recognition essentially unchanged across every objective family we try
---- an informative null: with 460 pretraining signers and 35 training
+recognition essentially unchanged across every objective family we try,
+an informative null: with 460 pretraining signers and 35 training
 signers, appearance invariance is already bought by real diversity.
 Synthetic counterfactuals earn their cost precisely where real signer
-diversity is scarce --- and are largely redundant where it is not.
+diversity is scarce, and are largely redundant where it is not.
 \end{adjustwidth}
 
 \tableofcontents

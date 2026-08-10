@@ -86,7 +86,7 @@ trains a linear head to predict the signer from the same mean-pooled
 features (3-fold stratified cross-validation; identical protocol to the
 fine-tuned-space probes of \S\ref{sec:results-ft-probes}). The two probes
 answer different questions: the ratio is a within-space signal-to-noise
-statistic --- how dominant signer identity is in the untrained geometry ---
+statistic (how dominant signer identity is in the untrained geometry),
 while decoding measures how much identity information is linearly
 accessible. \S\ref{sec:results-ft-probes} shows the two can dissociate
 sharply, so we do not read either as a proxy for the other, and in
@@ -128,8 +128,8 @@ the signer-disjoint test split ($99.4\%$ / $95.2\%$ / $74.3\%$, $11$
 signers, chance $9.1\%$).
 \todome{ADDITION START (04.08): gloss-disjoint control, job 25196749}
 Nor is the decoding accuracy content leakage: under gloss-disjoint
-cross-validation --- folds split by gloss, so the classifier is tested
-only on signs that appeared for no signer during its training --- the
+cross-validation (folds split by gloss, so the classifier is tested
+only on signs that appeared for no signer during its training), the
 numbers are essentially unchanged ($98.7\%$ / $94.6\%$ / $64.5\%$),
 ruling out the possibility that the probe partly learns \emph{which
 glosses} a signer contributes rather than how they look and move.
@@ -140,15 +140,15 @@ zero test videos excluded.}
 Camera framing cannot explain this: the pose
 features are root-centred at the shoulder midpoint and scale-normalised
 to shoulder width at extraction, so what identifies the signer is
-shoulder-normalised geometry --- body proportions, habitual posture, and
-movement style. Pose discards pixels, but it retains --- and arguably
-distills --- precisely the appearance cues that identify signers without
+shoulder-normalised geometry: body proportions, habitual posture, and
+movement style. Pose discards pixels, but it retains, and arguably
+distills, precisely the appearance cues that identify signers without
 them.
 
 The two probes also dissociate \emph{within} the RGB pair, foreshadowing
 \S\ref{sec:results-ft-probes}: Logos and I3D are indistinguishable by
 the distance ratio, yet I3D sits near ceiling for linear signer decoding
-while Logos gives up $28$ points --- consistent with Logos' gloss-supervised,
+while Logos gives up $28$ points, consistent with Logos' gloss-supervised,
 transfer-oriented pretraining shedding linearly accessible identity
 information while leaving the distance geometry untouched. This is an
 early instance of a pattern that recurs throughout the thesis: coarse
@@ -168,12 +168,12 @@ positive pairs, SupCon degenerates, so this arm uses the video-only
 InfoNCE of \S\ref{sec:method-objectives});
 the treatment arms add, at the \emph{same} front camera, either both Unreal
 avatars ($K{=}3$) or two Flux identity edits (signer swap, skin tone;
-$K{=}3$) --- a head-to-head of the motion-locked and generative routes at
-matched $K$, matched content, and matched viewpoint --- plus a
-full-strength arm with all six avatar views ($K{=}7$). All arms share an
-identical sentence set --- the 744 sentences of the full four-signer pool
-with complete synthetic coverage
-(Table~\ref{tab:ngt_setups}) --- sample one repeat take per step, and keep the
+$K{=}3$), a head-to-head of the motion-locked and generative routes at
+matched $K$, matched content, and matched viewpoint; a further
+full-strength arm adds all six avatar views ($K{=}7$). All arms share an
+identical sentence set (the 744 sentences of the full four-signer pool
+with complete synthetic coverage,
+Table~\ref{tab:ngt_setups}), sample one repeat take per step, and keep the
 contrastive batch constant (64 signs, so the number of in-batch negatives is
 equal across arms; the encoder-pass cost instead scales with $K$), with the
 learning-rate schedule matched to the per-arm update count.
@@ -293,14 +293,14 @@ At matched strength the motion-locked route wins the head-to-head:
 E3 exceeds E4 by $\Delta$R@1 $0.144$ (test$\to$train) / $0.089$ (train$\to$test), significant on
 all three seeds test$\to$train and two of three train$\to$test. The generative route therefore
 retains roughly $65$--$80\%$ (by
-direction) of the Unreal appearance gain at equal $K$, content, and viewpoint
---- a substantial but incomplete substitute for the motion-locked renders. Both
+direction) of the Unreal appearance gain at equal $K$, content, and viewpoint:
+a substantial but incomplete substitute for the motion-locked renders. Both
 synthetic-only arms, trained without any real video (E9 Unreal-only $0.296$, E10
 Flux-only $0.452$), at least match the real-only baseline, indicating the avatar
 and edited frames carry the discriminative sign content on their own.
 Crucially,
-the real-multiview control (E2) --- two \emph{real} extra camera views of the
-same signers at the same $K{=}3$ --- does not reproduce the synthetic gain: it
+the real-multiview control (E2; two \emph{real} extra camera views of the
+same signers at the same $K{=}3$) does not reproduce the synthetic gain: it
 leaves test$\to$train R@1 near baseline ($0.266$ vs E1 $0.234$) and, while it does lift
 train$\to$test ($0.420$ vs $0.247$), stays far below the matched-$K$ synthetic arms in
 both directions (E3 $0.649$/$0.695$, E4 $0.505$/$0.606$). Extra viewpoints of the
@@ -327,7 +327,7 @@ identity buys much more: at the identical $K{=}3$, two Unreal avatars
 rendered at the unchanged front camera (E3, $0.649$/$0.695$) sit far above the
 multiview control in both directions. Nor do synthetic viewpoints stack on
 top of synthetic identities: rendering the same avatars from three cameras
-(E5, $K{=}7$, $0.437$/$0.482$) lands over $0.2$ R@1 below E3 --- at
+(E5, $K{=}7$, $0.437$/$0.482$) lands over $0.2$ R@1 below E3, at
 the constant 64-sign negative pool shared by all arms, so negative
 starvation cannot account for the drop. The two diversity axes are, however,
 not independent: in the signer-count ablation that follows, the
@@ -336,7 +336,7 @@ Fig.~\ref{fig:ngt_dropoff}) starts from a stronger real baseline than the
 single front view (test$\to$train roughly $0.26$--$0.28$ vs $0.21$--$0.24$, train$\to$test
 $0.32$--$0.34$ vs $0.24$--$0.26$ across $S$), and the Unreal gain measured from that
 stronger baseline is smaller ($+0.042$ to $+0.109$ R@1 across cells, vs $+0.081$
-to $+0.160$ in the single-view E1$\to$E5 panel) --- real viewpoints already supply part of what the
+to $+0.160$ in the single-view E1$\to$E5 panel): real viewpoints already supply part of what the
 avatars supply. The viewpoint story is therefore graded, not null: real
 viewpoints help (mostly train$\to$test), synthetic identities at matched $K$ help
 far more, synthetic viewpoints beyond matched $K$ hurt, and viewpoint
@@ -353,7 +353,7 @@ real-signer-count ablation}
 The two-regime reading predicts that the Unreal gain is a property of
 \emph{low real-signer diversity}: as genuine signer variety enters
 training, synthetic appearance variety should have progressively less to
-add. The NGT corpus permits a direct test --- its training pool comprises
+add. The NGT corpus permits a direct test: its training pool comprises
 four recording sessions, each a distinct real signer. We propose a
 fixed-budget ablation design: we train at
 $S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
@@ -364,10 +364,10 @@ avatars' front views) and the full Unreal arm (E5, $K{=}7$).
 
 The load-bearing control is that data volume is fixed while diversity
 varies: every condition trains on exactly 180 sentences (the largest even
-budget the smallest single-signer pool supports --- session 251126 has 182
+budget the smallest single-signer pool supports; session 251126 has 182
 render-complete sentences), split evenly across its included signers, with a
 single (deterministic, render-complete)
-take per sentence --- so 180 front-view videos, identical epoch size, and
+take per sentence, so 180 front-view videos, identical epoch size, and
 an identical update budget everywhere, and the take-count differences
 between signers (1.5--2.4 takes per sentence) cannot masquerade as a
 diversity effect. All arms of a condition use the same sentences and the
@@ -375,7 +375,7 @@ same takes; the Unreal arms differ only by attaching avatar views of each
 take (the two avatar front views for E3, all six avatar views for E5). Evaluation is the same frozen 364-sentence protocol as the
 ladder (Table~\ref{tab:ngt_setups}),
 with galleries built from features independent of what was trained on, so
-the eval set never varies across conditions --- it therefore contains
+the eval set never varies across conditions; it therefore contains
 sentences outside a given condition's 180-sentence training pool and, for
 $S{<}4$, gallery videos of signers absent from that condition's training.
 
@@ -450,12 +450,12 @@ paired gain of the Unreal arm over the matched real-only arm (unrounded
 means). Arms as in Table~\ref{tab:ngt_ladder}: \textbf{single-view} = E1
 front camera vs E5 front $+$ 6 avatar views; \textbf{matched-$K$} = the
 same E1 vs E3 (front $+$ both avatar front views, the ladder's strongest
-arm); \textbf{multiview} = E2 (3 real views) vs E2 $+$ 6 avatar views
---- a viewpoint-matched real baseline. Per-seed exact McNemar (364
+arm); \textbf{multiview} = E2 (3 real views) vs E2 $+$ 6 avatar views,
+a viewpoint-matched real baseline. Per-seed exact McNemar (364
 paired queries), $p<0.05$: matched-$K$ in $3/3$ seeds for every $S$ and
 direction; single-view $3/3$ except $S{=}4$ test$\to$train ($2/3$);
 multiview $3/3/2/3$ (test$\to$train) and $3/2/1/2$ (train$\to$test) for
-$S{=}1\ldots4$ --- robust test$\to$train, thinning in train$\to$test
+$S{=}1\ldots4$: robust test$\to$train, thinning in train$\to$test
 exactly where the gain is smallest. Evaluation: the frozen 364-sentence
 protocol of Table~\ref{tab:ngt_setups}.
 \todome{04.08, from your overflow todo: in-table panel headers shortened
@@ -474,7 +474,7 @@ $K{=}1\to K{=}7$), matched-$K$ (E1 $\to$ E3, $K{=}1\to K{=}3$) and the
 viewpoint-matched multiview panel ($K{=}3\to K{=}9$), in each retrieval
 direction. Dashed lines are least-squares fits, annotated with slope per
 added signer and $R^2$. The full-Unreal and multiview gains shrink as real
-signer diversity grows, and the multiview gain is smaller throughout ---
+signer diversity grows, and the multiview gain is smaller throughout,
 both consistent with the two-regime reading that synthetic appearance
 variety substitutes for absent real diversity. The matched-$K$ gain is the
 largest at every $S$ and nearly flat in train$\to$test.}
@@ -573,7 +573,7 @@ every fine-tuning and augmentation arm below attempts to clear.
 \todome{ADDITION END}
 Four findings stand out. (i) Cross-entropy fine-tuning improves retrieval R@1
 from 83.59 (best frozen) to 85.57 at top-2 depth (85.95 at top-6), while
-the linear probe is already best \emph{without} any fine-tuning (86.33) ---
+the linear probe is already best \emph{without} any fine-tuning (86.33):
 fine-tuning improves retrieval clustering at a small cost to linear
 separability. (ii) Depth helps only up to a point: full unfreeze (84.96)
 is worse than top-6 (85.95), suggesting the earliest, highest-resolution
@@ -597,7 +597,7 @@ how little weight the within-block orderings can bear. (iv) Cosine consistency a
 linear probe (probe R@1 drops to 82.27 at top-2 and 82.45 at top-6;
 this value also moved by 1.8 points between the two training
 generations, the least stable in the table) while its retrieval score
-looks ordinary --- the positive-only pull distorts the geometry in a way
+looks ordinary: the positive-only pull distorts the geometry in a way
 nearest-neighbour retrieval tolerates but a linear head does not. The
 two-stage schedule (\S\ref{sec:setup-training}: the consistency term
 switched on only after CE convergence, at a $100\times$ lower learning
@@ -612,7 +612,7 @@ The mechanistic question of whether the consistency loss actually pulls
 augmented copies together is now answered directly, not left to this
 paragraph: \S\ref{sec:results-ft-probes} (linear decodability) and
 \S\ref{sec:results-aug-geometry} (feature-space geometry, training vs.\
-held-out pairs) give a converging, load-bearing answer --- yes on training
+held-out pairs) give a converging, load-bearing answer: yes on training
 pairs, not on held-out ones.
 
 \subsection{SignCLIP head on frozen Logos/I3D features}
@@ -670,7 +670,7 @@ $K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (MViTv2-S, Logos) & 0.567 
 \caption{Video-to-text retrieval on ASL Citizen (random-baseline Median R
 $=1366$, 2731 unique glosses).
 Row naming: \emph{synth.} marks training that uses the Flux synthetic
-appearance edits --- \emph{$+$ synth.\ data} adds them to the real training
+appearance edits: \emph{$+$ synth.\ data} adds them to the real training
 videos as extra items, \emph{synth.\ data only} fine-tunes on the edits
 alone, and the pair-SupCon rows fine-tune with a SupCon objective treating
 each video and its synthetic edits as explicit positives; unmarked rows
@@ -685,7 +685,7 @@ cross-entropy on real videos; aug-FT $=$ CE $+$ synth.\ data; SDDA-FT $=$
 CE $+$ synth.\ data $+$ SDDA invariance term,
 \S\ref{sec:method-losses}); the CE/aug/SDDA-FT rows use
 \texttt{logos\_native} preprocessing, whereas the frozen rows above use
-\texttt{direct224} --- the ``Scratch on native (frozen)'' row is the matched
+\texttt{direct224}; the ``Scratch on native (frozen)'' row is the matched
 control that isolates the preprocessing difference from the fine-tuning effect.
 \todome{K=5 removal executed 04.08: the K=5 pair-SupCon row (0.414,
 checkpoint\_last) and its dangling $^{\S}$ mark are gone from this
@@ -840,13 +840,13 @@ fixed sign. The \emph{decoding probe} is its supervised complement, using standa
 linear-probing methodology~\cite{alainUnderstandingIntermediateLayers2017}: a linear
 head $p(s\,|\,z)=\mathrm{softmax}(Wz+b)$ is trained (cross-validated, frozen
 $z$) to predict the signer label $s$, reporting top-1 accuracy against the
-$1/S$ chance level. The two can dissociate --- a distance probe misses
+$1/S$ chance level. The two can dissociate (a distance probe misses
 identity information that is linearly decodable but small relative to
-gloss variation --- so an intervention that genuinely removes appearance
+gloss variation), so an intervention that genuinely removes appearance
 identity must lower both, not merely rescale distances. We run both probes
 on the frozen baseline, the top-2 family (CE, aug-as-data,
 cosine-consistency plus its per-variant ablations, SDDA), and the SignCLIP
-heads, reading each family as a matched block --- the depth confound forbids
+heads, reading each family as a matched block; the depth confound forbids
 comparing across them. The backbone-family probes use the test split; the
 SignCLIP-head spaces are exported for the train split only, so their probes
 run on the matched train split (35 signers) and are reported as a separate
@@ -917,7 +917,7 @@ runs sitting at $16.4$--$17.1\times$, indistinguishable from plain CE
 ($16.5\times$) and barely below frozen. The decoding probe tells a
 sharper story: a linear head recovers signer identity from the frozen
 space at 75.3\% (11-way chance 9.1\%), and every fine-tuned space is
-substantially less decodable --- CE alone already drops this to 64.2\%,
+substantially less decodable: CE alone already drops this to 64.2\%,
 aug-as-data to 62.6\%, and cosine consistency furthest, to 56.3\%, while
 SDDA is the weakest intervention at 67.6\% despite its loss explicitly
 targeting signer structure. So identity is not literally frozen in place:
@@ -927,7 +927,7 @@ this coarse distance statistic is too blunt to register. This reduction
 does not translate into better retrieval (Table~\ref{tab:backbone_ft_retrieval}:
 consistency training is at or below plain CE on both evals), so removing
 decodable signer information and improving in-domain accuracy are
-dissociable outcomes here --- consistent with the geometry of
+dissociable outcomes here, consistent with the geometry of
 \S\ref{sec:results-aug-geometry}, where the same objectives are shown to
 pull their own training pairs together without closing the gap on
 held-out counterfactuals.
@@ -938,9 +938,9 @@ geometry of the augmentations}
 \todo{this is too long and too dense. Decide what is the most relevant, degrade the rest to appendix}
 The interventions above add little in-domain (\S\ref{sec:results-indomain}),
 and two very different geometries could produce a null of this shape. The
-synthetic edits might be \emph{redundant} --- each augment landing so close
+synthetic edits might be \emph{redundant} (each augment landing so close
 to its source video that it supplies no variation the backbone has not
-already absorbed from a 35-signer corpus --- or they might carry a
+already absorbed from a 35-signer corpus), or they might carry a
 \emph{sim-to-real gap}: occupying a systematically distinct, ``synthetic''
 region of the feature space that adds domain shift rather than useful signer
 diversity. These are not mutually exclusive; the more interesting possibility
@@ -959,17 +959,17 @@ Each Flux edit of type
 $t\in\{$shirt, glasses, skin~tone, signer~swap$\}$
 yields a pair $\big(f(v),f(\tilde{v}_t)\big)$, matched by video id, and the
 object of study is the \emph{displacement}
-$\delta_t(v)=f(\tilde{v}_t)-f(v)$ --- the arrow the edit draws in feature
+$\delta_t(v)=f(\tilde{v}_t)-f(v)$, the arrow the edit draws in feature
 space. We propose four measurements to characterise these arrows; headline
 numbers are medians over pairs.
 
 \textbf{(1) Displacement, in units of a real signer change.} A raw cosine
-$\cos\big(f(v),f(\tilde{v}_t)\big)$ is not interpretable on its own ---
-embedding spaces concentrate similarity, and the concentration differs
-between spaces --- so we calibrate it against a reference built from the
+$\cos\big(f(v),f(\tilde{v}_t)\big)$ is not interpretable on its own
+(embedding spaces concentrate similarity, and the concentration differs
+between spaces), so we calibrate it against a reference built from the
 same features and metadata. For each source $v$ we measure its mean cosine
 $\bar{c}(v)$ to up to $64$ videos of the \emph{same gloss by different
-signers} --- the natural magnitude of a genuine signer change for that very
+signers}, the natural magnitude of a genuine signer change for that very
 video. We propose the \emph{normalised displacement}
 $\mathrm{n.disp}=\big(1-\cos(f(v),f(\tilde{v}_t))\big)/\big(1-\bar{c}(v)\big)$
 to measure the fraction of a real signer change that the edit induces. A value of
@@ -977,7 +977,7 @@ $0.5$ means the edit moves the embedding half as far as replacing the
 person would; $1.0$, exactly as far. A second per-video control,
 \emph{different glosses by the same signer}, provides a sign-identity
 floor: in every space and on both samples, $\geq 99.9\%$ of augments remain
-closer to their source than this floor --- no edit moves a video past its
+closer to their source than this floor: no edit moves a video past its
 own sign.
 
 \textbf{(2) Sim-to-real separability.} To test for a collectively
@@ -1003,7 +1003,7 @@ $f(\tilde{v}_t)=f(v)+\mu_t+\varepsilon$. If the synthetic region were
 nothing but the shared offset $\mu_t$, subtracting it should erase
 separability. Within each cross-validation fold we estimate $\hat{\mu}_t$
 as the mean displacement of the \emph{training-fold pairs only}, subtract
-it from every augment, retrain, and score on the held-out fold ---
+it from every augment, retrain, and score on the held-out fold;
 estimating the shift on the evaluation pairs themselves would trivially
 centre them, so the fold-internal protocol keeps the test honest (and
 each training pair contributes only one of its two members, chosen at
@@ -1014,34 +1014,34 @@ synthetic signature was one translation per edit type.
 
 \textbf{(4) Meaning kept, appearance moved?}
 Two checks. \emph{gloss@1}: does the augment's nearest real video
-(source excluded) show the same sign? --- the edit preserved meaning; the
+(source excluded) show the same sign? If so, the edit preserved meaning; the
 video-to-video analogue of the counterfactual check in
 \S\ref{sec:results-diagnosis}. \emph{flip}: summarising each signer by the
 mean embedding of their videos (prototype), the share of pairs whose
-nearest prototype differs between source and augment --- the edit visibly
+nearest prototype differs between source and augment, meaning the edit visibly
 moved identity-related appearance (intended for signer swap; unintended
 drift for the local edits).
 Because the whole analysis runs per feature space, we repeat it on the
 fine-tuned backbones of Table~\ref{tab:backbone_ft_retrieval}
 (aug-as-data, cosine-consistency, SDDA, and the CE control) to ask whether
 any intervention pulls the augments toward their originals or shrinks the
-synthetic region --- the geometric companion to the retrieval numbers.
+synthetic region, the geometric companion to the retrieval numbers.
 
 \textbf{Two evaluation samples.} We evaluate every space on two disjoint
 pair samples. The first comprises the $6{,}000$ augmented training source
 videos, each with all four edits; it maximizes statistical power but is
 selection-biased by construction, since augmentation targets were chosen
-worst-first --- the classes with the fewest training signers and lowest
+worst-first: the classes with the fewest training signers and lowest
 baseline accuracy (\S\ref{sec:method-diffusion}). The second is a
 signer-stratified random sample of $500$ \emph{test-split} videos, augmented
 with the identical pipeline; its signers are fully disjoint from the $35$
-training signers. For the frozen backbone --- which never saw ASL Citizen,
-so neither sample raises a leakage concern --- the held-out sample serves as
+training signers. For the frozen backbone (which never saw ASL Citizen,
+so neither sample raises a leakage concern), the held-out sample serves as
 a check that conclusions are not artifacts of the rare-gloss selection. For
 the fine-tuned spaces the distinction is substantive: the training pairs are
 the very items those models optimized on, so they bound the intervention's
 effect from above, while the held-out pairs give the honest generalization
-number --- and a divergence between the two is itself informative,
+number; and a divergence between the two is itself informative,
 separating memorization of specific counterfactual pairs from a learned
 appearance invariance. Both sides of every pair share identical
 aspect-preserving spatial preprocessing and a matched effective frame rate,
@@ -1061,7 +1061,7 @@ skin-tone and signer-swap are whole-person edits that should move it much
 further, approaching the magnitude of a genuine signer change. The decisive
 question for the in-domain null is \emph{where} that displacement lands. If
 real-versus-synthetic separability is low, the counterfactuals are faithful and the null is one of
-saturation --- the high-signer ASL Citizen backbone had already learned the
+saturation: the high-signer ASL Citizen backbone had already learned the
 invariance the edits supply, consistent with the marginal
 Table~\ref{tab:asl_citizen_retrieval} gain and with the opposite,
 low-signer NGT result (\S\ref{sec:results-crossdomain}). If instead the
@@ -1113,7 +1113,7 @@ The locality ordering holds: garment and skin edits move an embedding
 about half as far as a genuine signer change (normalised displacement
 $0.44$--$0.53$), while signer swap moves it exactly as far as one
 ($1.04$--$1.05$) and flips the nearest signer prototype for $91\%$ of
-training pairs --- the intended identity change registers. Sign content
+training pairs: the intended identity change registers. Sign content
 survives every edit (gloss retention $0.70$--$0.75$ on the unbiased
 held-out pairs; lower, $0.49$--$0.63$, on the training pairs, which by
 construction target the hardest classes).
@@ -1138,10 +1138,10 @@ After subtracting a single mean displacement vector per edit type,
 estimated leak-free within each fold, separability collapses to chance
 ($0.48$--$0.51$) in every space and on both samples: to linear probing,
 the entire sim-to-real gap is one shared translation. The individual
-arrows do scatter widely around that translation --- the shared
+arrows do scatter widely around that translation (the shared
 component is only $32$--$53\%$ of a typical displacement's length, and
 no single principal direction explains more than about $10\%$ of the
-displacement cloud's variance --- but the scatter carries no class
+displacement cloud's variance), but the scatter carries no class
 information; everything a linear probe can use is the mean offset. This
 is the mechanistic reading behind the in-domain null: the entire
 linearly detectable synthetic signature is a single shared offset per
@@ -1168,7 +1168,7 @@ SDDA        & 0.76 & 0.67 & 0.996 & 0.80 & 0.66 & 0.961 & 0.50 \\
 \end{tabular}
 \caption{The same geometry across feature spaces, shown for the
 signer-swap edit (the strongest intervention; the local edits show the
-same pattern --- full grid with uncertainty in
+same pattern; full grid with uncertainty in
 Appendix~\ref{app:aug_geometry_grid}). n.disp and gloss@1
 as in Table~\ref{tab:aug_geometry_frozen}; AUC pools all four edit
 types; AUC$_{\text{de-sh}}$ is on held-out
@@ -1183,7 +1183,7 @@ CE control never trained on augments and is correspondingly symmetric.}
 \end{table*}
 
 
-Qualitative companions to these numbers --- a t-SNE of the augments around their source videos and the per-edit-type cosine distributions --- are shown in Appendix~\ref{app:aug_geometry_grid} (Figs.~\ref{fig:aug_vs_orig_tsne} and~\ref{fig:aug_vs_orig_cosine}).
+Qualitative companions to these numbers (a t-SNE of the augments around their source videos and the per-edit-type cosine distributions) are shown in Appendix~\ref{app:aug_geometry_grid} (Figs.~\ref{fig:aug_vs_orig_tsne} and~\ref{fig:aug_vs_orig_cosine}).
 
 
 
@@ -1196,8 +1196,8 @@ The organising
 construct of the Logos dataset is the \emph{visually similar sign}
 (VSSign): signs with different meanings but the same manual component,
 subsuming both polysemy and minimal pairs, and the Logos authors show
-that \emph{grouping} VSSigns under one label --- training the encoder
-precisely \emph{not} to separate signs that look alike --- yields a
+that \emph{grouping} VSSigns under one label (training the encoder
+precisely \emph{not} to separate signs that look alike) yields a
 better transfer encoder than keeping them
 apart~\cite{ovodovLogosWellTemperedPretrain2025}. A backbone
 pre-trained this way is not merely agnostic about form-similar pairs;

@@ -1,7 +1,52 @@
 \chapter{Related Work}
 \todo{briefly describe what is covered in related work sections}
 \section{Signer-independent SLR}
-\todo{write this}
+\label{sec:related-signer-independent}
+Signer variation is a long-standing generalisation axis in SLR, and the
+field has responded on two fronts: evaluation protocols that withhold
+signers, and methods that suppress signer information.
+
+On the protocol side, signer-independent evaluation is well established.
+The ChaLearn LAP challenge on AUTSL made large-scale signer-independent
+isolated recognition a community benchmark (226 signs, 43 signers,
+signer-disjoint splits); its winning entries relied heavily on pose
+estimation, graph convolutions, and
+ensembling~\cite{sincanChaLearnLAPSigner2021}. PHOENIX-2014 ships a
+dedicated signer-independent split alongside its default protocol, used
+by signer-invariant CSLR work~\cite{zuoImprovingContinuousSign2024},
+and ASL Citizen is signer-disjoint by construction~\cite{aslcitizen}.
+Recent challenges push the setting further: the Cross-View Isolated SLR
+challenge adds camera viewpoint to the held-out axes~\cite{CV-ISLR},
+and the SignEval 2025 challenge makes signer-independent CSLR on Isharah
+a dedicated track, distributing only pose features extracted from the
+RGB recordings out of concern for signer overfitting and
+privacy~\cite{luqmanSignEval2025Challenge2025a,
+alyamiIsharahLargeScaleMultiScene2026b}, a design choice we return to in
+\S\ref{sec:related-work-modality}.
+
+On the method side, three families recur. Adversarial approaches train
+the encoder so that signer identity cannot be recovered from it:
+Ferreira et al.\ apply signer-adversarial training to isolated
+recognition~\cite{Ferreira2021}, and Zuo and Mak add a signer removal
+module that disentangles signer statistics from the recognition features
+of a CSLR model~\cite{zuoImprovingContinuousSign2024}. Disentanglement
+approaches separate signer style from sign content explicitly, as in
+contrastive disentangled meta-learning for signer-independent
+translation~\cite{jinContrastiveDisentangledMetaLearning2021}. Data-side
+approaches raise the signer diversity the model sees, with more real
+signers or with synthetic signer variety such as SDDA's
+diffusion-generated signers (\S\ref{sec:related-work-synthetic}).
+Pose-centric modelling, finally, sidesteps the pixel appearance
+altogether~\cite{kratimenosIndependentSignLanguage2020,
+tranRegionAwarePoseModeling2025}, at the cost examined in
+\S\ref{sec:related-work-modality}.
+
+These lines share a view of the signer as a nuisance to be held out,
+removed, or averaged over. What they rarely examine is the appearance
+content itself: which incidental visual properties a model actually keys
+on, and whether controlled variation of exactly those properties, with
+the signing held fixed, removes the shortcut. That question is where the
+appearance-bias literature of the next section comes in.
 \section{Addressing appearance bias}
 \label{sec:related-appearance-bias}
 The problem that recognition benchmarks reward static appearance cues was
@@ -33,18 +78,22 @@ demographic disparities and research practice rather than intervening on the
 appearance content of the training distribution itself, so appearance bias
 in learned sign representations is not untouched in the sign language
 domain, but it remains far less directly tackled than in action
-recognition. The closest intervention is SDDA, which pairs
+recognition. SignRep~\cite{wongSignRepEnhancingSelfSupervised2025}
+suppresses appearance on the representation side, with an adversarial
+style loss during self-supervised pretraining
+(\S\ref{sec:related-work-modality} discusses its design). The closest
+data-side intervention is SDDA, which pairs
 diffusion-generated signer variety with a consistency objective on a
 single studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}
 (discussed under Synthetic data below); our work differs in using
-\emph{motion-locked} re-renders --- mocap-driven avatar renders ---
+\emph{motion-locked} re-renders (mocap-driven avatar renders)
 alongside generative edits, and in asking what the intervention does to
 the learned embedding space, across two data regimes, rather than only to
 task accuracy. Nor do the action-recognition interventions above transfer
 one-to-one: they separate the actor from a biased background or scene,
 whereas in signing the confound sits on the signer's own body, so
 appearance must change while fine-grained hand and face motion is
-preserved --- a much stronger constraint than background replacement.
+preserved, a much stronger constraint than background replacement.
 % Framing note (2026-07-11, applied 2026-07-28): the qualification of story
 % point 1 ("not well-tackled in the SL domain" rather than "unexplored")
 % acknowledges Atwell/Desai/SDDA while keeping the novelty claim narrow and
@@ -105,14 +154,39 @@ temporally sensitive representations. Byvshev et al.\ are not alone in
 locating the bias in data rather than architecture: Kowal
 et al.\ find most spatiotemporal models dominated by static information and
 reduce that dominance with a training-time
-intervention~\cite{kowalQuantifyingLearningStatic2025}; and a family of
-methods --- motion-coherent augmentation~\cite{zhangDontJudgeLook2024},
+intervention~\cite{kowalQuantifyingLearningStatic2025}; Li et al.\ show
+that a static-bias-mitigating augmentation works on a video Swin
+transformer~\cite{liMitigatingEvaluatingStatic2023a}; and a family of
+methods spanning motion-coherent augmentation~\cite{zhangDontJudgeLook2024},
 tubelet-contrastive pre-training~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
 adversarial debiasing~\cite{fioresiALBARAdversarialLearning2025,
 duanMitigatingRepresentationBias2023}, and causal background
-interventions~\cite{rastegarBackgroundNoMore2024} --- shows the reliance on
+interventions~\cite{rastegarBackgroundNoMore2024} shows that the reliance on
 appearance can be reduced by reshaping the training signal
 (\S\ref{sec:related-appearance-bias} discusses these in detail).
+
+SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
+modality choice is a false dichotomy. Its downstream model consumes RGB
+only, but its masked pretraining predicts pose-derived targets from the
+RGB input: normalised keypoints, hand and body joint angles,
+inter-landmark distances, and signer activity, with the pose decoder
+discarded after pretraining. Pose there acts as supervision rather than
+input: the skeleton tells the RGB encoder which structures in the frame
+carry the signing, while the encoder keeps the appearance-borne
+linguistic detail (facial expression, mouthing, fine handshape) that
+sparse keypoints drop and pose-estimation errors corrupt. The resulting
+frozen features outperform prior skeleton-based methods on isolated
+benchmarks, including state-of-the-art frozen-feature dictionary
+retrieval on ASL Citizen (Table~\ref{tab:backbone_ft_retrieval}). Two of
+its design details matter for this thesis. Its pose targets are
+normalised to a canonical body shape (median bone lengths), precisely so
+that person-specific proportions do not leak into the supervision; and it
+needs an adversarial style loss, a discriminator on Gram-matrix style
+statistics of the embeddings, to suppress background and appearance
+information. Both choices concede the premise of this thesis: an RGB
+sign representation drifts toward appearance unless actively
+constrained. SignRep constrains it with an inferred style statistic; our
+counterfactuals supply the constraint as data.
 
 Motivated
 by this body of evidence, we ask whether the
@@ -128,9 +202,10 @@ stream (RGB video or pose), and multi-stream or hybrid architectures are
 out of scope on compute and inference-cost grounds.
 
 \section{Synthetic data}
+\label{sec:related-work-synthetic}
 Byvshev et al.'s finding that appearance bias is shaped by training-data
 statistics~\cite{byvshevAre3DConvolutional2022a} suggests that reshaping the
-training distribution --- rather than only the architecture --- can reduce
+training distribution, rather than only the architecture, can reduce
 appearance reliance. Sign language recognition, however, lacks a counterpart
 to the large, temporally rich pretraining corpora available in general video
 understanding, motivating the use of \emph{synthetic} data to reshape the
@@ -145,16 +220,16 @@ understanding~\cite{liRoleVideoGeneration2025}, but do not consider sign
 language; Knapp and Bohacek further note that sign-language tasks are among
 those that have so far been unable to exploit the full potential of
 synthetic video, as generated human motion suffers from uncanny
-artefacts~\cite{knapp2025synthetic} --- a gap this thesis addresses.
+artefacts~\cite{knapp2025synthetic}; this thesis addresses that gap.
 
 \subsection{Sign language data augmentation approaches}
 Walsh et al.\ show that sign language production can generate useful
 synthetic augmentations for sign language translation, with a revealing
 modality split: skeleton-level sign-stitching augmentation yields large,
 consistent gains (at least 15\% across all reported metrics), whereas
-photo-realistic RGB augmentation --- via a GAN-based renderer (SignGAN) and
+photo-realistic RGB augmentation, via a GAN-based renderer (SignGAN) and
 a Gaussian-splatting renderer
-(SignSplat~\cite{ivashechkinSignSplatRenderingSign2025}) --- yields smaller
+(SignSplat~\cite{ivashechkinSignSplatRenderingSign2025}), yields smaller
 and mixed improvements, with GAN artefacts sometimes degrading
 performance~\cite{walshUsingSignLanguage2025}.
 % Verified against the paper (2026-07-11): pose-vs-RGB contrast confirmed,
@@ -181,20 +256,36 @@ to address viewpoint generalisation, introducing new backgrounds and
 viewpoints but not new signer
 appearance~\cite{pengSyntheticViewAugmentation2025a}; notably, their
 synthetic viewpoints enter training only through the projected-keypoint
-(pose) and rendered-depth streams of a multi-modal model --- view
-augmentation of the RGB stream is explicitly left to future work --- whereas
+(pose) and rendered-depth streams of a multi-modal model, with view
+augmentation of the RGB stream explicitly left to future work, whereas
 this thesis targets the lack of variety in signer appearance directly, in
 the RGB modality.
 
 \subsection{Avatar and Unreal Engine approaches}
-Ranum's thesis on synthetic avatar data \todo{describe that Ranum also renders synthetic avatars based on mocap, but evaluates them by extracting pose features from them} for Dutch Sign Language
-(NGT)~\cite{ranum3DAwarenessGeometry2024} finds that synthetic data benefits
-recognition in the pose modality but is expected to transfer less well to
-the video modality given the cartoon-like appearance of the avatars used;
-our experiments test the video-modality case directly. 
+The closest precedent for our motion-locked route is Ranum's thesis on
+synthetic avatar data for Dutch Sign Language
+(NGT)~\cite{ranum3DAwarenessGeometry2024}. Like us, Ranum renders
+synthetic avatars driven by recorded motion capture; unlike us, the
+renders are evaluated in the pose modality, by extracting keypoints from
+the rendered videos and training on those. In that modality the
+synthetic data benefits recognition, but the thesis expects the gain to
+transfer less well to the video modality, given the cartoon-like
+appearance of the avatars used. Our experiments test exactly that
+video-modality case: the renders enter training as RGB clips, appearance
+included. 
 
 Prior work has built gesture-producing virtual avatar systems using Unreal
 Engine and motion capture~\cite{messinaModularSignLanguage2025}, and has
-used Unreal-rendered virtual agents --- animated from mocap and varied in
-skin tone, lighting, background, and camera angle --- as a scalable source
-of training data for gesture recognition~\cite{loyVirtualAgentsScalable}. \todo{describe what we bring what the other approaches did not}
+used Unreal-rendered virtual agents, animated from mocap and varied in
+skin tone, lighting, background, and camera angle, as a scalable source
+of training data for gesture recognition~\cite{loyVirtualAgentsScalable}.
+
+What our work adds to this line is the counterfactual construction and
+its controlled evaluation. Prior avatar pipelines generate synthetic
+gesture or sign data at scale; none of them, to our knowledge, renders
+the same captured signing under systematically varied appearance and
+then asks, against matched real controls, what that variation buys. We
+evaluate the renders directly as RGB training views for sign language,
+compare them at matched view count against a real multiview control and
+against generative edits of the same videos, and trace the effect into
+the learned embedding space rather than reporting task accuracy alone.
