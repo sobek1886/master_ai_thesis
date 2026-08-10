@@ -1,0 +1,1212 @@
+\chapter{Results}
+\label{chap:results}
+
+We present results in three stages, following the two-regime story
+motivated in Chapter~\ref{chap:method}: first, diagnostic evidence that
+appearance/signer identity is measurable in every feature space we test
+(\S\ref{sec:results-diagnosis}); second, a low-diversity setting
+intervention on NGT where synthetic appearance augmentation produces a
+clear, sizeable gain (\S\ref{sec:results-crossdomain}); third, a high-diversity setting
+intervention on ASL Citizen where the same idea does not lead to improvements(\S\ref{sec:results-indomain}).
+\todome{stale pointer (03.08): ``the two-regime story motivated in
+Chapter~\ref{chap:method}'' --- after the agnostic rewrite the Method
+chapter no longer carries the regime framing; the motivation now lives in
+the Introduction (and the SDDA regime contrast in
+\S\ref{sec:related-appearance-bias}). Re-point accordingly. Also missing
+here: a space before the final parenthesis.}
+
+\section{Diagnosis: signer identity is recoverable from every feature space}
+\label{sec:results-diagnosis}
+
+\subsection{Counterfactual and cross-gloss signer probes (WLASL)}
+We first test whether SignCLIP embeddings encode sign content or signer
+style, comparing similarity for same-sign/different-signer pairs against
+same-signer/different-sign pairs.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lcc}
+\hline
+Condition & Shared property & Mean similarity \\
+\hline
+Positive & Same sign, different signer & \textbf{0.753} \\
+Negative & Different sign, same signer & 0.589 \\
+Control  & Different sign, different signer & 0.573 \\
+\hline
+\end{tabular}
+\caption{SignCLIP counterfactual analysis on WLASL: mean cosine similarity
+by pair type.}
+\label{tab:wlasl_counterfactual}
+\end{table}
+
+Positive pairs are substantially more similar than control pairs
+($\Delta=+0.164$, $p<0.001$), confirming SignCLIP primarily encodes sign
+content. Negative pairs (same signer, different sign) are nonetheless
+slightly \emph{more} similar than control pairs, indicating a residual
+signer-style signal.
+
+We then test signer identifiability directly with a leave-one-gloss-out
+retrieval probe: for each query video we build per-signer prototypes
+excluding the query's own gloss, and check whether the correct signer is
+retrieved.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lcc}
+\hline
+Feature & Top-1 acc.\ (chance) & MRR \\
+\hline
+SignCLIP embeddings & 0.302 (0.013) & 0.471 \\
+MediaPipe (1218-d mean+std) & 0.207 (0.013) & 0.374 \\
+\hline
+\end{tabular}
+\caption{Cross-gloss signer retrieval probe, SignCLIP embeddings vs.\ raw
+MediaPipe pose features.}
+\label{tab:cross_gloss_signer_probe}
+\end{table}
+
+Both feature spaces identify signers far above chance even with gloss
+content excluded, though SignCLIP embeddings do so more strongly. We note
+this may partly reflect vocabulary bias (individual signers discussing
+different topics) rather than pure appearance signal alone.
+
+\subsection{Signer-separability probes on raw features (ASL Citizen)}
+\label{sec:results-l2-raw}
+
+To quantify signer separability in the raw, task-untrained feature spaces,
+we apply two complementary probes to mean-pooled per-video features on the
+ASL Citizen training split. The \emph{distance probe} computes a per-signer
+prototype for every gloss; the intra-signer L2 (video to its own
+signer--gloss prototype) measures how consistently a signer repeats a sign,
+the inter-signer L2 (between prototypes of different signers for the same
+gloss) measures how far apart signers sit at fixed content, and their
+per-gloss ratio is summarised by its median over glosses with a $95\%$
+bootstrap confidence interval over glosses. The \emph{decoding probe}
+trains a linear head to predict the signer from the same mean-pooled
+features (3-fold stratified cross-validation; identical protocol to the
+fine-tuned-space probes of \S\ref{sec:results-ft-probes}). The two probes
+answer different questions: the ratio is a within-space signal-to-noise
+statistic --- how dominant signer identity is in the untrained geometry ---
+while decoding measures how much identity information is linearly
+accessible. \S\ref{sec:results-ft-probes} shows the two can dissociate
+sharply, so we do not read either as a proxy for the other, and in
+particular we do not rank spaces by the ratio alone. Because MediaPipe
+extraction fails on $8\%$ of training videos, all numbers are computed on
+the common subset of $37{,}437$ videos ($33$ signers) for which all three
+spaces have features; per-space full-subset values agree within rounding,
+so the missing videos drive no comparison.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Signer-separability probes on raw ASL Citizen features (train
+split, common subset). Median ratio = per-gloss median of the
+inter-signer/intra-signer L2, with the $95\%$ gloss-bootstrap confidence
+interval; decoding = linear-head top-1 signer accuracy under 3-fold
+stratified cross-validation (chance $3.0\%$, majority-class baseline
+$8.0\%$; fold-to-fold sd $\leq 0.5$ points in every space).}
+\label{tab:raw_feature_l2_probe}
+\begin{tabular}{lrcc}
+\toprule
+Feature & Dim & Median ratio [$95\%$ CI] & Signer decoding \\
+\midrule
+MediaPipe        &  609 & $29.9\times$ [28.4, 32.0] & \textbf{98.7\%} \\
+Logos (MViTv2-S) &  768 & $22.7\times$ [21.6, 24.0] & 65.9\% \\
+I3D (WLASL ft.)  & 1024 & $22.2\times$ [21.2, 23.6] & 94.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Signer identity dominates every space by both readouts. The distance
+ratio is $22$--$30\times$, with inter $>$ intra for $100\%$ of the
+$2{,}731$ glosses, and a linear head recovers the signer far above both
+chance ($3.0\%$) and the majority-class baseline ($8.0\%$) in all three
+spaces. MediaPipe pose features are the most signer-separable of the
+three on \emph{both} probes: their ratio confidence interval overlaps
+neither RGB backbone's, and signer decoding reaches $98.7\%$, against
+$94.2\%$ for I3D and $65.9\%$ for Logos; the ordering is unchanged on
+the signer-disjoint test split ($99.4\%$ / $95.2\%$ / $74.3\%$, $11$
+signers, chance $9.1\%$).
+\todome{ADDITION START (04.08): gloss-disjoint control, job 25196749}
+Nor is the decoding accuracy content leakage: under gloss-disjoint
+cross-validation --- folds split by gloss, so the classifier is tested
+only on signs that appeared for no signer during its training --- the
+numbers are essentially unchanged ($98.7\%$ / $94.6\%$ / $64.5\%$),
+ruling out the possibility that the probe partly learns \emph{which
+glosses} a signer contributes rather than how they look and move.
+\todome{ADDITION END. Provenance:
+probe\_out/gloss\_disjoint\_decoding.json; same features, subset, and
+linear head as the table, StratifiedGroupKFold over the 2{,}731 glosses,
+zero test videos excluded.}
+Camera framing cannot explain this: the pose
+features are root-centred at the shoulder midpoint and scale-normalised
+to shoulder width at extraction, so what identifies the signer is
+shoulder-normalised geometry --- body proportions, habitual posture, and
+movement style. Pose discards pixels, but it retains --- and arguably
+distills --- precisely the appearance cues that identify signers without
+them.
+
+The two probes also dissociate \emph{within} the RGB pair, foreshadowing
+\S\ref{sec:results-ft-probes}: Logos and I3D are indistinguishable by
+the distance ratio, yet I3D sits near ceiling for linear signer decoding
+while Logos gives up $28$ points --- consistent with Logos' gloss-supervised,
+transfer-oriented pretraining shedding linearly accessible identity
+information while leaving the distance geometry untouched. This is an
+early instance of a pattern that recurs throughout the thesis: coarse
+distance statistics can stay static while the accessible signer
+information moves.
+
+\section{Cross-domain intervention: NGT}
+\label{sec:results-crossdomain}
+
+\subsection{Isolating the appearance axis: single-view arms}
+\label{sec:ngt-single-view}
+Synthetic multi-view training bundles two axes at once: added
+\emph{identities} (avatars or edits) and added \emph{viewpoints} (cameras).
+The single-view ladder holds viewpoint fixed and varies appearance
+only. Its baseline trains on the front camera alone ($K{=}1$; with no
+positive pairs, SupCon degenerates, so this arm uses the video-only
+InfoNCE of \S\ref{sec:method-objectives});
+the treatment arms add, at the \emph{same} front camera, either both Unreal
+avatars ($K{=}3$) or two Flux identity edits (signer swap, skin tone;
+$K{=}3$) --- a head-to-head of the parametric and diffusion routes at
+matched $K$, matched content, and matched viewpoint --- plus a
+full-strength arm with all six avatar views ($K{=}7$). All arms share an
+identical sentence set --- the 744 sentences of the full four-signer pool
+with complete synthetic coverage
+(Table~\ref{tab:ngt_setups}) --- sample one repeat take per step, and keep the
+contrastive batch constant (64 signs, so the number of in-batch negatives is
+equal across arms; the encoder-pass cost instead scales with $K$), with the
+learning-rate schedule matched to the per-arm update count.
+Evaluation is fixed across arms: front-view, take-0 galleries and the
+held-out real test set (the frozen 364 sentences of the current test pool
+that have a trained counterpart; train and test counts are no longer
+matched (the frozen 364-sentence protocol of Table~\ref{tab:ngt_setups}), scored in both directions with
+per-sentence ranks, enabling paired comparisons (exact McNemar on top-1 correctness plus
+a bootstrap CI on the R@1 difference) rather than seed-mean gaps alone.
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Arm} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{MRR} \\
+\midrule
+\multicolumn{5}{l}{\textit{Test $\to$ Train \; (query: test set, gallery: train set)}} \\
+\midrule
+E1 real ($K{=}1$)            & 0.234\pmsd{0.025} & 0.420\pmsd{0.040} & 0.506\pmsd{0.054} & 0.325\pmsd{0.027} \\
+E2 real multiview ($K{=}3$)  & 0.266\pmsd{0.013} & 0.453\pmsd{0.024} & 0.544\pmsd{0.021} & 0.361\pmsd{0.002} \\
+\rowcolor{rowhl}
+E3 $+$Unreal ($K{=}3$)       & \textbf{0.649}\pmsd{0.044} & 0.836\pmsd{0.026} & 0.899\pmsd{0.018} & 0.738\pmsd{0.033} \\
+E4 $+$Flux ($K{=}3$)         & 0.505\pmsd{0.010} & 0.729\pmsd{0.010} & 0.808\pmsd{0.011} & 0.607\pmsd{0.009} \\
+E5 $+$Unreal full ($K{=}7$)  & 0.437\pmsd{0.018} & 0.676\pmsd{0.019} & 0.783\pmsd{0.032} & 0.553\pmsd{0.018} \\
+E6 $+$Flux full ($K{=}4$)    & 0.491\pmsd{0.025} & 0.713\pmsd{0.028} & 0.788\pmsd{0.030} & 0.593\pmsd{0.020} \\
+E7 $+$Flux glasses ($K{=}5$) & 0.461\pmsd{0.023} & 0.691\pmsd{0.015} & 0.771\pmsd{0.023} & 0.568\pmsd{0.012} \\
+E8 combined ($K{=}10$)       & 0.525\pmsd{0.022} & 0.770\pmsd{0.016} & 0.855\pmsd{0.018} & 0.636\pmsd{0.021} \\
+E9 Unreal-only ($K{=}3$)     & 0.296\pmsd{0.022} & 0.545\pmsd{0.014} & 0.662\pmsd{0.027} & 0.414\pmsd{0.018} \\
+E10 Flux-only ($K{=}3$)      & 0.452\pmsd{0.044} & 0.671\pmsd{0.050} & 0.750\pmsd{0.039} & 0.554\pmsd{0.039} \\
+
+\midrule
+\multicolumn{5}{l}{\textit{Train $\to$ Test \; (query: train set, gallery: test set)}} \\
+\midrule
+E1 real ($K{=}1$)            & 0.247\pmsd{0.035} & 0.446\pmsd{0.043} & 0.547\pmsd{0.037} & 0.347\pmsd{0.037} \\
+E2 real multiview ($K{=}3$)  & 0.420\pmsd{0.016} & 0.721\pmsd{0.018} & 0.805\pmsd{0.005} & 0.551\pmsd{0.014} \\
+\rowcolor{rowhl}
+E3 $+$Unreal ($K{=}3$)       & \textbf{0.695}\pmsd{0.030} & 0.886\pmsd{0.025} & 0.934\pmsd{0.015} & 0.779\pmsd{0.024} \\
+E4 $+$Flux ($K{=}3$)         & 0.606\pmsd{0.006} & 0.827\pmsd{0.025} & 0.889\pmsd{0.011} & 0.705\pmsd{0.002} \\
+E5 $+$Unreal full ($K{=}7$)  & 0.482\pmsd{0.025} & 0.766\pmsd{0.022} & 0.859\pmsd{0.030} & 0.615\pmsd{0.023} \\
+E6 $+$Flux full ($K{=}4$)    & 0.610\pmsd{0.017} & 0.836\pmsd{0.014} & 0.902\pmsd{0.020} & 0.713\pmsd{0.012} \\
+E7 $+$Flux glasses ($K{=}5$) & 0.581\pmsd{0.019} & 0.807\pmsd{0.030} & 0.881\pmsd{0.003} & 0.683\pmsd{0.014} \\
+E8 combined ($K{=}10$)       & 0.579\pmsd{0.004} & 0.831\pmsd{0.010} & 0.901\pmsd{0.005} & 0.690\pmsd{0.005} \\
+E9 Unreal-only ($K{=}3$)     & 0.252\pmsd{0.017} & 0.484\pmsd{0.059} & 0.596\pmsd{0.063} & 0.367\pmsd{0.032} \\
+E10 Flux-only ($K{=}3$)      & 0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
+\bottomrule
+\end{tabular}
+\caption{Single-view NGT ladder: cross-signer retrieval (0--1 scale) with viewpoint
+held to the front camera, mean$\pm$sd over 3 seeds. Arm composition ($K$ =
+views per training item; every arm except E9/E10 includes the real
+front-view clip): E1 $=$ real front view only (video-only InfoNCE; all
+other arms SupCon over the $K$ views); E2 $=$ E1 $+$ 2 further real
+camera views; E3 $=$ E1 $+$ 2 Unreal avatars at the front camera; E4 $=$
+E1 $+$ 2 Flux identity edits (signer swap, skin tone); E5 $=$ E3 $+$ the
+same two avatars at the two remaining cameras; E6 $=$ E4 $+$ the shirt
+edit; E7 $=$ E6 $+$ the glasses edit (all four Flux edits); E8 $=$ E5
+$+$ E6's three Flux edits; E9 $=$ one Unreal avatar $\times$ 3 cameras,
+no real video; E10 $=$ E6's three Flux edits only, no real
+video. All arms share one
+sentence set (744 sentences, four signers; the 364 with a test counterpart
+are evaluated), one repeat take sampled per step, and a constant contrastive
+batch (64 signs, i.e.\ equal negatives across arms; the encoder-pass cost
+scales with $K$). The learning-rate schedule is matched to the per-tier
+update count. Evaluation is fixed across arms (front-view take-0 galleries,
+held-out test queries). The length-only shortcut floor is the gallery ranked
+by $|\Delta$ clip count$|$.}
+% Scale harmonised to 0--1 (2026-07-28) per the todo: all values in this
+% table and tab:ngt_signer_count are the summarize_ngt_experiments.py
+% percentages divided by 100 (same values, same precision, new
+% representation); surrounding prose converted to match. The PNGs
+% Axis scales: both ngt_ladder_r1_vs_k.png and ngt_dropoff.png now render
+% R@1 on the tables' 0--1 scale (ladder rescaled 2026-07-30).
+% A presentation version of the ladder figure (test->train only, descriptive
+% point labels, no E-codes needed) lives at thesis/ngt_ladder_presentation.png
+% (context/results/ngt_ladder_plot/plot_ngt_ladder_presentation.py) — slides
+% only, not included in the thesis.
+\label{tab:ngt_ladder}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{ngt_ladder_r1_vs_k.png}
+\caption{Single-view NGT ladder: cross-signer R@1 against the number of
+views per training item $K$, by augmentation family (3-seed mean$\pm$sd;
+front-view evaluation as in Table~\ref{tab:ngt_ladder}, same 0--1 scale).
+Lines trace the
+Unreal (E1$\to$E3$\to$E5) and Flux (E1$\to$E4$\to$E6$\to$E7) families from
+the shared real-only baseline; isolated points mark the real-multiview
+control (E2), the two synthetic-only arms trained without any real video
+(E9 Unreal-only and E10 Flux-only, open markers), and the combined arm
+(E8). Every arm is drawn at its true $K$, so the five arms that share
+$K{=}3$ (E2, E3, E4, E9, E10) sit in one column. The Unreal route peaks
+sharply at matched $K{=}3$ and
+collapses at full strength ($K{=}7$), whereas the Flux route stays flat as
+edits are added.}
+\label{fig:ngt_ladder_r1}
+\end{figure}
+
+Figure~\ref{fig:ngt_ladder_r1} plots the ladder's R@1 against $K$ by
+augmentation family, which makes the family structure that
+Table~\ref{tab:ngt_ladder} lists row-wise directly visible.
+With viewpoint held fixed, both synthetic routes recover a large share of the \todo{move descriptions of $EX = E1 + xxx$ to the table}
+cross-signer gap. Over the real-only baseline (E1, test$\to$train R@1 $0.234$), the
+matched-$K{=}3$ Unreal arm (E3) reaches $0.649$ and the matched-$K{=}3$ Flux arm
+(E4) $0.505$; each route's paired gain over E1 is significant on every
+seed (exact McNemar $p<0.05$, $3/3$ seeds in both directions: Unreal
+E1$\to$E5 $\Delta$R@1 $+0.203$ test$\to$train / $+0.234$ train$\to$test, Flux E1$\to$E6
+$+0.257$ / $+0.363$).
+\todome{NUMBERS BUG (03.08, verified against tab:ngt\_ladder): the
+sentence's subject is the matched-$K{=}3$ arms E3 and E4, but the quoted
+deltas are the full-strength comparisons E1$\to$E5 and E1$\to$E6 ---
+E3$-$E1 is $0.649-0.234=0.415$ test$\to$train, not $+0.203$. Either pull
+the actual E1$\to$E3 and E1$\to$E4 McNemar results from the ladder eval
+artifacts (do NOT reuse the E5/E6 values), or reword the sentence to
+attribute the quoted significance to E5/E6 and drop the per-route claim
+for E3/E4. A reviewer redoing the arithmetic will catch this.}
+At matched strength the parametric route wins the head-to-head:
+E3 exceeds E4 by $\Delta$R@1 $0.144$ (test$\to$train) / $0.089$ (train$\to$test), significant on
+all three seeds test$\to$train and two of three train$\to$test. The diffusion route therefore
+retains roughly $65$--$80\%$ (by
+direction) of the Unreal appearance gain at equal $K$, content, and viewpoint
+--- a substantial but incomplete substitute for the parametric renders. Both
+synthetic-only arms, trained without any real video (E9 Unreal-only $0.296$, E10
+Flux-only $0.452$), at least match the real-only baseline, indicating the avatar
+and edited frames carry the discriminative sign content on their own.
+Crucially,
+the real-multiview control (E2) --- two \emph{real} extra camera views of the
+same signers at the same $K{=}3$ --- does not reproduce the synthetic gain: it
+leaves test$\to$train R@1 near baseline ($0.266$ vs E1 $0.234$) and, while it does lift
+train$\to$test ($0.420$ vs $0.247$), stays far below the matched-$K$ synthetic arms in
+both directions (E3 $0.649$/$0.695$, E4 $0.505$/$0.606$). Extra viewpoints of the
+same identities are therefore not what drives the effect; appearance and
+identity diversity is. The length-only shortcut floor (R@1 $0.005$) sits two
+orders of magnitude below every model arm, so none of these effects is a
+duration artefact.
+
+Adding synthetic views \emph{beyond} the matched $K{=}3$ does not help, and for
+the Unreal route it hurts: the full six-view Unreal arm (E5, $K{=}7$) falls to
+R@1 $0.437$, far below its own $K{=}3$ counterpart ($0.649$), whereas the extra
+Flux variants (E6--E7) leave the Flux score essentially unchanged. The two
+full-strength arms consequently invert the matched-$K$ ordering (E6 $>$ E5,
+$\Delta$R@1 $+0.054$/$+0.128$, $2/3$ and $3/3$ seeds), an effect that recurs,
+attenuated, on the test-matched subset tier (E6s $>$ E5s, $+0.018$/$+0.065$,
+$1/3$ and $2/3$ seeds).
+
+Taken together, the ladder's view-composition arms separate what viewpoint
+diversity contributes from what identity diversity contributes. Adding real
+viewpoints does help: the two extra camera views in E2 lift the real-only
+baseline (E1) from R@1 $0.234$ to $0.266$ test$\to$train and, far more sharply, from
+$0.247$ to $0.420$ train$\to$test ($+0.173$). But the same view budget spent on
+identity buys much more: at the identical $K{=}3$, two Unreal avatars
+rendered at the unchanged front camera (E3, $0.649$/$0.695$) sit far above the
+multiview control in both directions. Nor do synthetic viewpoints stack on
+top of synthetic identities: rendering the same avatars from three cameras
+(E5, $K{=}7$, $0.437$/$0.482$) lands over $0.2$ R@1 below E3 --- at
+the constant 64-sign negative pool shared by all arms, so negative
+starvation cannot account for the drop. The two diversity axes are, however,
+not independent: in the signer-count ablation that follows, the
+viewpoint-matched multiview panel (Table~\ref{tab:ngt_signer_count},
+Fig.~\ref{fig:ngt_dropoff}) starts from a stronger real baseline than the
+single front view (test$\to$train roughly $0.26$--$0.28$ vs $0.21$--$0.24$, train$\to$test
+$0.32$--$0.34$ vs $0.24$--$0.26$ across $S$), and the Unreal gain measured from that
+stronger baseline is smaller ($+0.042$ to $+0.109$ R@1 across cells, vs $+0.081$
+to $+0.160$ in the single-view E1$\to$E5 panel) --- real viewpoints already supply part of what the
+avatars supply. The viewpoint story is therefore graded, not null: real
+viewpoints help (mostly train$\to$test), synthetic identities at matched $K$ help
+far more, synthetic viewpoints beyond matched $K$ hurt, and viewpoint
+diversity partially substitutes for identity diversity.
+
+
+\subsection{Does the synthetic gain survive real diversity? A fixed-data
+real-signer-count ablation}
+\label{sec:ngt-signer-count}
+% Matched-K panel provenance: the E3-equivalent arms (ngt_sv_unreal_R1..R4)
+% never trained in the first attempt (the jobs died at start on the scratch
+% inode quota); retrained 2026-07-29 as Snellius jobs 25042412--25042415
+% (3 seeds each) and harvested from ngt_sv_unreal_R*_aggregated.json.
+The two-regime reading predicts that the Unreal gain is a property of
+\emph{low real-signer diversity}: as genuine signer variety enters
+training, synthetic appearance variety should have progressively less to
+add. The NGT corpus permits a direct test --- its training pool comprises
+four recording sessions, each a distinct real signer. We propose a
+fixed-budget ablation design: we train at
+$S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
+subset of the next), and measure at each $S$ the paired gain
+$\Delta(S)$ of two Unreal arms over the real-only arm (E1, $K{=}1$): the
+matched-$K$ arm (the ladder's E3 setup, $K{=}3$: front camera plus both
+avatars' front views) and the full Unreal arm (E5, $K{=}7$).
+
+The load-bearing control is that data volume is fixed while diversity
+varies: every condition trains on exactly 180 sentences (the largest even
+budget the smallest single-signer pool supports --- session 251126 has 182
+render-complete sentences), split evenly across its included signers, with a
+single (deterministic, render-complete)
+take per sentence --- so 180 front-view videos, identical epoch size, and
+an identical update budget everywhere, and the take-count differences
+between signers (1.5--2.4 takes per sentence) cannot masquerade as a
+diversity effect. All arms of a condition use the same sentences and the
+same takes; the Unreal arms differ only by attaching avatar views of each
+take (the two avatar front views for E3, all six avatar views for E5). Evaluation is the same frozen 364-sentence protocol as the
+ladder (Table~\ref{tab:ngt_setups}),
+with galleries built from features independent of what was trained on, so
+the eval set never varies across conditions --- it therefore contains
+sentences outside a given condition's 180-sentence training pool and, for
+$S{<}4$, gallery videos of signers absent from that condition's training.
+
+
+Table~\ref{tab:ngt_signer_count} shows both outcomes at once, split by arm.
+The real-only baseline moves little with $S$: adding real signers at a
+fixed 180-sentence budget does not by itself improve cross-signer retrieval
+(R@1 $0.21$--$0.24$ test$\to$train throughout). The full-Unreal gain
+behaves as the two-regime account predicts: $\Delta(S)$ shrinks from
+$+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train; $+0.160$ to
+$+0.134$ train$\to$test), and the viewpoint-matched multiview panel repeats
+the pattern from a stronger real baseline, with smaller gains throughout.
+The matched-$K$ arm does not: it is the strongest configuration at every
+$S$ (R@1 $0.450$--$0.527$ test$\to$train, $0.523$--$0.557$
+train$\to$test), its gain is two to three times the full-Unreal gain
+($+0.238$ to $+0.299$), it is significant in $3/3$ seeds for every cell,
+and it declines only weakly with $S$ in one direction ($+0.289$ to
+$+0.257$, non-monotone) and not at all in the other (flat around
+$+0.29$).
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+$S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
+\midrule
+\multicolumn{4}{l}{\textbf{Single-view panel}: E1 ($K{=}1$) $\to$ E5 ($K{=}7$)} \\
+\midrule
+\multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
+1 & 0.237\pmsd{0.007} & 0.382\pmsd{0.022} & $+0.145$ \\
+2 & 0.210\pmsd{0.019} & 0.321\pmsd{0.020} & $+0.111$ \\
+3 & 0.212\pmsd{0.020} & 0.315\pmsd{0.025} & $+0.103$ \\
+4 & 0.224\pmsd{0.011} & 0.305\pmsd{0.029} & $+0.081$ \\
+\multicolumn{4}{l}{\textit{Train $\to$ Test}} \\
+1 & 0.259\pmsd{0.027} & 0.419\pmsd{0.003} & $+0.160$ \\
+2 & 0.236\pmsd{0.017} & 0.392\pmsd{0.058} & $+0.156$ \\
+3 & 0.244\pmsd{0.037} & 0.376\pmsd{0.019} & $+0.133$ \\
+4 & 0.239\pmsd{0.029} & 0.373\pmsd{0.041} & $+0.134$ \\
+\midrule
+\multicolumn{4}{l}{\textbf{Matched-$K$ panel}: E1 ($K{=}1$) $\to$ E3 ($K{=}3$)} \\
+\midrule
+\multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
+1 & 0.237\pmsd{0.007} & 0.527\pmsd{0.044} & $+0.289$ \\
+2 & 0.210\pmsd{0.019} & 0.483\pmsd{0.027} & $+0.273$ \\
+3 & 0.212\pmsd{0.020} & 0.450\pmsd{0.034} & $+0.238$ \\
+4 & 0.224\pmsd{0.011} & 0.482\pmsd{0.061} & $+0.257$ \\
+\multicolumn{4}{l}{\textit{Train $\to$ Test}} \\
+1 & 0.259\pmsd{0.027} & 0.557\pmsd{0.026} & $+0.298$ \\
+2 & 0.236\pmsd{0.017} & 0.524\pmsd{0.040} & $+0.288$ \\
+3 & 0.244\pmsd{0.037} & 0.523\pmsd{0.030} & $+0.279$ \\
+4 & 0.239\pmsd{0.029} & 0.538\pmsd{0.035} & $+0.299$ \\
+\midrule
+\multicolumn{4}{l}{\textbf{Multiview panel}: E2 ($K{=}3$) $\to$ E2$+$avatars ($K{=}9$)} \\
+\midrule
+\multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
+1 & 0.269\pmsd{0.028} & 0.378\pmsd{0.005} & $+0.109$ \\
+2 & 0.256\pmsd{0.011} & 0.338\pmsd{0.025} & $+0.082$ \\
+3 & 0.257\pmsd{0.032} & 0.337\pmsd{0.035} & $+0.080$ \\
+4 & 0.277\pmsd{0.017} & 0.360\pmsd{0.012} & $+0.083$ \\
+\multicolumn{4}{l}{\textit{Train $\to$ Test}} \\
+1 & 0.322\pmsd{0.040} & 0.429\pmsd{0.015} & $+0.106$ \\
+2 & 0.327\pmsd{0.008} & 0.422\pmsd{0.033} & $+0.095$ \\
+3 & 0.338\pmsd{0.021} & 0.380\pmsd{0.037} & $+0.042$ \\
+4 & 0.344\pmsd{0.014} & 0.394\pmsd{0.021} & $+0.049$ \\
+\bottomrule
+\end{tabular}
+\caption{Real-signer-count ablation: fixed 180 sentences per condition,
+signer count $S{=}1\ldots4$, cross-signer retrieval R@1 (0--1 scale, as
+in Table~\ref{tab:ngt_ladder}), mean$\pm$sd over 3 seeds; $\Delta(S)$ =
+paired gain of the Unreal arm over the matched real-only arm (unrounded
+means). Arms as in Table~\ref{tab:ngt_ladder}: \textbf{single-view} = E1
+front camera vs E5 front $+$ 6 avatar views; \textbf{matched-$K$} = the
+same E1 vs E3 (front $+$ both avatar front views, the ladder's strongest
+arm); \textbf{multiview} = E2 (3 real views) vs E2 $+$ 6 avatar views
+--- a viewpoint-matched real baseline. Per-seed exact McNemar (364
+paired queries), $p<0.05$: matched-$K$ in $3/3$ seeds for every $S$ and
+direction; single-view $3/3$ except $S{=}4$ test$\to$train ($2/3$);
+multiview $3/3/2/3$ (test$\to$train) and $3/2/1/2$ (train$\to$test) for
+$S{=}1\ldots4$ --- robust test$\to$train, thinning in train$\to$test
+exactly where the gain is smallest. Evaluation: the frozen 364-sentence
+protocol of Table~\ref{tab:ngt_setups}.
+\todome{04.08, from your overflow todo: in-table panel headers shortened
+(the multiview one also had a duplicated parenthetical), arm
+compositions moved into the caption, McNemar details compressed. No
+numbers changed.}}
+\label{tab:ngt_signer_count}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.9\textwidth]{ngt_dropoff.png}
+\caption{Unreal appearance gain $\Delta(S)$ against real-signer count, for the
+three panels of Table~\ref{tab:ngt_signer_count}: single-view (E1 $\to$ E5,
+$K{=}1\to K{=}7$), matched-$K$ (E1 $\to$ E3, $K{=}1\to K{=}3$) and the
+viewpoint-matched multiview panel ($K{=}3\to K{=}9$), in each retrieval
+direction. Dashed lines are least-squares fits, annotated with slope per
+added signer and $R^2$. The full-Unreal and multiview gains shrink as real
+signer diversity grows, and the multiview gain is smaller throughout ---
+both consistent with the two-regime reading that synthetic appearance
+variety substitutes for absent real diversity. The matched-$K$ gain is the
+largest at every $S$ and nearly flat in train$\to$test.}
+\label{fig:ngt_dropoff}
+\end{figure*}
+
+\section{In-domain intervention: ASL Citizen}
+\label{sec:results-indomain}
+
+\subsection{Direct backbone fine-tuning: an informative null}
+We begin by fine-tuning the Logos MViTv2-S
+backbone itself with cross-entropy and, optionally, an appearance-invariance
+term, then re-evaluate frozen features
+with dictionary retrieval and a linear probe on the identical gallery.
+Training a
+contrastive head on top of the frozen features follows in the next
+subsection.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc@{\hskip 1.0em}ccc}
+\toprule
+ & \multicolumn{4}{c}{\textbf{Dictionary retrieval}} & \multicolumn{3}{c}{\textbf{Linear probe}} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-8}
+\textbf{Configuration} & \textbf{DCG} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} \\
+\midrule
+\multicolumn{8}{l}{\emph{Reference systems}} \\
+\;\;ST-GCN (end-to-end)$^{\dagger}$~\cite{aslcitizen}  & 76.37 & 59.52 & 82.68 & 88.13 & --- & --- & --- \\
+\;\;I3D (end-to-end)$^{\dagger}$~\cite{aslcitizen}     & 79.13 & 63.10 & 86.09 & 90.86 & --- & --- & --- \\
+\;\;SignRep (frozen)$^{\dagger}$~\cite{wongSignRepEnhancingSelfSupervised2025} & 90.84 & 81.37 & 96.11 & --- & --- & --- & --- \\
+\;\;Logos (frozen)~\cite{ovodovLogosWellTemperedPretrain2025} & \textbf{92.73} & \textbf{83.59} & \textbf{98.36} & \textbf{99.04} & \tbest{86.33} & \tbest{98.34} & \tbest{99.00} \\
+\midrule
+\multicolumn{8}{l}{\emph{Logos fine-tuned, top-2 unfreeze}} \\
+% Run-id mapping: CE only=run2, +synth=run3, +cosine=run1,
+% +CLS-SupCon=run1_clscontrast, +SDDA=run_sdda; top-6: run2_mid,
+% run1_mid; full: run_full_ce, run_full_glosscon, run_full_sdda.
+% Retest deltas (old generation values in git, experiments.tex
+% pre-07-21): retrieval 0.01-0.30 points, probe 0.05-1.84 points; the
+% cosine probe value is the least stable (1.84).
+\;\;CE only (standard fine-tuning) & 93.58 & 85.57 & 98.49 & 99.08 & \textbf{86.26} & 97.67 & 98.43 \\
+\;\;$+$ synth.\ data (aug-as-data) & \textbf{93.59} & \textbf{85.59} & 98.52 & \textbf{99.11} & 85.76 & 97.30 & 98.14 \\
+\;\;$+$ cosine consistency & 93.57 & 85.45 & \textbf{98.55} & 99.06 & 82.27 & 95.37 & 96.61 \\
+\;\;$+$ CLS-SupCon & 93.08 & 84.43 & 98.34 & 99.03 & 85.10 & 97.26 & 98.08 \\
+\;\;$+$ SDDA & 92.66 & 83.45 & 98.32 & 99.03 & 85.88 & \textbf{97.95} & \textbf{98.67} \\
+\midrule
+\multicolumn{8}{l}{\emph{Logos fine-tuned, top-6 unfreeze}} \\
+\;\;CE only (standard fine-tuning) & \tbest{\textbf{93.78}} & \tbest{\textbf{85.95}} & \textbf{98.48} & \textbf{99.09} & \textbf{85.69} & \textbf{97.13} & \textbf{97.77} \\
+\;\;$+$ cosine consistency & 93.62 & 85.63 & \textbf{98.48} & 99.05 & 82.45 & 94.54 & 95.76 \\
+\midrule
+\multicolumn{8}{l}{\emph{Logos fine-tuned, full unfreeze}} \\
+\;\;CE only (standard fine-tuning) & 93.37 & 84.96 & 98.49 & 99.10 & 85.29 & 97.55 & 98.44 \\
+\;\;$+$ gloss-SupCon & 93.38 & 84.94 & \tbest{\textbf{98.58}} & \tbest{\textbf{99.12}} & 85.38 & \textbf{97.61} & \textbf{98.51} \\
+\;\;$+$ SDDA & \textbf{93.39} & \textbf{85.00} & 98.54 & 99.11 & \textbf{85.55} & 97.60 & 98.46 \\
+\bottomrule
+\end{tabular}
+\caption{Frozen-feature retrieval on ASL Citizen after backbone
+fine-tuning, all on the identical full gallery. In the reference block,
+$^{\dagger}$ marks numbers taken from the cited papers (ST-GCN and I3D
+trained end-to-end~\cite{aslcitizen}; SignRep on frozen
+features~\cite{wongSignRepEnhancingSelfSupervised2025}), all under the
+same dictionary-retrieval protocol; those works report retrieval only,
+and SignRep does not report R@10. The Logos number is produced by us:
+its authors~\cite{ovodovLogosWellTemperedPretrain2025} did not evaluate
+on ASL Citizen, so we score their unmodified frozen backbone ourselves.
+It is the first of two baseline tiers; the CE-only rows are the second,
+standard fine-tuning of the same backbone. Bold marks the numeric best
+per column within each block; a blue cell marks the numeric best in the
+table for that column (probe values exist only for our rows). These
+marks are descriptive, not inferential: each cell is a single training
+run, and within-block differences of a few tenths of a point are within
+training and evaluation noise; near-ties should be read as equivalent. Row naming: \emph{CE only}
+$=$ the unchanged Logos backbone fine-tuned with plain gloss
+cross-entropy on the real videos under our recipe; $+$ synth.\ data $=$
+CE with the Flux synthetic edits added as training items; $+$ cosine
+consistency, $+$ CLS-SupCon, and $+$ SDDA $=$ CE on real $+$ synthetic
+data plus the named invariance term; $+$ gloss-SupCon adds a
+supervised-contrastive term over same-gloss clips
+(\S\ref{sec:method-losses}).
+\todome{recommendation 04.08: KEEP DCG, it is the benchmark's signature
+metric and the column comparable to the reference systems.}
+\todo{unfreeze levels are a separate table, move it. separate question}}
+\label{tab:backbone_ft_retrieval}
+\end{table*}
+
+\todome{ADDITION START (05.08): credit-framing sentence per your note}
+Before the findings, one framing note: the frozen Logos row is not an
+achievement of this thesis. It is the unmodified Logos backbone of
+Ovodov et al.~\cite{ovodovLogosWellTemperedPretrain2025}, whose authors
+never evaluated on ASL Citizen; that it nonetheless exceeds the
+benchmark's published end-to-end baselines and SignRep's frozen
+representation, with no target-corpus training at all, is a property of
+their pretraining. For this thesis it is the baseline: the bar that
+every fine-tuning and augmentation arm below attempts to clear.
+\todome{ADDITION END}
+Four findings stand out. (i) Cross-entropy fine-tuning improves retrieval R@1
+from 83.59 (best frozen) to 85.57 at top-2 depth (85.95 at top-6), while
+the linear probe is already best \emph{without} any fine-tuning (86.33) ---
+fine-tuning improves retrieval clustering at a small cost to linear
+separability. (ii) Depth helps only up to a point: full unfreeze (84.96)
+is worse than top-6 (85.95), suggesting the earliest, highest-resolution
+blocks overfit in-domain signers when adapted. (iii) No appearance or
+signer-invariance objective beats plain cross-entropy at matched depth,
+and several are worse: aug-as-data is statistically indistinguishable
+from the matched CE run (85.59 vs 85.57, a gap far below the retest
+spread quantified below), SDDA below both (83.45, at
+frozen-baseline level). The
+matched full-unfreeze pair makes this precise
+(gloss-SupCon $\approx$ CE only, $\Delta$R@1$<0.1$ on both evals),
+and the per-variant consistency ablations replicate it: all four
+single-variant runs (glasses/shirt/signer-swap/skin) land in a 0.14-point
+band around the aggregate (retrieval R@1 85.48--85.62), so no individual edit
+type carries hidden signal. Notably, this null now stands \emph{twice}:
+the top-2 rows were fully retrained on the regenerated 512px
+augmentations, and the retrained runs moved by only $0.01$--$0.3$
+retrieval points (probe values by up to $1.8$) relative to their
+first-generation counterparts, reproducing the pattern and calibrating
+how little weight the within-block orderings can bear. (iv) Cosine consistency actively damages the
+linear probe (probe R@1 drops to 82.27 at top-2 and 82.45 at top-6;
+this value also moved by 1.8 points between the two training
+generations, the least stable in the table) while its retrieval score
+looks ordinary --- the positive-only pull distorts the geometry in a way
+nearest-neighbour retrieval tolerates but a linear head does not. The
+two-stage schedule (\S\ref{sec:setup-training}: the consistency term
+switched on only after CE convergence, at a $100\times$ lower learning
+rate) fits the same pattern: its retrieval R@1 of 85.02\todome{mismatch
+found 05.08: the table's full-unfreeze SDDA R@1 is 85.00, and has been
+in every git generation since July; this 85.02 needs the eval log
+checked or should follow the table} sits within the
+plain-CE range (84.96--85.95) rather than above it, while its probe R@1
+of 85.82 avoids the linear-probe damage of single-stage consistency
+training. 
+The mechanistic question of whether the consistency loss actually pulls
+augmented copies together is now answered directly, not left to this
+paragraph: \S\ref{sec:results-ft-probes} (linear decodability) and
+\S\ref{sec:results-aug-geometry} (feature-space geometry, training vs.\
+held-out pairs) give a converging, load-bearing answer --- yes on training
+pairs, not on held-out ones.
+
+\subsection{SignCLIP head on frozen Logos/I3D features}
+We next evaluate appearance augmentation as training data for a
+contrastive SignCLIP-style head trained on top of frozen backbone features.
+
+% TABLE CONVENTION (updated 2026-08-05 per Piotr):
+% - \textbf on a data cell = best value in that metric column within its
+%   comparison block (ties: all bolded).
+% - \tbest{...} (blue cell) = best value in that column across the WHOLE
+%   table (per eval type, individual cells; Med.R skipped where all-tied).
+% - \rowcolor{rowhl} = the recommended configuration overall (may differ
+%   from per-column winners; say so in the caption if it does).
+% - Stub column header is "Setup"; setup labels are compositional:
+%   {From scratch | Fine-tuned} x {(real only) | + synth. data | , synth.
+%   data only}, "synth. data" (not "aug") everywhere.
+% Applied so far: T2V table + stub headers of both retrieval tables.
+% Remaining tables to be swept for per-block bolding (Phase 2).
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Setup} & \textbf{Features} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{Med.\,R} \\
+\midrule
+SignCLIP from scratch        & Pose (MediaPipe) & 0.39 & 0.71 & 0.84 & 2 \\
+SignCLIP fine-tuned          & Pose (MediaPipe) & 0.46 & 0.77 & 0.84 & 2 \\
+SignCLIP fine-tuned + linear & Pose (MediaPipe) & \textbf{0.60} & \textbf{0.84} & \textbf{0.89} & 1 \\
+\midrule
+From scratch          & RGB (I3D, WLASL)                  & 0.32  & 0.63  & 0.73  & 3 \\
+From scratch          & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.750 & 0.950 & 0.970 & 1 \\
+From scratch $+$ synth.\ data & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.756 & 0.955 & 0.970 & 1 \\
+Fine-tuned            & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.789 & 0.962 & 0.975 & 1 \\
+Fine-tuned, synth.\ data only & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.760 & 0.957 & 0.971 & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (MViTv2-S, Logos+AUTSL+WLASL) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
+\midrule
+\multicolumn{6}{l}{\textit{From-scratch head (real data only) on a \emph{fine-tuned} MViTv2-S backbone}$^{\ddagger}$} \\
+Scratch on native (frozen) & RGB (MViTv2-S, native)   & 0.775 & \textbf{0.966} & \textbf{0.977} & 1 \\
+Scratch on CE-FT           & RGB (MViTv2-S, CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
+Scratch on aug-FT          & RGB (MViTv2-S, aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
+Scratch on SDDA-FT         & RGB (MViTv2-S, SDDA-FT)  & \textbf{0.782} & 0.958 & 0.970 & 1 \\
+\midrule
+\multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone}$^{\ddagger}$} \\
+\rowcolor{rowhl}
+FT$+$synth.\ recipe on native   & RGB (MViTv2-S, native)   & \tbest{\textbf{0.818}} & \tbest{\textbf{0.972}} & \tbest{\textbf{0.982}} & 1 \\
+FT$+$synth.\ recipe on CE-FT    & RGB (MViTv2-S, CE-FT)    & 0.809 & 0.946 & 0.957 & 1 \\
+FT$+$synth.\ recipe on aug-FT   & RGB (MViTv2-S, aug-FT)   & 0.812 & 0.942 & 0.954 & 1 \\
+FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.810 & 0.964 & 0.974 & 1 \\
+\midrule
+\multicolumn{6}{l}{\textit{Pair-SupCon head (fine-tune; synth.\ edits as explicit positives)}} \\
+$K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (MViTv2-S, Logos) & 0.567 & 0.887 & 0.934 & 1 \\
+\bottomrule
+\end{tabular}
+\caption{Video-to-text retrieval on ASL Citizen (random-baseline Median R
+$=1366$, 2731 unique glosses).
+Row naming: \emph{synth.} marks training that uses the Flux synthetic
+appearance edits --- \emph{$+$ synth.\ data} adds them to the real training
+videos as extra items, \emph{synth.\ data only} fine-tunes on the edits
+alone, and the pair-SupCon rows fine-tune with a SupCon objective treating
+each video and its synthetic edits as explicit positives; unmarked rows
+train on real videos only. The three pose-input rows are the published
+results of the original SignCLIP model~\cite{jiangSignCLIPConnectingText2024},
+not our runs.\todome{provenance sentence added 04.08 per your note ---
+verify the three pose numbers (0.39/0.46/0.60) against the SignCLIP
+paper's tables before sending}
+$^{\ddagger}$These heads train the named recipe on \emph{fine-tuned}
+(rather than frozen) MViTv2-S features (backbone tags: CE-FT $=$
+cross-entropy on real videos; aug-FT $=$ CE $+$ synth.\ data; SDDA-FT $=$
+CE $+$ synth.\ data $+$ SDDA invariance term,
+\S\ref{sec:method-losses}); the CE/aug/SDDA-FT rows use
+\texttt{logos\_native} preprocessing, whereas the frozen rows above use
+\texttt{direct224} --- the ``Scratch on native (frozen)'' row is the matched
+control that isolates the preprocessing difference from the fine-tuning effect.
+\todome{K=5 removal executed 04.08: the K=5 pair-SupCon row (0.414,
+checkpoint\_last) and its dangling $^{\S}$ mark are gone from this
+table, and the K=3-to-K=5 retrieval citation in Future Work was
+rephrased. BOUNDARY QUESTION for you: the K=5 \emph{model} still appears
+in non-retrieval places --- the head signer-probes table (26.34$\times$
+/ 21.2\% row, and the caption's 22.0--26.3$\times$ range) and two
+appendix iconicity analyses of its embedding space. Same checkpoint
+provenance. Remove the model everywhere, or keep the embedding-space
+rows? Say the word and I sweep the rest.}
+}
+\label{tab:asl_citizen_retrieval}
+\end{table*}
+
+
+\paragraph{The effect of augmentations on T2V retrieval performance}
+\todome{DRAFT PROPOSAL START (03.08): this paragraph header had no body;
+the text below states only what the two tables show, no new claims.}
+Table~\ref{tab:asl_citizen_t2v} repeats the comparison in the
+text-to-video direction, where precision@$k$ replaces recall@$k$ because
+the gallery holds several correct videos per gloss query. The ordering
+matches the video-to-text table: fine-tuning alone lifts P@1 from
+$0.871$ to $0.895$, synthetic data alone adds little ($0.883$ from
+scratch, $0.884$ as the only fine-tuning data), and the combination is
+the strongest configuration on every metric (P@1 $0.919$, Mean~R
+$1.128$). Carried onto the fine-tuned backbones, the same recipe reaches
+P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour.
+\todome{DRAFT PROPOSAL END. Interpretive reading (why T2V moves more
+than V2T --- the anchor-neighbourhood argument) was cut in the 03.08
+cleanup; reconnect it here or leave the paragraph descriptive.}
+
+\begin{table*}[t]
+  \centering
+  \small
+  \makebox[\linewidth][c]{
+  \begin{tabular}{llcccc}
+  \toprule
+  \textbf{Setup} & \textbf{Features} & \textbf{P@1} & \textbf{P@5} & \textbf{P@10} & \textbf{Mean R} \\
+  \midrule
+  From scratch          & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.871 & 0.854 & 0.786 & 1.228 \\
+  From scratch $+$ synth.\ data    & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.883 & 0.861 & 0.790 & 1.213 \\
+  Fine-tuned           & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.895 & 0.876 & 0.808 & 1.166 \\
+  Fine-tuned, synth.\ data only & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.884 & 0.863 & 0.796 & 1.216 \\
+  Fine-tuned $+$ synth.\ data      & RGB (MViTv2-S, Logos+AUTSL+WLASL) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
+  \midrule
+  \multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone} }\\
+
+  FT$+$synth.\ recipe on native   & RGB (MViTv2-S, native)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
+  \rowcolor{rowhl}
+
+  FT$+$synth.\ recipe on CE-FT    & RGB (MViTv2-S, CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
+  FT$+$synth.\ recipe on aug-FT   & RGB (MViTv2-S, aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
+  FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
+  \bottomrule
+  \end{tabular}
+  }
+  \caption{Text-to-video retrieval on ASL Citizen, same configurations as
+  Table~\ref{tab:asl_citizen_retrieval}. Reported as precision@k rather than
+  recall@k: the test gallery contains multiple correct videos per gloss query,
+  so recall@1 is bounded by gallery multiplicity regardless of model quality,
+  while precision@k directly measures whether the top-ranked video(s) are
+  correct. The original SignCLIP work does not report this direction for ASL-Citizen at
+  full scale.}
+  \label{tab:asl_citizen_t2v}
+\end{table*}
+
+
+
+
+
+
+
+Figure~\ref{fig:tsne_grid} gives a qualitative view of the gloss
+organisation of nine of these spaces on a shared clip sample.
+% FIGURE (t-SNE grid) redesigned 2026-07-30: the original 58-gloss probe
+% set (built for the gendered-pair analogy task) turned up ZERO glosses
+% sharing an exact 5/5 ASL-LEX phonological match among its high-iconicity
+% members, so the gloss subset was replaced with 6 real phonological
+% "minimal families" (triplets, exact match on MajorLocation/MinorLocation/
+% Handshape/Movement/SignType) found by a full-corpus search over all 2725
+% ASL-Citizen train glosses joined to ASL-LEX (994 rated; provenance:
+% family_search_full.py, probe_families.json). Families were further
+% chosen (2026-07-30 refinement) to MAXIMIZE diversity ACROSS families:
+% MajorLocation/MinorLocation are Neutral for every eligible candidate (a
+% hard property of this corpus, not a choice), so the 6 families instead
+% cover 6 distinct handshapes (the max of 8 available given the 6-family
+% cap) and jointly represent all 3 Movement values and both SignType
+% values. Colour now encodes family, marker shape encodes
+% member-within-family (consistent across all 9 panels). Panel set:
+% dropped the two pair-SupCon panels (K=3, K=5);
+% added the fine-tuned-feature SignCLIP family (augft_on_{ce,aug,sdda})
+% and the headless fine-tuned-backbone "Logos" family (ce, aug) --
+% extracted via dump_kq_spaces_families.py (cluster job 25054868, genoa
+% CPU partition, no GPU/SBU cost). augft_on_sdda has no bare-backbone
+% sibling in the grid (ce/aug were chosen over sdda/consistency as the
+% two healthiest backbone-FT recipes per the signer-probe results above);
+% this is a deliberate 9th-panel choice, not an oversight. The
+% signer-coloured twin is still NOT buildable from local caches (kqfeat
+% exports carry no signer or video IDs) and stays deferred to
+% jobs/visualize_embedding_spaces.job.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.85\textwidth]{tsne_grid_gloss.png}
+\caption{t-SNE projections (shared hyper-parameters: perplexity 30, PCA
+initialisation, fixed seed) of the same video sample in nine embedding
+spaces. The 18 plotted glosses are six phonological ``minimal families''
+(triplets): groups of three ASL-Citizen glosses that are simultaneously
+high-iconicity (top tertile of ASL-LEX deaf-signer ratings among
+well-sampled train glosses), share an exact match on all five ASL-LEX
+form features (major/minor location, handshape, movement, sign type), and
+were chosen to be as phonologically distinct from one another as the
+corpus allows -- major/minor location is Neutral for every eligible
+family (unavoidable: that is where high-iconicity phonological overlap
+concentrates in this corpus), but the six families span six different
+handshapes and, jointly, all three movement types and both sign types --
+e.g.\ \{CANOE, CAR, SHOVEL1\}, all Neutral-space, S handshape, curved,
+symmetrical/alternating signs, versus \{GUN1, LIGHTER, REMOTECONTROL\},
+Neutral-space but A handshape, no path movement, one-handed. Colour
+identifies the family, marker shape the member within it, consistent
+across every panel so the same gloss can be tracked across spaces ($n$
+per panel in the title). Panel titles report the silhouette score $s$ of
+the plotted clips computed in the original 768-dimensional L2-normalised
+feature space, so cluster quality is a property of the space rather than
+of the projection. Every Logos-based space separates these hard,
+phonologically-confusable cases by gloss ($s{=}0.31$--$0.51$): the frozen
+backbone alone is loosest ($s{=}0.31$), backbone fine-tuning helps a
+little (CE $0.33$, aug $0.34$), and every SignCLIP head is tighter still,
+with the three fine-tuned-feature heads (on CE/aug/SDDA-FT backbones,
+$s{=}0.50$--$0.51$) essentially matching the frozen-backbone head
+($s{=}0.50$). The original pose-based SignCLIP model (bottom right;
+$n{=}238$ where pose extraction succeeds) shows no gloss structure on
+this out-of-domain sample ($s{=}-0.07$). A signer-coloured companion
+requires per-clip signer metadata not present in the cached exports and
+is deferred to the embedding-visualisation job.}
+\label{fig:tsne_grid}
+\end{figure*}
+
+\subsection{Does any objective actually remove signer identity? Distance and
+decoding probes on the fine-tuned spaces}
+\label{sec:results-ft-probes}
+The retrieval numbers above measure task quality, not signer encoding: a
+fine-tuned space can match the baseline's accuracy while carrying just as
+much identity information. We therefore probe every re-extracted space $z$
+with two complementary readouts. The \emph{distance probe} repeats the
+construction of \S\ref{sec:results-l2-raw} on each space: per test video the
+mean L2 distance to same-gloss clips by the \emph{same} signer
+($\bar{d}_{\mathrm{intra}}$) versus by \emph{different} signers
+($\bar{d}_{\mathrm{inter}}$), summarised as the median ratio
+$\rho=\mathrm{med}\,\big(\bar{d}_{\mathrm{inter}}/\bar{d}_{\mathrm{intra}}\big)$;
+$\rho\!\approx\!1$ means signers are no longer geometrically separated at
+fixed sign. The \emph{decoding probe} is its supervised complement, using standard
+linear-probing methodology~\cite{alainUnderstandingIntermediateLayers2017}: a linear
+head $p(s\,|\,z)=\mathrm{softmax}(Wz+b)$ is trained (cross-validated, frozen
+$z$) to predict the signer label $s$, reporting top-1 accuracy against the
+$1/S$ chance level. The two can dissociate --- a distance probe misses
+identity information that is linearly decodable but small relative to
+gloss variation --- so an intervention that genuinely removes appearance
+identity must lower both, not merely rescale distances. We run both probes
+on the frozen baseline, the top-2 family (CE, aug-as-data,
+cosine-consistency plus its per-variant ablations, SDDA), and the SignCLIP
+heads, reading each family as a matched block --- the depth confound forbids
+comparing across them. The backbone-family probes use the test split; the
+SignCLIP-head spaces are exported for the train split only, so their probes
+run on the matched train split (35 signers) and are reported as a separate
+panel (Table~\ref{tab:head_signer_probes}) that must not be compared
+row-for-row with the test-split numbers. The full-unfreeze runs are not probed: their
+contribution is already settled at the accuracy level
+(Table~\ref{tab:backbone_ft_retrieval}: gloss-SupCon adds nothing even at full
+capacity), and the compute budget was spent where new evidence was possible,
+so the probe conclusions below are scoped to top-2 depth.
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Space} & \textbf{$\rho$ (inter/intra)} & \textbf{signer decoding} \\
+\midrule
+Logos (frozen) & 17.67$\times$ & 75.3\% \\
+% run-id mapping as in tab:backbone_ft_retrieval
+fine-tuned, CE only       & 16.46$\times$ & 64.2\% \\
+fine-tuned $+$ synth.\ data & 16.44$\times$ & 62.6\% \\
+fine-tuned $+$ cosine consistency & 16.66$\times$ & 56.3\% \\
+fine-tuned $+$ SDDA       & 17.12$\times$ & 67.6\% \\
+\bottomrule
+\end{tabular}
+\caption{Signer-identity probes on the re-extracted top-2-family spaces.
+$\rho$ = median over multi-signer glosses of the inter-signer/intra-signer
+L2 ratio (prototype-based); in every space 100\% of glosses have
+inter $>$ intra. Decoding = linear-head top-1 signer accuracy
+(3-fold stratified CV; test split, 11 signers, chance 0.091).}
+\label{tab:signer_probes}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Head space (train split)} & \textbf{$\rho$ (inter/intra)} & \textbf{signer decoding} \\
+\midrule
+frozen backbone (reference)        & 17.67$\times^{\dagger}$ & 66.9\% \\
+From scratch                       & 22.29$\times$ & 22.6\% \\
+Fine-tuned                         & 22.35$\times$ & 24.6\% \\
+Fine-tuned $+$ synth.\ data        & 22.02$\times$ & 22.4\% \\
+$K{=}3$ pair-SupCon                & 23.35$\times$ & 20.1\% \\
+$K{=}5$ pair-SupCon                & 26.34$\times$ & 21.2\% \\
+\bottomrule
+\end{tabular}
+\caption{The same two probes on the SignCLIP-head spaces. Head features
+exist only for the train split, so this panel uses the matched train
+split (35 signers, chance 0.029) and is not comparable row-for-row with
+the test-split panel above; the frozen-backbone row gives the same-split
+decoding reference. $^{\dagger}$Reference $\rho$ from the full-split
+computation above. The dissociation sharpens in the heads: they separate
+signers \emph{more} geometrically than the backbone spaces
+($\rho$ 22.0--26.3$\times$) while making identity far \emph{less}
+linearly decodable (20--25\% against 66.9\% on the same
+split).\todo{framing check}}
+\label{tab:head_signer_probes}
+\end{table}
+
+
+The two probes dissociate exactly as anticipated. The distance probe says
+essentially nothing moved: signer separation at fixed sign is enormous in
+the frozen space ($\rho = 17.7\times$, inter-signer prototype distances
+exceeding within-signer spread for \emph{every} multi-signer gloss) and
+remains so after every fine-tuning objective, with the invariance-targeted
+runs sitting at $16.4$--$17.1\times$, indistinguishable from plain CE
+($16.5\times$) and barely below frozen. The decoding probe tells a
+sharper story: a linear head recovers signer identity from the frozen
+space at 75.3\% (11-way chance 9.1\%), and every fine-tuned space is
+substantially less decodable --- CE alone already drops this to 64.2\%,
+aug-as-data to 62.6\%, and cosine consistency furthest, to 56.3\%, while
+SDDA is the weakest intervention at 67.6\% despite its loss explicitly
+targeting signer structure. So identity is not literally frozen in place:
+fine-tuning, and consistency training most of all, measurably erodes the
+\emph{linearly decodable} component of signer identity, in a direction
+this coarse distance statistic is too blunt to register. This reduction
+does not translate into better retrieval (Table~\ref{tab:backbone_ft_retrieval}:
+consistency training is at or below plain CE on both evals), so removing
+decodable signer information and improving in-domain accuracy are
+dissociable outcomes here --- consistent with the geometry of
+\S\ref{sec:results-aug-geometry}, where the same objectives are shown to
+pull their own training pairs together without closing the gap on
+held-out counterfactuals.
+
+\subsection{Where do the appearance counterfactuals land? Feature-space
+geometry of the augmentations}
+\label{sec:results-aug-geometry}
+\todo{this is too long and too dense. Decide what is the most relevant, degrade the rest to appendix}
+The interventions above add little in-domain (\S\ref{sec:results-indomain}),
+and two very different geometries could produce a null of this shape. The
+synthetic edits might be \emph{redundant} --- each augment landing so close
+to its source video that it supplies no variation the backbone has not
+already absorbed from a 35-signer corpus --- or they might carry a
+\emph{sim-to-real gap}: occupying a systematically distinct, ``synthetic''
+region of the feature space that adds domain shift rather than useful signer
+diversity. These are not mutually exclusive; the more interesting possibility
+is their conjunction, in which each augment sits near its own original yet all
+augments are collectively separable from real video by a small, shared
+offset. Closing exactly this kind of real--synthetic gap is the explicit
+target of adversarial synthetic-data methods such as
+SDDA~\cite{fuSignerDiversitydrivenData2024b}, and pairing an image with its
+counterfactual is the basis of counterfactual-contrastive
+learning~\cite{roschewitzCounterfactualContrastiveLearning2025}; here we
+instead \emph{measure} the geometry directly.
+
+Every video $v$ is embedded by the backbone under analysis into a single
+vector $f(v)\in\mathbb{R}^{768}$ (clip features mean-pooled over the video).
+Each Flux edit of type
+$t\in\{$shirt, glasses, skin~tone, signer~swap$\}$
+yields a pair $\big(f(v),f(\tilde{v}_t)\big)$, matched by video id, and the
+object of study is the \emph{displacement}
+$\delta_t(v)=f(\tilde{v}_t)-f(v)$ --- the arrow the edit draws in feature
+space. We propose four measurements to characterise these arrows; headline
+numbers are medians over pairs.
+
+\textbf{(1) Displacement, in units of a real signer change.} A raw cosine
+$\cos\big(f(v),f(\tilde{v}_t)\big)$ is not interpretable on its own ---
+embedding spaces concentrate similarity, and the concentration differs
+between spaces --- so we calibrate it against a reference built from the
+same features and metadata. For each source $v$ we measure its mean cosine
+$\bar{c}(v)$ to up to $64$ videos of the \emph{same gloss by different
+signers} --- the natural magnitude of a genuine signer change for that very
+video. We propose the \emph{normalised displacement}
+$\mathrm{n.disp}=\big(1-\cos(f(v),f(\tilde{v}_t))\big)/\big(1-\bar{c}(v)\big)$
+to measure the fraction of a real signer change that the edit induces. A value of
+$0.5$ means the edit moves the embedding half as far as replacing the
+person would; $1.0$, exactly as far. A second per-video control,
+\emph{different glosses by the same signer}, provides a sign-identity
+floor: in every space and on both samples, $\geq 99.9\%$ of augments remain
+closer to their source than this floor --- no edit moves a video past its
+own sign.
+
+\textbf{(2) Sim-to-real separability.} To test for a collectively
+``synthetic'' region we train a standard linear classifier (logistic
+regression on
+standardised features) to label real originals vs.\ augments, and report
+ROC-AUC under a protocol we propose for such paired data: $5$-fold
+cross-validation \emph{grouped by source video}, so that a
+video and its own edits always occupy the same fold. The grouping is what
+makes the number meaningful. An original and its augment are
+near-duplicates, so if one fell in the training fold and the other in the
+test fold, the classifier could recognise the test item purely by its
+proximity to a memorised training item, inflating AUC without any
+generalising real-vs-synthetic direction; with grouping, AUC is the
+probability that an augment of an \emph{unseen} video scores more
+``synthetic'' than an unseen real one ($0.5$ = indistinguishable). We
+report AUC on raw and on $\ell_2$-normalised features: a gap that survives
+normalisation is directional, whereas one that vanishes was mere feature
+magnitude.
+
+\textbf{(3) The de-shift test: is the gap a single translation?} Write
+$f(\tilde{v}_t)=f(v)+\mu_t+\varepsilon$. If the synthetic region were
+nothing but the shared offset $\mu_t$, subtracting it should erase
+separability. Within each cross-validation fold we estimate $\hat{\mu}_t$
+as the mean displacement of the \emph{training-fold pairs only}, subtract
+it from every augment, retrain, and score on the held-out fold ---
+estimating the shift on the evaluation pairs themselves would trivially
+centre them, so the fold-internal protocol keeps the test honest (and
+each training pair contributes only one of its two members, chosen at
+random, since keeping both would equalise the class means by construction
+and pin AUC at $0.5$ mechanically). A collapse of
+AUC$_{\text{de-shift}}$ to chance means the entire linearly detectable
+synthetic signature was one translation per edit type.
+
+\textbf{(4) Meaning kept, appearance moved?}
+Two checks. \emph{gloss@1}: does the augment's nearest real video
+(source excluded) show the same sign? --- the edit preserved meaning; the
+video-to-video analogue of the counterfactual check in
+\S\ref{sec:results-diagnosis}. \emph{flip}: summarising each signer by the
+mean embedding of their videos (prototype), the share of pairs whose
+nearest prototype differs between source and augment --- the edit visibly
+moved identity-related appearance (intended for signer swap; unintended
+drift for the local edits).
+Because the whole analysis runs per feature space, we repeat it on the
+fine-tuned backbones of Table~\ref{tab:backbone_ft_retrieval}
+(aug-as-data, cosine-consistency, SDDA, and the CE control) to ask whether
+any intervention pulls the augments toward their originals or shrinks the
+synthetic region --- the geometric companion to the retrieval numbers.
+
+\textbf{Two evaluation samples.} We evaluate every space on two disjoint
+pair samples. The first comprises the $6{,}000$ augmented training source
+videos, each with all four edits; it maximizes statistical power but is
+selection-biased by construction, since augmentation targets were chosen
+worst-first --- the classes with the fewest training signers and lowest
+baseline accuracy (\S\ref{sec:method-diffusion}). The second is a
+signer-stratified random sample of $500$ \emph{test-split} videos, augmented
+with the identical pipeline; its signers are fully disjoint from the $35$
+training signers. For the frozen backbone --- which never saw ASL Citizen,
+so neither sample raises a leakage concern --- the held-out sample serves as
+a check that conclusions are not artifacts of the rare-gloss selection. For
+the fine-tuned spaces the distinction is substantive: the training pairs are
+the very items those models optimized on, so they bound the intervention's
+effect from above, while the held-out pairs give the honest generalization
+number --- and a divergence between the two is itself informative,
+separating memorization of specific counterfactual pairs from a learned
+appearance invariance. Both sides of every pair share identical
+aspect-preserving spatial preprocessing and a matched effective frame rate,
+so the measured displacement contains no framing or temporal-sampling
+artifact. What we deliberately do \emph{not} remove is the diffusion
+pipeline's own low-level footprint: every augment passes through a resize to
+longest-side $512$ and the generator's encode--decode round trip, and so
+carries a faint resampling texture even in pixels the edit left untouched.
+That footprint is part of the synthetic signal being measured, because any
+model trained on these augments consumes exactly the same footprint; we
+verified separately that the saved augments preserve the source aspect
+ratio.
+
+We expect the four edit types to fall on a clear ordering: shirt and glasses
+are local edits that should displace the embedding only slightly, whereas
+skin-tone and signer-swap are whole-person edits that should move it much
+further, approaching the magnitude of a genuine signer change. The decisive
+question for the in-domain null is \emph{where} that displacement lands. If
+real-versus-synthetic separability is low, the counterfactuals are faithful and the null is one of
+saturation --- the high-signer ASL Citizen backbone had already learned the
+invariance the edits supply, consistent with the marginal
+Table~\ref{tab:asl_citizen_retrieval} gain and with the opposite,
+low-signer NGT result (\S\ref{sec:results-crossdomain}). If instead the
+displacement is highly separable, the edits
+carry a sim-to-real gap that offsets their benefit in feature space. This is
+the mechanistic evidence behind the reading in
+\S\ref{sec:discussion-regimes}.
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Edit type} & \textbf{n.disp} & \textbf{AUC} &
+\textbf{AUC$_{\text{de-shift}}$} & \textbf{gloss@1} & \textbf{flip} \\
+\midrule
+\multicolumn{6}{l}{\emph{Training pairs ($6{,}000$ per edit type, selection-biased)}} \\
+\;\;glasses     & 0.46 & 0.993 & 0.50 & 0.58 & 0.67 \\
+\;\;shirt       & 0.53 & 0.999 & 0.50 & 0.62 & 0.76 \\
+\;\;skin tone   & 0.44 & 0.997 & 0.51 & 0.63 & 0.68 \\
+\;\;signer swap & 1.04 & 1.000 & 0.51 & 0.49 & 0.91 \\
+\midrule
+\multicolumn{6}{l}{\emph{Held-out test pairs ($500$ per edit type, signer-disjoint)}} \\
+\;\;glasses     & 0.50 & 0.960 & 0.50 & 0.70 & 0.57 \\
+\;\;shirt       & 0.47 & 0.990 & 0.50 & 0.75 & 0.56 \\
+\;\;skin tone   & 0.46 & 0.972 & 0.50 & 0.74 & 0.54 \\
+\;\;signer swap & 1.05 & 1.000 & 0.50 & 0.59 & 0.77 \\
+\bottomrule
+\end{tabular}
+\caption{Augmentation geometry in the \textbf{frozen} Logos space
+(fine-tuned spaces: Table~\ref{tab:aug_geometry_spaces}). All values are
+medians over pairs. n.disp = displacement as a fraction of a real signer
+change (measurement 1); AUC = real-vs-synthetic linear separability under
+$5$-fold cross-validation grouped by source video ($\ell_2$-normalised
+features change no value by more than $0.001$); AUC$_{\text{de-shift}}$ =
+the same test after removing the fold-estimated mean displacement
+(measurement 3); gloss@1 = share of augments whose nearest real video
+(source excluded) shows the same sign; flip = share of augments nearest to
+a different signer's prototype than their source.}
+% E_signer removed 2026-08-03 per Piotr's decision; anchors that
+% falsified the directional reading: chance 0.012, real signer change
+% 0.074, edits 0.09-0.14 (probe_out/esigner_anchors.json, job 25195647).
+\label{tab:aug_geometry_frozen}
+\end{table}
+
+The frozen-space geometry (Table~\ref{tab:aug_geometry_frozen}) settles
+the two hypotheses in favour of their \emph{conjunction}, with one twist.
+The locality ordering holds: garment and skin edits move an embedding
+about half as far as a genuine signer change (normalised displacement
+$0.44$--$0.53$), while signer swap moves it exactly as far as one
+($1.04$--$1.05$) and flips the nearest signer prototype for $91\%$ of
+training pairs --- the intended identity change registers. Sign content
+survives every edit (gloss retention $0.70$--$0.75$ on the unbiased
+held-out pairs; lower, $0.49$--$0.63$, on the training pairs, which by
+construction target the hardest classes).
+\todome{NUMBERS BUG (03.08, verified against the table above): held-out
+gloss@1 is $0.70$/$0.75$/$0.74$ for glasses/shirt/skin tone but
+$\mathbf{0.59}$ for signer swap --- the quoted $0.70$--$0.75$ silently
+drops the signer-swap value while the sentence claims content ``survives
+every edit''. Proposed rewrite: ``Sign content largely survives the
+appearance edits (gloss retention $0.70$--$0.75$ on held-out pairs for
+glasses/shirt/skin tone) but takes a real hit from the identity change
+($0.59$ for signer swap); on the training pairs, which by construction
+target the hardest classes, retention is $0.49$--$0.63$.'' The drop is
+worth owning: the strongest edit type also costs the most sign content,
+which connects to the hallucination limitation.} Yet the same augments are
+near-perfectly linearly separable from real video (AUC $0.96$--$1.00$,
+unchanged by $\ell_2$-normalisation, so the gap is directional rather
+than a magnitude artifact): each counterfactual sits close to its source
+while the synthetic population as a whole occupies an identifiable
+region.
+The twist is how \emph{shallow} that region's signature is.
+After subtracting a single mean displacement vector per edit type,
+estimated leak-free within each fold, separability collapses to chance
+($0.48$--$0.51$) in every space and on both samples: to linear probing,
+the entire sim-to-real gap is one shared translation. The individual
+arrows do scatter widely around that translation --- the shared
+component is only $32$--$53\%$ of a typical displacement's length, and
+no single principal direction explains more than about $10\%$ of the
+displacement cloud's variance --- but the scatter carries no class
+information; everything a linear probe can use is the mean offset. This
+is the mechanistic reading behind the in-domain null: the entire
+linearly detectable synthetic signature is a single shared offset per
+edit type, a direction a classifier can trivially factor out.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{lccc ccc c}
+\toprule
+& \multicolumn{3}{c}{\textbf{Training pairs}} &
+\multicolumn{3}{c}{\textbf{Held-out pairs}} & \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\textbf{Space} & n.disp & gloss@1 & AUC & n.disp & gloss@1 & AUC &
+\textbf{AUC$_{\text{de-sh}}$} \\
+\midrule
+frozen      & 1.04 & 0.49 & 0.997 & 1.05 & 0.59 & 0.976 & 0.50 \\
+CE          & 1.13 & 0.56 & 0.992 & 1.00 & 0.60 & 0.972 & 0.50 \\
+aug-as-data & 1.04 & 0.91 & 0.991 & 1.17 & 0.62 & 0.949 & 0.48 \\
+consistency & 0.79 & 0.89 & 0.986 & 1.11 & 0.57 & 0.942 & 0.49 \\
+SDDA        & 0.76 & 0.67 & 0.996 & 0.80 & 0.66 & 0.961 & 0.50 \\
+\bottomrule
+\end{tabular}
+\caption{The same geometry across feature spaces, shown for the
+signer-swap edit (the strongest intervention; the local edits show the
+same pattern --- full grid with uncertainty in
+Appendix~\ref{app:aug_geometry_grid}). n.disp and gloss@1
+as in Table~\ref{tab:aug_geometry_frozen}; AUC pools all four edit
+types; AUC$_{\text{de-sh}}$ is on held-out
+pairs only because, unlike n.disp and gloss@1, it shows no
+training/held-out asymmetry to report (training values within $0.03$
+in every space). Reading: a model that \emph{learned} appearance invariance would
+contract n.disp and preserve gloss@1 in \emph{both} column groups;
+gains confined to the training columns (aug-as-data, consistency) are
+memorisation of the specific counterfactual pairs seen in training. The
+CE control never trained on augments and is correspondingly symmetric.}
+\label{tab:aug_geometry_spaces}
+\end{table*}
+
+
+Qualitative companions to these numbers --- a t-SNE of the augments around their source videos and the per-edit-type cosine distributions --- are shown in Appendix~\ref{app:aug_geometry_grid} (Figs.~\ref{fig:aug_vs_orig_tsne} and~\ref{fig:aug_vs_orig_cosine}).
+
+
+
+
+\subsection{Iconicity analysis}
+\todo{Add the plots from the presentation}
+\todo{Discuss how all interventions reduce iconicity}
+\todo{describe high iconicity signs based on ASL-LEX, include an example of high-iconicity family used in the presentation}
+The organising
+construct of the Logos dataset is the \emph{visually similar sign}
+(VSSign): signs with different meanings but the same manual component,
+subsuming both polysemy and minimal pairs, and the Logos authors show
+that \emph{grouping} VSSigns under one label --- training the encoder
+precisely \emph{not} to separate signs that look alike --- yields a
+better transfer encoder than keeping them
+apart~\cite{ovodovLogosWellTemperedPretrain2025}. A backbone
+pre-trained this way is not merely agnostic about form-similar pairs;
+collapsing them is part of its supervision, and that metric bias
+travels with the frozen features from RSL to our ASL inputs
+
+
+
+
+
+\section{Summary}
+\todo{write this}

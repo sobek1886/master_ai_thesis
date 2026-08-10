@@ -1,36 +1,346 @@
 \chapter{Introduction}
-\label{sec:introduction}
-% Mention scientific context/field, problem statement, research gap and (sub) research question(s). 
-Write your introduction here. It should be immediately clear how your proposed contribution is scientifically relevant and fills the research gap.
-  This is a test citation \cite{Gruber1995}
 
-Towards the end of the introduction, you should also add your \textit{preliminary} \textbf{reasearch questions (RQ)} here. You may want to state your main RQ like this:
+\todo{the content is here, but the introduction needs to be reorganized and rewritten}
+Sign language recognition (SLR) faces two distinct problems that this
+thesis addresses together. The first is \emph{data scarcity}: compared to
+speech or text, annotated sign language corpora are small, expensive to
+collect, and dominated by a handful of recording setups and
+signers~\cite{DataProblem} --- a gap that synthetic data generation can, in
+principle, fill. The second is \emph{appearance bias}: independently of how
+much data it sees, a video model can score well on a benchmark by
+exploiting the static, incidental visual properties of whoever happened to
+be recorded --- clothing, skin tone, body shape, background --- rather than
+the motion that carries the linguistic content. In the action-recognition
+literature this second phenomenon is well
+documented~\cite{leiRevealingSingleFrame2023, ilicAppearanceFreeAction2022,
+liMitigatingEvaluatingStatic2023a, zhangDontJudgeLook2024}; action
+recognition is also the domain closest to ours --- SLR inherits its video
+backbones and training recipes from it --- so we treat its bias findings
+and interventions as directly relevant, and review them in
+\S\ref{sec:related-appearance-bias}. The two
+problems interact --- fewer recorded signers make appearance shortcuts
+easier to exploit --- but they are separate, and this thesis uses one
+mechanism against both: synthetically generated signing adds data where
+data is scarce, and its controlled appearance variation attacks the bias
+directly. Byvshev et
+al.~\cite{byvshevAre3DConvolutional2022a} further show that 3D convolutional
+networks are not \emph{inherently} biased towards appearance --- with suitable
+data and training interventions they can be made substantially
+appearance-invariant. The closest general results are from action
+recognition: a debiasing dropout derived from quantifying
+static-versus-dynamic bias across spatiotemporal
+architectures~\cite{kowalQuantifyingLearningStatic2025}, and a static-bias
+mitigating augmentation shown to work on a video Swin
+transformer~\cite{liMitigatingEvaluatingStatic2023a}. A transformer-specific
+analogue of Byvshev et al.'s finding for sign language --- that the
+\emph{signer-appearance} bias of the transformer video backbones used in
+modern RGB-based SLR is a data property open to intervention --- has, to our
+knowledge, not been established.
+% Reworded 2026-07-12 per Piotr's todo: no "transformers dominate SLR" claim
+% (pose-based approaches are the more prevalent response to signer variation,
+% as the next paragraphs now say explicitly with the SignEval evidence).
+% Gap re-verified 2026-07-11 by fresh scholarly search (OpenAlex citation walk
+% of Byvshev et al.: 9 citing papers, none transformer-specific; keyword
+% searches likewise empty). Kowal et al. TPAMI 2025 (StaticDropout) is the
+% nearest adjacent work and is now cited; our own MViTv2 backbone results
+% remain the closest transformer-specific evidence.
 
-\noindent\textit{To what extent can a master thesis template enhance the quality of the final thesis?}
+For sign language this is not an abstract concern. Signing is performed by
+people, and the appearance dimensions a model may latch onto --- skin tone,
+gender, clothing, recording environment --- correlate directly
+with demographic groups. A sign language recognition system that implicitly
+keys on appearance will degrade unpredictably for signers who look unlike its
+training population. Signer variation itself is a long-standing focus of
+SLR research: signer-independent evaluation is an established protocol, and
+proposed remedies range from adversarial signer-invariant
+training~\cite{Ferreira2021} and signer-diversity data
+augmentation~\cite{fuSignerDiversitydrivenData2024b} to pose-centric
+modelling~\cite{tranRegionAwarePoseModeling2025,
+kratimenosIndependentSignLanguage2020} and dedicated challenge
+tracks~\cite{luqmanSignEval2025Challenge2025a}. Yet while appearance bias
+is actively studied in general
+action recognition, it has received little direct attention in the sign
+language domain.
+% zotero-index.md "appearance-bias-in-SL-not-tackled": no SL-specific
+% appearance-bias paper found among 46 bib entries + papers/ folder — the
+% gap claim is supported by absence, anchored on the general-AR citations.
 
-You can then list the sub-questions as:
-\begin{itemize}
-    \item How does the structure of the template influence the final grading?
-    \item To what extent is textual guidance sufficient for structured working?
-    \item \dots
-\end{itemize}
+The field's dominant response to signer variation has been indirect: move
+from RGB input to pose-based input. Pose representations discard pixels ---
+and with them, most appearance information --- and a visible trend in recent
+benchmarks and challenges pushes towards signer-independent evaluation and
+pose-based methods~\cite{jangSigningOutsideStudio2022,
+luqmanSignEval2025Challenge2025a, jiangSignCLIPConnectingText2024}. The
+SignEval 2025 challenge makes the trend explicit: in its signer-independent
+recognition task, every submitted system was pose-based --- by design,
+since the organisers distributed only MediaPipe-derived pose features
+extracted from the underlying (RGB-recorded) Isharah videos, citing signer
+overfitting and privacy~\cite{luqmanSignEval2025Challenge2025a,
+alyamiIsharahLargeScaleMultiScene2026b}: for that task, RGB-based
+approaches were excluded from the outset rather than tried and outperformed.
+% Verified 2026-07-12 against the challenge report + Isharah paper (Zotero):
+% Track 01 Task 01 (signer-independent CSLR on Isharah); all listed systems
+% pose/keypoint-input; organisers extracted MediaPipe Holistic pose from the
+% RGB videos and distributed only that. NOTE the precision point: Isharah
+% itself is an RGB dataset (30k smartphone clips) — the pose-only setting is
+% the ORGANISERS' task design, not a dataset limitation
+But pose is not a free lunch. Pose extraction pipelines are themselves
+learned RGB models with their own failure modes: the standard training and
+evaluation sets for pose estimation under-represent darker-skinned
+individuals~\cite{lachanceCaseStudyFairness2023, hasanHi5SyntheticData2024},
+% Claim re-verified 2026-07-12; it is pose-task-specific, not generic
+% demographics: LaChance et al. build COCO-KD (the COCO pose-estimation
+% validation subset, demographically annotated) and find over-representation
+% of males and lighter-skinned individuals; Hi5 documents the skin-tone skew
+% of hand-pose TRAINING sets and shows accuracy on darker hands improves
+% when synthetic diverse-skin-tone data replaces them.
+the few existing fairness audits of pose estimators reach unstable
+conclusions that flip with the choice of evaluation
+set~\cite{lachanceCaseStudyFairness2023, xiangFairHumanCentricImage2025},
+% Re-verified 2026-07-12: LaChance et al. show the skin-tone bias direction
+% of OpenPose/MoveNet flips with the evaluated image subset; FHIBE (Nature
+% 2025) finds bias directions for human-centric tasks that contradict FACET's,
+% with pose/keypoint-level annotations supporting such audits.
+and on ASL Citizen itself the pose-based baseline model exhibits larger
+skin-tone and gender performance disparities than its RGB
+counterpart~\cite{atwellStudyingMitigatingBiases2024}.
+% Re-verified 2026-07-12 against the paper: gender gap ST-GCN ~16 points
+% (0.68 M vs 0.52 F) vs I3D ~9 points (0.68 vs 0.59); on the three darkest
+% inferred skin tones ST-GCN degrades more than I3D. "Larger disparities on
+% both axes" is accurate.
+Demographics aside, pose extraction also has documented mechanical failure
+modes on signing video: MediaPipe Holistic's hand region-of-interest
+prediction breaks down on non-ideal hand
+orientations~\cite{moryossefOptimizingHandRegion2024}, both OpenPose and
+MediaPipe degrade precisely where hands interact with each other or the
+face --- interactions that are linguistically load-bearing in
+signing~\cite{moryossefEvaluatingImmediateApplicability2021}, and in our own
+extraction MediaPipe produced no usable feature file for 8\% of ASL Citizen
+training videos (Table~\ref{tab:raw_feature_l2_probe}).
+% Resolved 2026-07-19: the reference behind Ranum/NGT200's "[97]" line is
+% Moryossef et al. 2021 (CVPRW), already cited directly above.
+% NEW CITATIONS NEEDING BIB ENTRIES (flagged in the resolution report;
+% entries provided there for Piotr to add during the bibentries merge):
+% moryossefOptimizingHandRegion2024 = Moryossef, arXiv:2405.03545 (2024);
+% moryossefEvaluatingImmediateApplicability2021 = Moryossef et al.,
+% CVPR 2021 Workshops, pp. 3429-3435, DOI 10.1109/CVPRW53098.2021.00382.
+% G1 closed 2026-07-11 via fresh scholarly search: no paper shows MediaPipe
+% *failing* on darker skin as a direct finding, so the claim stays at
+% "under-audited pipelines with documented demographic risk factors" —
+% LaChance et al. (AAAI-23 R2HCAI, COCO-KD), Hi5 (arXiv:2406.03599), FHIBE
+% (Nature 2025), and Atwell et al. 2024 (ST-GCN vs I3D disparity on ASL
+% Citizen). Story point 6b as originally phrased ("MediaPipe can fail on
+% dark-skinned individuals") is NOT directly supported — flagged to Piotr.
+Meanwhile recent self-supervised
+RGB representations report stronger sign representations than pose-based
+alternatives~\cite{wongSignRepEnhancingSelfSupervised2025}. If RGB has the higher ceiling, then abandoning it to escape
+appearance bias trades accuracy for robustness. The alternative this thesis
+explores is to keep RGB and attack the bias directly with \emph{synthetic
+appearance counterfactuals}: renderings or edits of the same signing motion
+under different appearances, so that appearance becomes a factor the model
+can be explicitly trained, or shown, to ignore.
+
+The approach we set out to build is the one that guarantees the
+counterfactual property by construction: record signing with motion
+capture, retarget the captured motion to synthetic avatars, and render the
+result in Unreal Engine. Every render then shows exactly the same signing
+motion under a freely chosen appearance --- motion preservation is a
+property of the pipeline, not an assumption. But this route cannot be
+applied to an existing benchmark: benchmark videos are plain RGB with no
+motion capture attached, so the only way to use it at benchmark scale would
+be to record a new mocap corpus of comparable size.
+
+We therefore approximated it. Modern diffusion image editors can rewrite
+the appearance of an existing video frame by frame: we use Flux to edit
+real benchmark videos --- changing clothing, adding glasses, altering skin
+tone, swapping in a different signer --- while leaving the rest of each
+frame alone. This recovers the appearance-variation axis of the avatar
+pipeline at a cost that scales to existing benchmarks. It is an
+approximation, not a substitute: the edits are per-frame appearance
+rewrites, so the signing motion is preserved only insofar as the editor
+leaves it untouched, not by construction as in the avatar renders.
+
+We test \todo{rewrite this, matching the reorder to focus on positive results first}
+whether the diffusion approximation actually changes anything on a real
+benchmark --- ASL Citizen, large and signer-diverse, with signer-disjoint
+evaluation --- and we demonstrate the full mocap-plus-Unreal pipeline at
+the scale where its cost is feasible: a small, self-recorded Dutch Sign
+Language (NGT) corpus with few signers, evaluated across a real signer gap.
+SDDA follows the same instinct as our diffusion arm in a single setting ---
+diffusion-generated signer variety with a consistency objective on one
+studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b} --- and we
+return to that comparison throughout. The two settings turn out to give
+different answers, and that contrast --- where synthetic appearance
+variation earns its cost and where it does not --- is the core result of
+the thesis. 
 
 
-The page limit is 35 pages. In any case, the irrelevant and the long unclear explanations will be penalized: clarity does not require long blocks of text, quite the opposite.
+This thesis asks whether appearance bias is measurable in modern sign
+language representations, and whether synthetic appearance counterfactuals
+--- the diffusion approximation at benchmark scale, the full
+motion-preserving pipeline at small scale --- can reduce it. Concretely:
 
+\todome{ANSWERED 04.08 (checked both theses): keep the RQs
+model-agnostic. Ioannis's thesis (the close structural precedent: MRQ +
+5 SRQs) names no specific model or dataset inside any RQ --- only
+categories (``current embedding models'', ``decoder-based VL
+embedders''); model names appear solely in the contributions and body.
+Angelos's thesis has no formal RQs at all (prose aim + bulleted
+contributions, which do name hCITRIS). Recommended edit here: replace
+MediaPipe/Logos/MViTv2/I3D/SignCLIP/Flux9B in RQ1--RQ3 with categories
+(``pose-based, RGB-transformer, RGB-CNN, and contrastively text-aligned
+representations''; ``diffusion-generated appearance edits''; ``avatar
+renders driven by motion capture'') and keep the concrete names in the
+Contributions section, which both reference theses do.}
 
-\section{Section}
-  \subsection{Subsection}
-    \subsubsection{Subsubsection}
-      \paragraph{Paragraph} Ex culpa ut commodo proident esse excepteur mollit in sed aliqua fugiat sed cupidatat dolor sint quis veniam amet aute ea fugiat quis do excepteur sunt commodo magna cupidatat veniam minim anim mollit do enim et nostrud ad esse velit nisi est dolor do ut dolore excepteur nulla ex sunt exercitation consequat ullamco ad in fugiat ut ut enim adipisicing cillum nisi anim ullamco ullamco nisi esse aute dolore amet nisi adipisicing dolor dolore do ut aliqua in sunt aliqua tempor duis amet ut non adipisicing nostrud ex ullamco excepteur culpa anim est minim fugiat laborum ex irure consectetur eu in reprehenderit sint magna ut consequat laborum ex minim laboris culpa amet incididunt laborum laborum dolore nulla cupidatat dolore in aliqua ut eu in magna sunt eiusmod est labore sit eu incididunt fugiat in culpa pariatur voluptate duis id velit sunt reprehenderit pariatur amet esse dolore minim non fugiat fugiat amet incididunt commodo sit dolor.
+\begin{description}
+\item[RQ1 (Diagnosis).] Do sign language video representations --- pose-based
+  (MediaPipe), RGB transformer
+  (Logos/MViTv2 \cite{ovodovLogosWellTemperedPretrain2025}), RGB CNN (I3D),
+  and contrastively text-aligned (SignCLIP \cite{jiangSignCLIPConnectingText2024})
+  --- encode signer identity beyond sign content, and to what degree?
 
-      In \verb|itemize| and \verb|enumeration|, longer sentences and text in paragraphs could require manual hyphenation with \verb|-| in case of boxes under- or over-flows:
-      \begin{itemize}
-        \item Ad dolor nisi culpa eu eiusmod sint ut est in nisi quis ut deserunt ut anim ut proident proident officia laborum in.
-        \item Dolore et irure adipisicing ex anim exercitation sit pro-ident mollit.
-      \end{itemize}
+\item[RQ2 (Cross-signer intervention).] In a low-data, cross-signer setting
+  (NGT), do motion-preserving synthetic counterfactuals --- Unreal Engine
+  avatar renders driven by real motion capture, the approach we originally
+  set out to scale --- improve retrieval across
+  a real-to-real signer gap when used as extra views under a supervised
+  contrastive objective~\cite{khosla2020supervised}?
+  
+\item[RQ3 (In-domain intervention).] In a high-data, signer-independent
+  setting (ASL Citizen), do diffusion-generated appearance augmentations
+  (Flux9B image edits: clothing, glasses, skin tone, signer swap) --- our
+  scalable approximation of motion-preserving synthesis --- improve
+  retrieval, either as training data for a contrastive embedding head or as
+  counterfactual supervision when fine-tuning the backbone itself?
+\todome{two review notes on the RQs (03.08): (i) RQ3 lists the
+contrastive head before backbone fine-tuning, but the Results chapter now
+presents backbone fine-tuning first --- swap the clause order when
+finalising; (ii) no RQ covers the matched-$K$ Unreal-vs-Flux head-to-head
+(E3 vs E4), the only place the two synthesis routes are compared under
+matched conditions and arguably the most novel single comparison in the
+thesis --- consider folding it into RQ2 (``...and how much of that gain
+does the scalable diffusion approximation retain at matched strength?'')
+or making it the first clause of RQ4.}
+\todome{DRAFT START (Claude 04.08): RQ4 widened from the old cosine-similarity question to the probe + geometry analyses actually run}
+\item[RQ4 (Interpretation).] What do the interventions of RQ2 and RQ3 do
+  to the embedding space itself: where do the synthetic counterfactuals
+  land relative to their source videos and to a genuine signer change ---
+  do they stay local, and do they occupy a separable ``synthetic'' region
+  --- and does any training objective actually reduce the signer identity
+  encoded in the features, measured both by distance geometry and by
+  linear decodability?
+% Answerable by: \S\ref{sec:results-l2-raw} + \S\ref{sec:results-ft-probes}
+% (distance ratio + linear decoding, incl. the dissociation, lines
+% 1309-1380 and 2002-2108) and \S\ref{sec:results-aug-geometry}
+% (displacement locality, sim-to-real separability, de-shift collapse,
+% lines 2110-2323). "genuine signer change" echoes the n.disp calibration
+% (lines 2141-2151); "separable synthetic region" echoes measurement 2
+% (lines 2158-2174); "distance geometry ... linear decodability" echoes the
+% two probes (lines 2008-2021).
+\todome{DRAFT END: (i) deliberately model-agnostic, matching your todo at
+line 287 about keeping RQs model-free; (ii) the 03.08 review note at lines
+309-317 suggests folding the matched-$K$ Unreal-vs-Flux head-to-head into
+RQ2 or making it RQ4's first clause --- this draft does NOT include it, so
+if you want it covered, prepend a clause like ``how much of the
+motion-preserving gain does the scalable diffusion approximation retain at
+matched strength, and ...''; (iii) one long sentence --- split after
+``region'' if you find it heavy.}
+\end{description}
 
-      \begin{enumerate}
-        \item Incididunt id cillum mollit officia aliquip id dolor ea reprehenderit ut pariatur consequat dolore adipisicing sit minim minim id irure ullamco nulla occaecat sint ut deserunt tempor aute eiusmod dolor.
-        \item Aliquip sunt in voluptate occaecat ut magna cupidatat sunt duis ut proident consequat.
-      \end{enumerate}
+\section{Contributions}
+
+\textbf{First, a positive in a low-diversity data setting.} 
+\todome{DRAFT START (Claude 04.08): contribution 1 body --- NGT headline numbers from the abstract, controls from the ladder section}
+On a self-recorded NGT corpus with four training signers and a single
+studio environment at train time, motion-preserving synthetic
+counterfactuals --- Unreal Engine avatar renders driven by the same
+motion capture, added as extra views under a supervised contrastive
+objective --- more than double cross-signer retrieval
+(R@1 $0.23 \to 0.65$ test$\to$train; $0.25 \to 0.70$ train$\to$test,
+3 seeds).
+% Numbers and "more than double" quoted from the abstract, lines 90-91;
+% table values are 0.234->0.649 and 0.247->0.695 (lines 1419/1422 and
+% 1434/1437 of tab:ngt_ladder).
+A real-multiview control at the same view count shows that extra
+viewpoints of the same signers do not reproduce the gain: what drives it
+is appearance and identity diversity.
+% Supported by the E2 discussion, lines 1525-1534 ("Extra viewpoints of
+% the same identities are therefore not what drives the effect;
+% appearance and identity diversity is.").
+At matched view count, content, and viewpoint, diffusion-based edits of
+the same videos retain roughly $65$--$80\%$ of this gain --- a
+substantial but incomplete substitute for the parametric renders.
+% "65--80%" and "substantial but incomplete substitute" from lines
+% 1518-1524 (the E3-vs-E4 head-to-head).
+\todome{DRAFT END: the third sentence is the matched-$K$ Unreal-vs-Flux
+comparison your 03.08 note (lines 309-317) wants surfaced somewhere in the
+front matter --- if you fold it into RQ2/RQ4 instead, cut it here to avoid
+saying it twice. Abstract rounds to 0.23/0.65; the tables print
+0.234/0.649 --- keep whichever precision you want consistent between
+Contributions and Abstract.}
+
+\textbf{Second, a benchmark-scale evaluation of the diffusion
+approximation in a high-diversity data setting.} On ASL Citizen we generate
+appearance counterfactuals with a modern open diffusion model
+\todome{DRAFT START (Claude 04.08): contribution 2 body --- continues the existing half-sentence; states the null honestly with the small head-gain exception}
+(Flux) and evaluate them across every objective family we try ---
+augmentation-as-data, cosine consistency, supervised contrast, and
+adversarial invariance.
+% Objective-family list quoted from the abstract, lines 94-95.
+Recognition is left essentially unchanged: the largest effect is
+$+1.1$ R@1 from adding the counterfactuals to a frozen-feature
+contrastive head, and backbone fine-tuning gains nothing over plain
+cross-entropy.
+% "+1.1 R@1 on a frozen-feature head, nothing at the backbone" from the
+% Discussion, line 2423; head numbers 0.789 -> 0.800 in
+% tab:asl_citizen_retrieval, lines 1831 and 1833; "No appearance or
+% signer-invariance objective beats plain cross-entropy at matched depth"
+% from lines 1778-1780.
+We report this as an informative null rather than a failure: with 460
+pretraining signers, 35 training signers, and diverse recording
+conditions, appearance invariance is already bought by real diversity,
+and the counterfactuals have little left to add.
+% "informative null", "460 pretraining signers, 35 training signers, and
+% diverse recording conditions, appearance invariance is already bought by
+% real diversity" from the abstract, lines 95-97.
+\todome{DRAFT END: sentence 3 tracks the abstract's phrasing closely
+(lines 95-99) --- fine for now, but when you refine the abstract at the
+end (todo line 75) vary one of the two so they do not read verbatim-twice.
+I wrote "(Flux)" to close the existing half-sentence; adjust if you finish
+that sentence differently.}
+
+\todome{DRAFT START (Claude 04.08): optional third contribution --- the diagnostic probes; drop the whole block if two contributions suffice}
+\textbf{Third, a diagnostic account of where signer identity lives.}
+Across every feature space we test --- pose-based (MediaPipe), RGB
+transformer (Logos/MViTv2-S), RGB CNN (I3D), and contrastively
+text-aligned (SignCLIP) --- signer identity is recoverable well above
+chance.
+% Feature-space list matches RQ1, lines 290-294; "recoverable from every
+% feature space we test" from the abstract, lines 82-84.
+On ASL Citizen the raw spaces separate signers at fixed sign content by a
+distance ratio of $22$--$30\times$, and the pose features are the most
+signer-separable of the three, with linear signer decoding reaching
+$98.7\%$ --- pose discards pixels, not the appearance cues that identify
+signers.
+% "$22$--$30\times$" from line 1356; "98.7%" from tab:raw_feature_l2_probe
+% (line 1348) and line 1361; final clause condenses "Pose discards pixels,
+% but it retains --- and arguably distills --- precisely the appearance
+% cues that identify signers without them" (lines 1368-1370).
+The two probes we use --- distance geometry and linear decodability ---
+moreover dissociate: fine-tuning and contrastive heads can substantially
+reduce how decodable identity is while leaving the distance geometry
+essentially unchanged, so neither readout can stand in for the other when
+auditing signer information in a representation.
+% Dissociation established at lines 1372-1380 (raw spaces), 2077-2081
+% (head panel caption), and 2086-2108 ("The two probes dissociate exactly
+% as anticipated ... in a direction this coarse distance statistic is too
+% blunt to register").
+\todome{DRAFT END: I recommend keeping this third bullet --- the abstract
+already leads with the diagnosis, RQ1 is a full RQ, and the dissociation
+is used as a recurring pattern (line 1377-1380 calls it "a pattern that
+recurs throughout the thesis") --- but it is separable: cutting it loses
+nothing from bullets 1-2. Note the last clause ("neither readout can stand
+in for the other") is my compression of lines 1327-1329 ("we do not read
+either as a proxy for the other"); check you are happy calling that a
+contribution rather than a methods choice.}

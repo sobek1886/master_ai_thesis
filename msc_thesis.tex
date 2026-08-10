@@ -1,39 +1,78 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For the use of University of Amsterdam
-% Master of AI thesis
+% Master of AI thesis  --  ported from main-claude.tex into the new
+% mscaithesis template (structure follows template.tex)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[license]{mscaithesis}  % Can print or not a license
-% The license is very optional and its definition easy to edit in mscaithesis.cls
+% The class loads xcolor itself; pass the options the tables need up front.
+\PassOptionsToPackage{table,dvipsnames}{xcolor}
+\documentclass{mscaithesis}
 
-\usepackage{mwe}  % Only for the example
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\graphicspath{{./}{media/figures/}}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{float}
+\usepackage{microtype}
+\setlength{\emergencystretch}{1.5em}
+\usepackage{flushend}   % balance the two columns on the last page of each chapter
+% Let floats fill pages more aggressively (avoids near-empty float pages)
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\dblfloatpagefraction}{0.7}
+\setcounter{topnumber}{4}
+\setcounter{dbltopnumber}{4}
+\setcounter{totalnumber}{6}
 
-\usepackage{amssymb} % Math packages are (on purpose) not included in the class document
+\usepackage{amssymb} % Math packages are (on purpose) not included in the class
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amsthm}
 
-\usepackage{natbib}
+\usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds}
+
+% Template uses natbib + ACM-Reference-Format (a numeric style); the numbers
+% option makes natbib accept it.
+\usepackage[numbers]{natbib}
+
+% ---- commands carried over from the old draft ----------------------------
+\definecolor{rowhl}{RGB}{209, 231, 255}
+\newcommand{\tbest}[1]{\cellcolor{rowhl}#1}  % table-wide best cell (per column)
+\newcommand{\pmsd}[1]{{\scriptsize$\pm$#1}}  % mean$\pm$sd in tables (seed spread)
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\newcommand{\todo}[1]{{\color{orange}\textbf{[TODO: #1]}}}
+\newcommand{\todome}[1]{{\color{magenta}\textbf{[TODO-PIOTR: #1]}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DOCUMENT METADATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Thesis related entries
-\title{Master AI thesis template:\\ A tale of computers}
-% \subtitle{A tale of computers}
+\title{Two Regimes of Appearance Bias in Sign Language Recognition:\\
+When Synthetic Counterfactuals Help and When They Don't}
 
-% Date on which your thesis is submitted
-\date{2026/06/19}
+% Date on which the thesis is submitted
+\date{\red{2026/??/??}}
 
-\author{Student \textsc{van Naam}}
-\studentnumber{314159265}
-\period{2026/01/05 -- 2026/06/19}
+\author{Piotr \textsc{Sobecki}}
+\studentnumber{15127206}
+\period{\red{Period in which the research was carried out}}
 \credits{36 ECTS}
-\examiner{Pr. E. Xaminer}
-\dailysupervisor{M. Entor}
-\uvasupervisor{Dr U. Vasupervisor}  % Only if different from daily supervisor, leave empty otherwise
-\addsupervisor{Ir. E. N. Gineer}  % Optional
+\examiner{\red{Dr A. Person}}
+\dailysupervisor{Casper Thuis}
+\uvasupervisor{Dr James Trujillo}   % NOTE: verify role mapping
+\addsupervisor{Angelos Nalmpantis}  % NOTE: class has no "second reader" slot
 
 \begin{document}
 \maketitle
@@ -41,8 +80,29 @@
 \frontmatter
         \chapter*{Abstract}
                 \begin{adjustwidth}{4cm}{4cm}
-                        Officia ex pariatur consectetur duis do aute do veniam ut consequat eu et do reprehenderit consequat est in ullamco proident aute minim sit qui sint dolor dolore ullamco quis fugiat fugiat irure occaecat anim amet aute minim ut nostrud eu officia sunt in anim dolore deserunt excepteur eiusmod deserunt laboris irure nulla tempor deserunt consectetur eu sit aliquip exercitation dolor ex proident aute tempor fugiat elit dolore amet sunt elit dolore sed labore excepteur quis proident laboris duis cupidatat do laborum in excepteur dolore excepteur ad laborum consectetur minim mollit anim occaecat commodo excepteur laborum sunt ad et minim deserunt excepteur mollit aliquip velit quis deserunt in exercitation ut non est in occaecat sunt ut culpa ut incididunt veniam eiusmod non ad sint deserunt anim tempor magna quis enim commodo adipisicing fugiat tempor officia sit non dolore tempor excepteur ea enim do ullamco non duis consequat consequat qui culpa amet nisi excepteur sunt pariatur consectetur laborum aute laborum cupidatat id magna sit consequat consequat mollit proident nostrud est dolor nostrud anim proident deserunt velit tempor velit ut in minim adipisicing id anim esse mollit et fugiat elit enim sunt dolor et aute ea adipisicing do consectetur nulla sit.
-                \end{adjustwidth}
+\todo{refine abstract at the end}
+Sign language recognition (SLR) models struggle under test domain shift:
+unseen signers and new recording conditions. Appearance-bias findings in action
+recognition motivate asking whether SLR models key on incidental visual
+properties of the recorded signers rather than the signing itself. This thesis asks
+whether \emph{synthetic appearance counterfactuals} --- edited training
+videos that change appearance while preserving the performed sign --- can
+remove this bias. We first diagnose the problem: signer
+identity is recoverable from every feature space we test, including
+pose-based ones. We then intervene with two synthesis pipelines:
+motion-preserving Unreal Engine avatar renders of a self-recorded Dutch
+Sign Language (NGT) corpus, and diffusion-based per-frame appearance
+edits (FLUX) of ASL Citizen videos. The outcome splits into two regimes.
+In the low-diversity NGT setting (4 training signers, one studio
+environment), synthetic signers more than double cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train;
+$0.25 \to 0.70$ train$\to$test, 3 seeds). On the large, signer- and
+environment-diverse ASL Citizen benchmark, the counterfactuals leave
+recognition essentially unchanged across every objective family we try
+--- an informative null: with 460 pretraining signers and 35 training
+signers, appearance invariance is already bought by real diversity.
+Synthetic counterfactuals earn their cost precisely where real signer
+diversity is scarce --- and are largely redundant where it is not.
+\end{adjustwidth}
 
 \tableofcontents
 
@@ -52,26 +112,23 @@
 
 \setlength{\parskip}{5pt}
 
-\include{sections/0-list-symbols}
-
-
 \twocolumn
 \mainmatter
         \include{sections/1-introduction}
         \include{sections/2-related-work}
         \include{sections/3-methodology}
-        \include{sections/4-results}
-        \include{sections/5-discussion}
-        \include{sections/6-conclusion}
+        \include{sections/4-setup}
+        \include{sections/5-results}
+        \include{sections/6-discussion}
+        \include{sections/7-limitations}
+        \include{sections/8-conclusion}
 
 \bibliographystyle{ACM-Reference-Format}
-\bibliography{bibliographies/references}
+\bibliography{bibliographies/bibentries}
 
-% \newpage
+% Single-column appendix (template: choose one and stick to it)
+\onecolumn
 \appendix
-        \include{sections/7-appendix}
+        \include{sections/9-appendix}
 
 \end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

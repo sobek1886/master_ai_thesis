@@ -1,10 +1,200 @@
 \chapter{Related Work}
-\label{sec:related_work}
-% Your work needs to be grounded and compared to earlier work and the state-of-the-art. Start the section with announcing the research gap and also end with the research gap. Consider using hypotheses. 
-Write about your related work here. Make clear to which key papers you will compare your eventual results. This can be done from the perspective of methods used, the task at hand and the addressed domain.
+\todo{briefly describe what is covered in related work sections}
+\section{Signer-independent SLR}
+\todo{write this}
+\section{Addressing appearance bias}
+\label{sec:related-appearance-bias}
+The problem that recognition benchmarks reward static appearance cues was
+formalised early: RESOUND quantifies the representation bias of action
+datasets and shows current ones are biased towards static objects, scenes
+and people~\cite{liRESOUNDActionRecognition2018}. Several recent
+action-recognition methods attempt to address such bias by enforcing
+invariance through paired or aligned training signals under controlled
+appearance change, rather than relying solely on standard data
+augmentation. Examples include Motion Coherent
+Augmentation~\cite{zhangDontJudgeLook2024} and Tubelet-Contrastive
+Self-Supervision~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
+which structure positive pairs around shared motion content; adversarial
+debiasing of both foreground and background
+cues~\cite{fioresiALBARAdversarialLearning2025,
+duanMitigatingRepresentationBias2023}; and causal interventions that
+separate action from background at training and test
+time~\cite{rastegarBackgroundNoMore2024}.
 
-% The related work section is not a a background section. If you want to explain techniques, it is possible to have a background section after the Related Work section. Background should only be added when it has benefit for an informed audience. It is not common to use a background section. 
+Within sign language specifically, Atwell et al.\ study and mitigate
+demographic bias directly on ASL Citizen, applying bias-mitigation
+techniques during training and showing they can reduce performance
+disparities without a loss of
+accuracy~\cite{atwellStudyingMitigatingBiases2024}; a Deaf-led review
+documents systemic, field-level biases in how sign language AI research
+selects datasets, labels, and modelling
+assumptions~\cite{desaiSystemicBiasesSign2024}. These works address
+demographic disparities and research practice rather than intervening on the
+appearance content of the training distribution itself, so appearance bias
+in learned sign representations is not untouched in the sign language
+domain, but it remains far less directly tackled than in action
+recognition. The closest intervention is SDDA, which pairs
+diffusion-generated signer variety with a consistency objective on a
+single studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}
+(discussed under Synthetic data below); our work differs in using
+\emph{motion-preserving} counterfactuals --- parametric avatar renders
+alongside diffusion edits --- and in asking what the intervention does to
+the learned embedding space, across two data regimes, rather than only to
+task accuracy. Nor do the action-recognition interventions above transfer
+one-to-one: they separate the actor from a biased background or scene,
+whereas in signing the confound sits on the signer's own body, so
+appearance must change while fine-grained hand and face motion is
+preserved --- a much stronger constraint than background replacement.
+% Framing note (2026-07-11, applied 2026-07-28): the qualification of story
+% point 1 ("not well-tackled in the SL domain" rather than "unexplored")
+% acknowledges Atwell/Desai/SDDA while keeping the novelty claim narrow and
+% true; aligned with the SDDA scoping in the intro (pivot paragraph) and the
+% Synthetic data section.
 
-Remember: a related works section is not a ``laundry list'' of references, cited for the sake of citing papers: they are the support and motivation for your research gap and research question that you are going to address.
+\section{Benchmarks}
+As surveyed in~\cite{kalinowskiMachineLearningSign2026}, a large share of
+continuous sign language recognition research has been conducted on two
+studio-recorded benchmarks, Phoenix2014~\cite{kollerContinuousSignLanguage2015}
+and CSL-Daily~\cite{CSL-daily}. Jang et al.~\cite{jangSigningOutsideStudio2022}
+note the limitations of studio-based benchmarks, in particular their lack of
+variance in setting and background; Zhu et al.\ similarly identify the
+studio-setting nature of existing benchmarks as a bottleneck and release
+CE-CNSL to address it~\cite{CE-CNSL}. More recently, Isharah addresses the
+lack of diversity and the challenge of signer-independent
+evaluation~\cite{alyamiIsharahLargeScaleMultiScene2026b}, and is used in the
+CSLR track of the SignEval 2025
+Challenge~\cite{luqmanSignEval2025Challenge2025b}.
 
-If you stick with Use \verb|\cite{}| for reference that is part of the sentence, and \verb|\citep{}| for references in parenthesis. For example, \cite{viola1997alignment} is awesome. Also, this is a citation~\citep{viola1997alignment}.
+ASL Citizen~\cite{aslcitizen} sits in the same lineage of ``harder'' benchmarks:
+it is signer-disjoint by construction and, unlike a single-studio corpus,
+aggregates recordings under varied real-world conditions. Atwell et al.\
+document this directly, using ASL Citizen's participant demographic and
+lexical metadata to study and mitigate demographic disparities in models
+trained on it, and releasing that per-participant demographic information
+for future bias work~\cite{atwellStudyingMitigatingBiases2024}.
+
+We adopt ASL Citizen
+as a high-resource benchmark that captures the appearance-bias question
+this thesis targets: diverse signers, varied recording conditions, and
+substantial signer-dependent variation.
+
+\section{Input modality}
+\label{sec:related-work-modality}
+On early CSLR benchmarks such as Phoenix2014 and CSL-Daily, RGB-based CNN
+architectures such as SlowFastSign~\cite{ahnSlowFastNetworkContinuous2023}
+achieved strong performance. On more recent, more challenging datasets,
+pose-based representations have shown improved robustness and competitive
+recognition accuracy~\cite{minCloserLookSkeletonbased2025}, and this trend
+is often attributed to the inherent
+invariance of pose representations to appearance factors such as clothing,
+background, and
+lighting~\cite{moryossefEvaluatingImmediateApplicability2021,
+kratimenosIndependentSignLanguage2020, tranRegionAwarePoseModeling2025}.
+Pose-based models, however, discard substantial
+visual information present in the original RGB signal, raising the question
+of whether the improved robustness of pose-based approaches stems solely
+from appearance invariance, or whether RGB-based models simply fail to
+capture motion cues in the presence of strong appearance signals.
+
+Byvshev et
+al.\ show that the appearance bias observed in 3D convolutional video models
+is not an inherent architectural limitation but a consequence of the
+statistical structure of training data~\cite{byvshevAre3DConvolutional2022a}:
+when motion and appearance are artificially decoupled, 3D CNNs learn
+temporally sensitive representations. Byvshev et al.\ are not alone in
+locating the bias in data rather than architecture: Kowal
+et al.\ find most spatiotemporal models dominated by static information and
+reduce that dominance with a training-time
+intervention~\cite{kowalQuantifyingLearningStatic2025}; and a family of
+methods --- motion-coherent augmentation~\cite{zhangDontJudgeLook2024},
+tubelet-contrastive pre-training~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
+adversarial debiasing~\cite{fioresiALBARAdversarialLearning2025,
+duanMitigatingRepresentationBias2023}, and causal background
+interventions~\cite{rastegarBackgroundNoMore2024} --- shows the reliance on
+appearance can be reduced by reshaping the training signal
+(\S\ref{sec:related-appearance-bias} discusses these in detail).
+
+Motivated
+by this body of evidence, we ask whether the
+same holds for the transformer-based backbones now common in SLR.
+
+A natural alternative is
+to combine RGB and pose in hybrid architectures, e.g.\ a two-stream
+network~\cite{chenTwoStreamNetworkSign}; we do not pursue this, preferring a
+single-stream RGB approach for its lower inference cost and simpler
+pipeline. Throughout this thesis we therefore consider \emph{single-stream}
+methods only: every backbone we train, probe, or compare consumes one input
+stream (RGB video or pose), and multi-stream or hybrid architectures are
+out of scope on compute and inference-cost grounds.
+
+\section{Synthetic data}
+Byvshev et al.'s finding that appearance bias is shaped by training-data
+statistics~\cite{byvshevAre3DConvolutional2022a} suggests that reshaping the
+training distribution --- rather than only the architecture --- can reduce
+appearance reliance. Sign language recognition, however, lacks a counterpart
+to the large, temporally rich pretraining corpora available in general video
+understanding, motivating the use of \emph{synthetic} data to reshape the
+training distribution directly. Knapp and Bohacek~\cite{knapp2025synthetic}
+generate synthetic action video via controllable 3D Gaussian avatar pose
+transfer and show gains when used as augmentation; related work renders
+synthetic action data in GTA V~\cite{guoLearningVideoRepresentations2022} and
+studies synthetic data for temporal alignment~\cite{SVLTA_Du_2025}. Li et
+al.\ show that data generated by a text-to-video diffusion transformer can
+benefit data-limited action
+understanding~\cite{liRoleVideoGeneration2025}, but do not consider sign
+language; Knapp and Bohacek further note that sign-language tasks are among
+those that have so far been unable to exploit the full potential of
+synthetic video, as generated human motion suffers from uncanny
+artefacts~\cite{knapp2025synthetic} --- a gap this thesis addresses.
+
+\subsection{Sign language data augmentation approaches}
+Walsh et al.\ show that sign language production can generate useful
+synthetic augmentations for sign language translation, with a revealing
+modality split: skeleton-level sign-stitching augmentation yields large,
+consistent gains (at least 15\% across all reported metrics), whereas
+photo-realistic RGB augmentation --- via a GAN-based renderer (SignGAN) and
+a Gaussian-splatting renderer
+(SignSplat~\cite{ivashechkinSignSplatRenderingSign2025}) --- yields smaller
+and mixed improvements, with GAN artefacts sometimes degrading
+performance~\cite{walshUsingSignLanguage2025}.
+% Verified against the paper (2026-07-11): pose-vs-RGB contrast confirmed,
+% but the RGB methods compared are SignGAN + SignSplat — NOT diffusion.
+% Story point 8 says "(Gaussian splatting, diffusion) don't work as well";
+% the "diffusion" attribution is not supported by Walsh et al. — flagged
+% to Piotr in the chat summary rather than silently corrected in his story.
+
+Fu et al.'s Signer Diversity-driven Data Augmentation (SDDA) combines
+diffusion-generated signer variation with a contrastive/adversarial
+consistency objective and reports gains on
+Phoenix2014T \cite{fuSignerDiversitydrivenData2024b}; the authors note that
+their synthesized signers do not closely resemble real footage and frame
+this as a limitation. We use the same consistency-objective family as one of
+our backbone-fine-tuning ablations (\S\ref{sec:method-objectives}) and
+return to the comparison in our Discussion (\S\ref{sec:discussion-regimes}):
+SDDA's positive result is on a studio-recorded, lower-signer-diversity
+corpus, closer to our low-data NGT regime than to our high-data ASL Citizen
+regime, which we argue explains why the same idea saturates in one setting
+and helps in the other.
+
+Peng et al.\ propose synthetic view augmentation using SMPL-X reconstruction
+to address viewpoint generalisation, introducing new backgrounds and
+viewpoints but not new signer
+appearance~\cite{pengSyntheticViewAugmentation2025a}; notably, their
+synthetic viewpoints enter training only through the projected-keypoint
+(pose) and rendered-depth streams of a multi-modal model --- view
+augmentation of the RGB stream is explicitly left to future work --- whereas
+this thesis targets the lack of variety in signer appearance directly, in
+the RGB modality.
+
+\subsection{Avatar and Unreal Engine approaches}
+Ranum's thesis on synthetic avatar data \todo{describe that Ranum also renders synthetic avatars based on mocap, but evaluates them by extracting pose features from them} for Dutch Sign Language
+(NGT)~\cite{ranum3DAwarenessGeometry2024} finds that synthetic data benefits
+recognition in the pose modality but is expected to transfer less well to
+the video modality given the cartoon-like appearance of the avatars used;
+our experiments test the video-modality case directly. 
+
+Prior work has built gesture-producing virtual avatar systems using Unreal
+Engine and motion capture~\cite{messinaModularSignLanguage2025}, and has
+used Unreal-rendered virtual agents --- animated from mocap and varied in
+skin tone, lighting, background, and camera angle --- as a scalable source
+of training data for gesture recognition~\cite{loyVirtualAgentsScalable}. \todo{describe what we bring what the other approaches did not}

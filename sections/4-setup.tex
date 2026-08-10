@@ -1,0 +1,356 @@
+\chapter{Experimental Setup}
+\label{chap:setup}
+This chapter collects the concrete instantiation of the study: the
+datasets we train and evaluate on, the models we train and the feature
+extractors they consume, and the protocols and metrics by which we score
+them. 
+
+\section{Datasets}
+\textbf{ASL Citizen}~\cite{aslcitizen} is our primary benchmark: a
+large, signer-disjoint isolated American Sign Language dataset (train split:
+40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
+real-world conditions rather than in a single studio.
+\textbf{WLASL} is used only for the signer-identity diagnostic probes
+(\S\ref{sec:results-diagnosis}). \textbf{NGT} is a unreleased Dutch Sign
+Language corpus: real signers performing
+a fixed set of sentences in mocap suits (VisLab studio, three camera
+angles) --- the \emph{train} set --- evaluated against a held-out \emph{test}
+set of unseen signers (recorded at the Bushuis studio, one camera angle),
+giving a genuine low-data, cross-signer,
+cross-studio evaluation setting. The train set comprises 775 unique
+sentences performed by 4 signers (1{,}395 front-view videos). In the raw
+corpus, every training sentence has a matching reference recording in
+the test pool; we removed from the evaluation side all recordings by the
+four training signers, so that retrieval is always scored against
+signers unseen during training. After this signer filter (and the
+synthetic-coverage restriction described below), the evaluation set
+provides, for 364 of these sentences, exactly one reference video by an
+unseen signer (six held-out signers in total).\todome{clarified 04.08
+from your todo --- please verify the filter chain: is 364 produced by
+the seen-signer filter alone, or jointly with the synthetic-coverage
+intersection mentioned two paragraphs down? The text now names both
+without attributing the count to either.}
+
+The NGT experiments use this corpus under two distinct splits, summarised
+in Table~\ref{tab:ngt_setups}. The single-view ladder
+(Table~\ref{tab:ngt_ladder}) and the signer-count
+ablation (Table~\ref{tab:ngt_signer_count}) draw on all four
+signers and are scored on a frozen \emph{364-sentence} evaluation set:
+the intersection of the recorded test pool with the 744 training sentences
+having complete synthetic coverage. The same 364 sentences are
+used for every arm and condition, so train and test counts no longer
+match. 
+The signer-count ablation additionally fixes data
+volume: every condition trains on exactly 180 sentences (one deterministic
+take each, hence 180 front-view videos and an identical update budget),
+split evenly across its $S$ nested signers, with both arms of a condition
+sharing identical sentences and takes, so only real-signer diversity
+varies.
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Single-view ladder} & \textbf{Signer-count ablation} \\
+ & (Table~\ref{tab:ngt_ladder}) & (Table~\ref{tab:ngt_signer_count}) \\
+\midrule
+Train signers & 4 (all sessions) & $S\in\{1,\ldots,4\}$, nested \\
+Train sentences & 744 (1{,}313 takes) & 180 per condition (one take) \\
+Views per item $K$ & 1--10 by arm & 1 vs.\ 7; 3 vs.\ 9 \\
+Sentences evaluated & 364 (frozen) & 364 (frozen across $S$) \\
+\bottomrule
+\end{tabular}
+\caption{The two NGT dataset splits. The single-view ladder and the
+signer-count ablation
+share one frozen 364-sentence evaluation protocol (the intersection of the
+current test set with the 744 render-complete sentences); the signer-count
+ablation additionally pins data volume at 180 sentences per condition. In
+every setup and both retrieval directions, query and gallery are built
+over the identical evaluated-sentence set, so each query always has its
+matched counterpart in the gallery.}
+\label{tab:ngt_setups}
+\end{table}
+
+\todo{email Gomer to ask how this NGT data should be referenced, who to give credit for collecting the dataset, whether I am allowed to include example frames in my thesis, whether I am allowed to share the augmented data (is there a difference whether the signer is swapped fully with a synthetic avatar vs when signer appearance is adjusted via diffusion methods, but the real signer is clearly distingushable anyways (adding glasses, changing shirt colour, changing skin colour)}
+
+\section{Models and training settings}
+\label{sec:setup-training}
+We train three models using the synthetic counterfactuals of
+\S\ref{sec:setup-generation}: a fine-tuned Logos backbone and a
+SignCLIP-style video--text head on ASL Citizen, and a view-contrastive
+encoder on NGT. Two heads recur throughout: the SignCLIP-style
+video--text head described below, and a plain linear head, used both as
+the gloss classifier during backbone fine-tuning and as the probing
+instrument of the signer-decoding analyses.
+
+\subsection{Backbone fine-tuning (ASL Citizen)}
+Our primary \emph{backbone} --- the pretrained video network that heads
+are trained on top of and that the fine-tuning experiments update --- is
+\textbf{Logos}~\cite{ovodovLogosWellTemperedPretrain2025}, an MViTv2-S
+video transformer~\cite{liMViTv2ImprovedMultiscale2022} pretrained on
+Logos+AUTSL+WLASL. We fine-tune it with a gloss cross-entropy objective,
+optionally combined with an appearance/signer-invariance term operating
+on each video together with its augmented copies: cosine-consistency
+pull, CLS-token supervised contrast, SDDA-style KL-consistency plus
+gradient-reversal adversarial
+discriminator~\cite{fuSignerDiversitydrivenData2024b}, or gloss-level
+supervised contrast across signers. Frozen 768-d CLS features are then
+re-extracted and evaluated with the benchmark's dictionary-retrieval
+protocol and a linear probe (\S\ref{sec:eval-protocols}), both on the
+identical signer-disjoint construction.
+
+Independently of the loss, we vary how much of the 16-block backbone
+adapts: the top $k \in \{2, 6, 16\}$ blocks are unfrozen (head always
+trainable), with layer-wise learning-rate decay
+$\mathrm{lr}(d) = \mathrm{lr}_{\mathrm{base}} \cdot \eta^{\,d_{\max}-d}$
+once more than the top two blocks train ($\eta = 0.75$ at $k{=}6$,
+$\eta = 0.9$ at $k{=}16$; uniform learning rate at $k{=}2$). A two-stage
+variant resumes a
+converged CE-only checkpoint (backbone and head) and continues at
+$100\times$ lower learning rate with the consistency term switched on. Note
+that with $k \leq 6$ the invariance losses only ever reach the top,
+semantic blocks --- never the early high-resolution stages where
+appearance is encoded.
+
+Independent of our fine-tuning choices, one design choice of the Logos
+pretraining recipe matters throughout this thesis, because it is baked
+into every feature the backbone produces. The organising construct of
+the Logos dataset is the
+\emph{visually similar sign} (VSSign): signs that share the same manual
+form but differ in meaning, covering both polysemy and minimal pairs.
+Rather than forcing the encoder to separate such signs, the Logos authors
+group VSSigns under one label and show that this yields a \emph{better}
+transfer encoder than keeping them apart~\cite{ovodovLogosWellTemperedPretrain2025}.
+The consequence for us is that a backbone trained this way is explicitly
+rewarded for placing look-alike signs close together: form-organised
+structure in its feature space is trained in, not incidental.
+
+Logos is also the thesis's workhorse feature extractor: its frozen
+features --- form-organised structure included --- feed the video--text
+heads of the next subsection, the signer probes, and the NGT encoder.
+
+\subsection{SignCLIP-head training (ASL Citizen)}
+A video--text head is trained from scratch or fine-tuned on top of
+frozen features. The head is the SignCLIP dual-encoder
+architecture~\cite{jiangSignCLIPConnectingText2024}, built on
+VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021} (12-layer BERT
+video encoder, 12-layer BERT text encoder, video--text InfoNCE),
+adapted to take video features other than its original MediaPipe pose
+input by swapping the first linear layer of its video-token projection
+MLP. SignCLIP is pose-based by design --- its authors evaluated an RGB
+alternative (I3D) only on the simpler fingerspelling task before
+committing to pose input --- so this adaptation lets us run the
+RGB-versus-pose comparison they left open, within one architecture, on
+full-vocabulary isolated recognition. Synthetic counterfactuals enter
+either purely as additional training data or, in some configurations,
+matched to their source video as positive pairs --- a
+counterfactual-contrastive strategy in the same spirit as recent work
+using causal image synthesis to build robust positive
+pairs~\cite{roschewitzCounterfactualContrastiveLearning2025}.
+We train this head on three families of input features:
+(i) \textbf{Logos} --- the frozen original backbone and, in the cross
+experiments, the fine-tuned variants (CE-FT, aug-FT, SDDA-FT) produced
+by the backbone experiments above; (ii)
+\textbf{I3D}~\cite{carreiraQuoVadisAction2017}, a 3D-CNN fine-tuned on
+WLASL and always frozen here --- the older-generation RGB reference
+point, retained because it is the RGB baseline in SignCLIP's own
+comparison, while no longer the strongest available RGB backbone; and
+(iii) \textbf{MediaPipe} Holistic pose
+keypoints~\cite{lugaresiMediaPipeFrameworkBuilding2019}, on which we do
+not train ourselves: the pose-input rows of our retrieval tables are the
+published results of the original SignCLIP model, and our own use of
+pose is analytic --- the raw keypoint features (a 609-dimensional
+mean-pooled or 1218-dimensional mean+std-pooled per-video vector; for
+ASL Citizen root-centred at the shoulder midpoint and scale-normalised
+to shoulder width per frame, so they carry body proportions, posture,
+and movement rather than camera framing) are evaluated directly in the
+signer probes of \S\ref{sec:results-diagnosis}, where the original
+SignCLIP model's embedding space is probed alongside them.
+
+\subsection{NGT view-contrastive training}
+The same SignCLIP-style
+video encoder (12 BERT layers over frozen 768-d Logos features) is
+trained \emph{without a text tower}: NGT has no gloss vocabulary, so the
+unit of supervision is the sign-recording identity itself. Each training
+item bundles the $K$ views of one sign --- the real front camera plus,
+depending on the arm, real side cameras, Unreal avatar renders, or Flux
+appearance edits --- and a supervised contrastive loss pulls all $K$
+views of a sign together while pushing other signs apart (video-only
+InfoNCE at $K{=}1$, where no positive pairs exist). The trained encoder
+is evaluated by zero-shot cosine retrieval across the real signer gap
+(\S\ref{sec:eval-protocols}); the ladder trains on 744
+sentence-recordings and the signer-count ablation on 180 per condition,
+$K$ views each. Loss details are given in \S\ref{sec:method-losses}.
+
+The single-view ladder and the signer-count ablations hold the
+\emph{contrastive batch} constant at 64 items for every arm ---
+equal in-batch negatives at every $K$, with encoder compute scaling
+with $K$ --- and set the learning-rate schedule length to each
+dataset tier's actual update count, so that no arm's schedule is cut
+short or left mostly in warmup.
+
+
+\section{Counterfactual generation}
+\label{sec:setup-generation}
+\todo{make into separate subsections, matching 3.2.1 and 3.2.2}
+\todo{reorder: unreal engine goes first}
+This section instantiates the two counterfactual routes of
+\S\ref{sec:method-diffusion}.
+
+For ASL Citizen we generate appearance counterfactuals with
+FLUX.2-klein-9B~\cite{blackforestlabsFLUX2Klein2026}, an open diffusion model, run on a single 48\,GB L40S GPU
+(or, when available, a shared H100 partition). We augment a targeted subset
+of the training data --- $6{,}000$ source videos ($14.9\%$ of the 40k-video
+training set) yielding $24{,}000$ augmented clips --- rather than the full
+corpus. The primary reason is the diffusion compute budget:
+frame-by-frame editing of all 40k source videos was beyond the GPU
+allocation available to this thesis, so a subset had to be selected.
+Given that constraint, evidence that augmenting a targeted portion of the
+data can outperform augmenting
+everything~\cite{nguyenDoWeNeedSynthetic2025} supports choosing the subset
+deliberately rather than at random, using the worst-first selection
+strategy of \S\ref{sec:method-diffusion}. The selected set covers the
+$450$ glosses with the fewest training signers ($8$--$13$, median $12$,
+against a corpus median of $14$) and below-average baseline separability
+(mean proxy accuracy $0.81$ vs.\ $0.88$ corpus-wide). Two properties of this
+selection matter later. It concentrates the augmentation where real signer
+diversity is thinnest and invariance is hardest to learn from real data
+alone --- though ASL Citizen has no truly signer-starved classes (minimum
+$8$ signers), which bounds the headroom any signer-diversity intervention
+can have in this corpus. And it makes the augmented pairs a deliberately
+biased, hard-class sample, which is why the feature-geometry analysis
+(\S\ref{sec:results-aug-geometry}) pairs it with a random held-out control. A further signer-stratified
+random sample of $500$ \emph{test-split} videos is augmented with the
+identical pipeline, solely as the held-out evaluation set for the
+feature-geometry analysis (\S\ref{sec:results-aug-geometry}); it is never
+used in training.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.8\textwidth]{aug_examples_grid.png}
+\caption{The four Flux appearance edit types on one ASL Citizen video.
+Each column is one of four aligned frames (indices below the columns);
+the top row shows the original video and the remaining rows its four
+edits (\emph{+ shirt}, \emph{+ glasses}, \emph{+ signer swap},
+\emph{+ skin tone}). The signing motion and framing are preserved across
+rows while only the targeted appearance attribute changes.}
+\label{fig:aug_examples}
+\end{figure*}
+A dedicated resolution sweep (Fig.~\ref{fig:flux_res_sweep}) compared
+generation quality at several output resolutions against the fixed
+224$\times$224 input required downstream, and selected 512\,px as the
+smallest resolution that still preserved hand-shape and facial detail
+(720/1024\,px performed comparably; 224/384\,px visibly degraded these
+features).
+Frame rates and augmentation strides differ per corpus. NGT was recorded
+at 60\,fps and ASL Citizen at 30\,fps, while the Logos backbone was
+pretrained on 30\,fps video sampled at temporal stride 2. We therefore
+edit every 4th frame of NGT (stride 4) and every 2nd frame of ASL Citizen
+(stride 2), rather than augmenting all frames and discarding most of them
+downstream; the backbone fine-tuning then reads these already-subsampled
+augmented frames at stride 1, so that augmented clips span the same
+temporal window as their stride-2-sampled originals. This stride
+bookkeeping must be mirrored in the NGT experiments when pairing
+augmented with original frames.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.85\textwidth]{flux_resolution_sweep.png}
+\caption{The same Flux-edited frame generated at 224, 512, and 1024\,px
+longest side (top row), with a zoom inset on the face-and-hand region
+(bottom row). At 224\,px the editor visibly degrades face and glasses
+detail --- detail the 224-input downstream model still depends on ---
+whereas the 512\,px output is visually indistinguishable from 1024\,px;
+512\,px was therefore selected as the smallest safe generation
+resolution.}
+\label{fig:flux_res_sweep}
+\end{figure*}
+
+For NGT we propose a different, motion-capture-driven pipeline: real signers
+are recorded in mocap suits, and the captured motion is retargeted onto two
+CharacterCreator avatars (``Digits'' and ``Palmer'') and rendered in Unreal
+Engine under three camera angles, giving six synthetic views per sentence in
+addition to the three real camera views ($K=9$ views total per sign, versus
+$K=3$ for the real-only baseline). Because this route starts from ground-truth
+3D motion rather than a 2D image edit, it can vary camera viewpoint as well
+as appearance --- a capability the 2D diffusion route does not have from a
+single input view. Fig.~\ref{fig:unreal_examples} shows one training
+sentence through this pipeline: the same mocap take as the real
+front-camera recording and as both avatar renders, together with the
+three camera viewpoints for one of the avatars.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.8\textwidth]{unreal_examples_grid.png}
+\caption{Motion-preserving Unreal Engine counterfactuals for one NGT
+training sentence (M20241210\_0257, session 251126, take 0). Top block:
+four aligned frames of the front-camera view, with indices on the common
+15\,fps timeline below the columns (the 60\,fps real recording is sampled
+at its temporally aligned frames); the top row shows the real recording of
+the mocap-suited signer, and the two rows below show the ``Palmer'' and
+``Digits'' avatars driven by the motion captured in that same take.
+Because the avatars are animated by retargeting the recorded mocap onto
+the avatar skeleton, the signing motion is identical across rows by
+construction --- unlike the Flux edits of Fig.~\ref{fig:aug_examples},
+whose motion preservation is an empirical property that must be verified. Bottom strip: the same avatar and
+frame rendered from the three camera positions, the viewpoint axis that
+this route adds and that a 2D image edit cannot reach from a single input
+view; clothing colour additionally varies across the rendered views.}
+\label{fig:unreal_examples}
+\end{figure*}
+
+\todo{Fig.~\ref{fig:unreal_examples} now covers the signer axis (real vs
+Palmer/Digits) and the synthetic camera axis; still missing from it are the
+three \emph{real} camera views and a held-out Bushuis-studio frame, which
+together would make the full K=3 vs K=9 setup and the cross-studio eval gap
+visible in one strip --- extend the figure or add a companion strip if wanted
+(sources: Data/obs\_right\_export\_cropped/ real views, Data/ Bushuis crops}
+
+\section{Evaluation protocols}
+\label{sec:eval-protocols}
+For ASL Citizen we use three evaluation modes. The first is
+\emph{dictionary retrieval}, the benchmark's own
+protocol~\cite{aslcitizen}: queries are test-split videos, the gallery
+is the train split, and glosses are ranked by their nearest gallery
+video in cosine distance, reported as DCG and R@1/R@5/R@10. Our
+implementation is a direct port of the benchmark's official reference
+code, and SignRep evaluates frozen features under the same
+protocol~\cite{wongSignRepEnhancingSelfSupervised2025}. The second is
+\emph{video-to-text retrieval} for the video--text heads: the same
+dictionary idea transplanted into the head's joint space, with one text
+prototype per gloss serving as the dictionary entry. The third is a
+\emph{linear probe} on frozen features (gloss classification with a
+linear head), the standard frozen-representation readout in
+representation learning. The probe is not part of the benchmark
+protocol, and we add it deliberately: retrieval scores the metric
+geometry of a space while the probe scores its linearly accessible
+information, and the two dissociate repeatedly in our results
+(\S\ref{sec:results-ft-probes}). It is also the gloss-side twin of the
+signer-decoding probe, so together the pair reads as what a space keeps
+of the task versus of signer identity. All modes are scored on an
+identical signer-disjoint construction across all configurations within
+any table.\todome{protocols rewrite 04.08: per-mode scoping after
+checking both papers and our eval code (a verified port of
+microsoft/ASL-citizen-code); the old A/B eval names are retired
+everywhere, they exist in no external work}
+
+For NGT we report cross-signer retrieval
+(R@1/R@5/R@10, MRR) between a held-out real signer and reference-signer
+embeddings, in both directions. 
+
+\paragraph{Paired significance testing.} When two arms are trained on the
+same data and evaluated on the same queries, we test whether they actually
+differ using McNemar's exact test~\cite{mcnemar1947note} on top-1
+correctness, a standard choice for comparing two models on a shared test
+set~\cite{dietterich1998approximate}. Since both arms answer the same
+queries, every query lands in one of four cells: both right, both wrong,
+only the baseline right, or only the treatment arm right. The first two
+cells just reflect how easy the query is and say nothing about the
+difference between the arms, so the test uses only the disagreements. If
+the two arms were equally good, each disagreement would go either way with
+probability $\tfrac{1}{2}$, so the number of disagreements won by the
+treatment arm follows a fair-coin binomial, and we compute an exact
+two-sided $p$-value from it. The test is standard; as our reporting
+convention we propose running it independently per seed and reporting
+how many of the 3 seeds reach $p<0.05$. With only 3 seeds, error bars on
+the mean gain are wide, but each seed contributes 50--100 disagreeing
+queries to the paired test, which makes small gains testable (e.g.\ the
+multiview panel of Table~\ref{tab:ngt_signer_count}).

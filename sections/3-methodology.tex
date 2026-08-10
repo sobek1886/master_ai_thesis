@@ -1,58 +1,377 @@
-\chapter{Methodology}
-\label{sec:methodology}
-% Focus on what you add to the existing method. Explain what you will do and why (and how). Do not forget to characterize your research design. There should be a sub-section on the evaluation. 
-%For DS students, this normally means using manually labelled or ground truth data. For IS students, it is not always needed to have a separate methodology section. You can also integrate the approach with the results in one section. It depends on your type of research what is best fitting.
-Write about your methodology here. Focus on your own contribution. Indicate exactly how you will assess your work in terms of evaluation.
+\chapter{Method}
+\label{chap:method}
+\todo{Add a method overview figure} This chapter presents the methodological contribution of the thesis: a
+formal framing of signer appearance as an intervenable nuisance factor
+(\S\ref{sec:method-notation}), a taxonomy of appearance counterfactuals
+together with two synthesis routes that realise them
+(\S\ref{sec:method-diffusion}), and training objectives that consume the
+counterfactuals either as additional data or as explicit positives
+(\S\ref{sec:method-objectives}). The concrete instantiation --- datasets,
+backbones, training configurations, and evaluation protocols --- is
+collected in Chapter~\ref{chap:setup}.
 
-% It is possible to use a separate section for the Experimental Setup, which then focuses on all settings used in your experiments. It also possible to address the settings in a sub-section under Methodology. 
-\section{Equations}
-        We estimate the deformable template parameters~$\theta_t$ and the deformation fields for every data point using maximum likelihood. Letting~$\mathcal{V} = \{\boldsymbol{v}_i\}$ and~$\mathcal{A} = \{a_i\}$,
-        %
-        \begin{align}
-                \hat{\theta_t}, \hat{\mathcal{V}} &= \arg \max_{\theta_t, \mathcal{V}} \log p_{\theta_t}(\mathcal{V} | \mathcal{X},  \mathcal{A}) \nonumber \\
-                &= \arg \max_{\theta_t, \mathcal{V}} \log p_{\theta_t}(\mathcal{X} | \mathcal{V}; \mathcal{A}) + \log p(\mathcal{V}),
-                \label{eq:logpost}
-        \end{align}
-        %
-        where the first term captures the likelihood of the data and deformations, and the second term controls a prior over the deformation fields.
+\section{Problem formulation}
+\label{sec:method-notation}
+% Formal notation block (2026-08-03): set/space definitions + typed maps in
+% the register of Nalmpantis §4.1-4.2 (run-in headers, one object per
+% paragraph, numbered display equations), grounded in this thesis's own task.
+This section fixes the notation used throughout the chapter: the data we
+train on, the encoder under study, the appearance-counterfactual operator
+that both synthesis routes instantiate, and the retrieval task on which
+every model is evaluated. The losses that bind these objects together are
+formalised in \S\ref{sec:method-losses} and the evaluation protocols in
+\S\ref{sec:eval-protocols}; here we define only the objects they operate
+on.
 
-        \begin{proof}
-                Awesome proof.
-        \end{proof}
+\paragraph{Videos and labels.}
+Let $\mathcal{X}$ denote the space of signing videos. A training corpus is
+a finite set of annotated clips
+\begin{equation}
+\label{eq:dataset}
+\mathcal{D} \;=\; \bigl\{(x_i,\, y_i,\, s_i)\bigr\}_{i=1}^{n}
+\;\subset\; \mathcal{X} \times \mathcal{Y} \times \mathcal{S},
+\end{equation}
+where $y_i \in \mathcal{Y}$ is the linguistic label of the video $x_i$ and
+$s_i \in \mathcal{S}$ identifies its signer; when convenient we write
+$y(x)$ and $s(x)$ for the label and signer of a clip. The label space
+$\mathcal{Y}$ differs between our two supervision regimes. On the isolated,
+gloss-labelled benchmarks each video clip shows a single sign and
+$\mathcal{Y} = \mathcal{G}$, a gloss vocabulary of $C = |\mathcal{G}|$
+classes shared across signers. The continuous corpus supplies no gloss
+vocabulary: full sentences are the unit of recording, and $\mathcal{Y}$ is
+the set of recorded sentence identities. Throughout, the signer is a
+nuisance variable: labels in $\mathcal{Y}$ are defined by what is signed,
+never by who signs it, and the retrieval tasks of this thesis ask the
+representation to match clips across $\mathcal{S}$ at fixed
+$\mathcal{Y}$-label.
 
-\section{Long equations in two columns}
-        Note that equations can fill the width pretty quickly when there are two columns.
-        Different mathemtical environments, beyond the basic \verb|\begin{equation}| may be of use. Taking as an example the binomial formula which overflows in Eq. \eqref{binom:eq}:
-        \begin{equation}
-                \label{binom:eq}
-                (1+x)^n = \underbrace{(1+x)\times...\times(1+x)}_{n \text{ times}} = \sum_{k=0}^n \binom{n}{k}x^k = \sum_{k=0}^n\frac{n!}{k!(n-k)!}x^k .
-        \end{equation}
+\paragraph{Encoder.}
+Every training setting, whatever its objective, produces a single video
+encoder
+\begin{equation}
+\label{eq:encoder}
+f_\theta : \mathcal{X} \to \mathbb{R}^{d},
+\qquad z \;=\; f_\theta(x),
+\end{equation}
+mapping a video clip to one embedding vector, where $\theta$ collects the
+trainable parameters --- a video--text head over frozen backbone features,
+the fine-tuned backbone itself, or the view-contrastive encoder; the
+instantiations, and the dimension $d$ each uses, are given in
+\S\ref{sec:setup-training}. Whether $z$ is $\ell_2$-normalised is a
+property of the objective and is stated with each loss. After training,
+$\theta$ is frozen and every analysis in this thesis --- retrieval,
+probing, feature geometry --- operates on the embeddings $z$ alone.
 
-        The \verb|\begin{multline}| environment is an easy although crude fix:
-        \begin{multline}
-                (1+x)^n = \underbrace{(1+x)\times...\times(1+x)}_{n \text{ times}} \\
-                = \sum_{k=0}^n \binom{n}{k}x^k \\
-                = \sum_{k=0}^n\frac{n!}{k!(n-k)!}x^k .
-        \end{multline}
-        \verb|\begin{align}| tends to give the most control over the final result:
-        \begin{align}
-                (1+x)^n &= \underbrace{(1+x)\times...\times(1+x)}_{n \text{ times}} \nonumber\\
-                        &= \sum_{k=0}^n \binom{n}{k}x^k \nonumber\\
-                        &= \sum_{k=0}^n\frac{n!}{k!(n-k)!}x^k .
-        \end{align}
+\paragraph{Appearance counterfactual operator.}
+The interventions of this thesis are appearance edits: maps
+\begin{equation}
+\label{eq:cf-operator}
+T_a : \mathcal{X} \to \mathcal{X}, \qquad a \in \mathcal{A},
+\end{equation}
+where $\mathcal{A}$ indexes the available edit types and $T_a(x)$ shows
+the signing of $x$ under a changed appearance. The defining intent is that
+$T_a$ moves a video clip across the nuisance factor while leaving the linguistic
+content intact,
+\begin{equation}
+\label{eq:motion-preservation}
+y\bigl(T_a(x)\bigr) \;=\; y(x) \qquad \text{for all } a \in \mathcal{A},
+\end{equation}
+while the appearance --- and, for identity-changing edits, the apparent
+signer --- differs. Whether Eq.~\eqref{eq:motion-preservation} actually
+holds is a property of the synthesis route, not an assumption we grant
+ourselves: the mocap-driven avatar renders satisfy it by construction,
+because every render is driven by the same captured motion, whereas the
+frame-wise diffusion edits satisfy it only insofar as the editor leaves the
+motion untouched, an empirical matter we return to when interpreting
+results. For the diffusion route, $\mathcal{A}$ is
+the four-type edit taxonomy $\{\text{shirt},\, \text{glasses},\,
+\text{skin tone},\, \text{signer swap}\}$; for the avatar route,
+$\mathcal{A}$ ranges over avatar--viewpoint pairs
+(\S\ref{sec:setup-generation}).
+
+\paragraph{Positive sets.}
+For a training video clip $x$ we write
+\begin{equation}
+\label{eq:cf-set}
+\mathcal{T}(x) \;=\; \{x\} \,\cup\,
+\bigl\{\, T_a(x) \;:\; a \in \mathcal{A}(x) \,\bigr\}
+\end{equation}
+for its counterfactual set, where $\mathcal{A}(x) \subseteq \mathcal{A}$
+are the edits realised for $x$ (not every edit is generated for every
+clip). The contrastive objectives of \S\ref{sec:method-losses} are built
+on positive sets over a batch: for an anchor $u$ in a batch indexed by
+$\mathcal{B}$,
+\begin{equation}
+\label{eq:positive-set}
+P(u) \;=\; \bigl\{\, p \in \mathcal{B} \setminus \{u\}
+\;:\; p \sim u \,\bigr\},
+\end{equation}
+where $\sim$ is the positive-defining equivalence of the run: membership
+of one counterfactual set $\mathcal{T}(x)$ (an original and its edits;
+counterfactual-contrastive), a shared gloss in $\mathcal{G}$ (gloss-level
+contrast across signers), or a shared recording identity (the view-contrastive setting,
+where all $K$ views of one recording --- real cameras and synthetic
+renders alike --- are positives). Everything in the batch outside $P(u)$
+acts as a negative.
+
+\paragraph{Cross-signer retrieval.}
+The task is retrieval with the frozen encoder. An evaluation protocol
+supplies a query set $\mathcal{Q}$ and a reference gallery $\mathcal{R}$,
+each element carrying a label in $\mathcal{Y}$; for a query $q$ the
+gallery is ranked by decreasing cosine similarity
+$\cos\bigl(f_\theta(q),\, f_\theta(r)\bigr)$, and retrieval at rank $k$
+succeeds if a correctly labelled reference appears among the $k$
+highest-ranked items:
+\begin{equation}
+\label{eq:recall-at-k}
+\mathrm{R}@k \;=\; \frac{1}{|\mathcal{Q}|} \sum_{q \in \mathcal{Q}}
+\mathbf{1}\Bigl[\, y(q) \in \bigl\{\, y(r) : r \in \mathcal{R}_k(q)
+\bigr\} \Bigr],
+\end{equation}
+where $\mathcal{R}_k(q) \subseteq \mathcal{R}$ are the $k$ gallery items
+most similar to $q$. The protocols of \S\ref{sec:eval-protocols}
+instantiate $\mathcal{Q}$ and $\mathcal{R}$ per corpus --- including a
+video-to-text variant in which the gallery holds text prototypes rather
+than videos --- and share one structural property: evaluation signers are
+unseen during training, and in the continuous-corpus protocol query and
+gallery are
+additionally produced by disjoint signers, making the retrieval itself
+cross-signer.
+
+\section{Synthetic appearance counterfactuals}
+\label{sec:method-diffusion}
 
 
-\section{Math styles}
-        Different font styles can be used for equations:
-        \begin{itemize}
-                \item \verb|$a b c A B C 1 2 3$|: $ a b c A B C 1 2 3 $
-                \item \verb|$\mathbf{a b c A B C 1 2 3}$|: $ \mathbf{a b c A B C 1 2 3} $
-                \item \verb|$\mathfrak{a b c A B C 1 2 3}$|: $ \mathfrak{a b c A B C 1 2 3} $
-                \item \verb|$\mathcal{ABC}$|: $ \mathcal{ABC} $
-                \item \verb|$\mathbb{ABC}$|: $ \mathbb{ABC} $
-                \item \verb|$\mathsf{ABC}$|: $ \mathsf{ABC} $
-                \item \verb|$\mathtt{ABC}$|: $ \mathtt{ABC} $
-        \end{itemize}
+\subsection{Diffusion-based appearance editing}
+We generate appearance counterfactuals for the isolated-benchmark corpus
+by editing real training videos frame-by-frame with an open image
+diffusion model; the model, compute, and the statistics of the edited
+subset are given in \S\ref{sec:setup-generation}. Rather than
+augmenting a uniform sample, targets are chosen worst-first
+at the class level: every gloss is ranked by its number of distinct training
+signers (ascending), with ties broken by a difficulty proxy --- per-class
+nearest-centroid gloss accuracy computed on the from-scratch contrastive
+baseline's test embeddings, a clustering measure that degrades precisely when
+embeddings organise by signer rather than by sign --- and entire classes are
+taken in rank order until the budget fills.
+\todome{REWRITE PROPOSAL (03.08): the opener above binds the diffusion
+route to ``the isolated-benchmark corpus'', but Setup and Results apply
+Flux to NGT too (stride-4 NGT edits in \S\ref{sec:setup-generation}; the
+single-view ladder arms E4/E6/E7/E10 are Flux-on-NGT) --- the binding is
+false and it also makes the route-vs-corpus framing in the abstract too
+clean. Proposed replacement for the first sentence: ``The first route
+edits real training videos frame-by-frame with an open image diffusion
+model; it requires nothing beyond the RGB video itself, so it applies to
+any corpus. The model, compute, and edited-subset statistics are given in
+\S\ref{sec:setup-generation}.'' Let Setup alone say which route ran
+where. Same issue in the avatar subsection below.}
+We propose a taxonomy of four independent appearance edit types
+(Fig.~\ref{fig:aug_examples}); for each
+selected source video we generate up to four edits, applied frame-by-frame:
+\emph{shirt} (a clothing swap, the lowest-risk edit --- the video backbone's own training
+augmentations already include colour jitter, so this edit's marginal value
+over standard colour augmentation is itself an open question), \emph{glasses}
+(addition/removal, with some risk of altering facial expression near the
+eyes), \emph{skin tone} (the highest-risk edit for hallucination, e.g.\
+occasional extra or malformed hand shapes), and \emph{signer swap} (a full
+identity change, carrying the highest potential benefit for a
+signer-independent task alongside the highest hallucination risk).
 
-        Text and names in equations should be dealt with the \verb|\text| command, for instance:\\
-        \verb|$\mathcal L_{\text{SuperLoss}}$|: $\mathcal L_{\text{SuperLoss}}$ and not $\mathcal L_{SuperLoss}$.
+\subsection{Motion-preserving avatar counterfactuals}
+For the continuous corpus we propose a second, motion-capture-driven
+route: the captured 3D motion of a real signer is retargeted onto
+synthetic avatars and re-rendered under multiple camera viewpoints
+(\S\ref{sec:setup-generation}). Because this route starts from
+ground-truth motion rather than a 2D image edit, the signing motion is
+preserved by construction, and the route can vary camera viewpoint as
+well as appearance --- an axis a 2D edit cannot reach from a single
+input view.
+\todome{REWRITE PROPOSAL (03.08), same corpus-binding issue as above:
+``For the continuous corpus'' ties the avatar route to NGT by
+definition. Propose opening with ``The second route is
+motion-capture-driven: ...'' (rest verbatim) and closing with ``Unlike
+the diffusion route it requires motion-capture recordings, so it applies
+only where capture is controlled.''}
+
+\section{Counterfactual-aware training objectives}
+\label{sec:method-objectives}
+We train encoders with these counterfactuals in three settings ---
+two on an isolated, gloss-labelled benchmark and one on a continuous
+corpus without a gloss vocabulary; their concrete configurations
+(datasets, backbones, dimensions) are given in
+\S\ref{sec:setup-training}. In every setting the counterfactuals enter
+the objective either as additional labelled data or as explicit
+positives matched to their source video; the loss formulations below
+cover both mechanisms.
+
+\subsection{Loss formulations}
+\label{sec:method-losses}
+Three distinct model components are trained in this thesis, and each has
+its own objective; Table~\ref{tab:objective_map} maps components to
+objectives before the formulations are given. The \emph{video--text
+head} trains only its own parameters on top of frozen backbone features
+--- the backbone receives no gradient. The \emph{backbone fine-tuning}
+runs do the opposite: they update the video backbone itself, with a
+disposable linear gloss head on top. The \emph{view-contrastive encoder}
+of the continuous corpus again trains only its own parameters over
+frozen backbone features, and has no text tower at all.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llll}
+\toprule
+\textbf{Component} & \textbf{What is trained} & \textbf{Objective} &
+\textbf{Counterfactuals enter as} \\
+\midrule
+\makecell[tl]{Video--text head\\\scriptsize (SignCLIP, both towers,\\\scriptsize on frozen Logos/I3D/pose feats)} & \makecell[tl]{head only;\\input features frozen} &
+\makecell[tl]{video--text InfoNCE,\\Eq.~\eqref{eq:nce}} &
+\makecell[tl]{extra $(v,t)$ pairs (aug-as-data), or\\pair-SupCon
+positives, Eq.~\eqref{eq:supcon}} \\
+\addlinespace
+\makecell[tl]{Backbone fine-tuning\\\scriptsize (Logos MViTv2-S)} & \makecell[tl]{the backbone itself\\($+$ linear
+gloss head)} & \makecell[tl]{master loss, Eq.~\eqref{eq:master}:\\CE $+$
+one invariance option} & \makecell[tl]{extra labelled clips and/or\\
+invariance-term positives} \\
+\addlinespace
+\makecell[tl]{View-contrastive encoder\\\scriptsize (SignCLIP video tower only,\\\scriptsize on frozen Logos feats)} & \makecell[tl]{encoder only;\\backbone frozen}
+& \makecell[tl]{SupCon over views, Eq.~\eqref{eq:supcon};\\video-only
+InfoNCE at $K{=}1$} & \makecell[tl]{synthetic views as\\additional
+positives} \\
+\bottomrule
+\end{tabular}
+\caption{Which objective trains which component. The SupCon form of
+Eq.~\eqref{eq:supcon} is shared by two components; what differs is the
+positive-defining equivalence of Eq.~\eqref{eq:positive-set} ---
+counterfactual instance for the head and backbone runs,
+recording identity for the view-contrastive encoder.}
+\label{tab:objective_map}
+\end{table*}
+
+\paragraph{Video--text head objective.}
+The video--text head is trained with the symmetric InfoNCE
+loss~\cite{oordRepresentationLearningContrastive2018}
+we take from VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021}, over frozen
+768-d backbone features; only the head's parameters receive gradients.
+For a batch of paired video and text
+embeddings $(v_i, t_i)$,
+\begin{equation}
+\label{eq:nce}
+\begin{split}
+\mathcal{L}_{\mathrm{NCE}} \;=\;
+-\frac{1}{N}\sum_{i=1}^{N}\Bigl[&
+\log \frac{\exp(v_i \cdot t_i)}{\sum_{j}\exp(v_i \cdot t_j)}\\
+&+ \log \frac{\exp(v_i \cdot t_i)}{\sum_{j}\exp(v_j \cdot t_i)}
+\Bigr],
+\end{split}
+\end{equation}
+where the text side is the gloss rendered as a caption; following
+VideoCLIP, the embeddings are not $\ell_2$-normalised and no temperature is
+applied. Synthetic counterfactuals enter in one of two ways: as additional
+$(v, t)$ pairs carrying their source video's gloss (aug-as-data), or --- in
+the pair-SupCon configurations --- by replacing the video--text loss with
+the supervised-contrastive form of Eq.~\eqref{eq:supcon} below, computed
+over video embeddings alone with an original and its edits sharing one
+instance label (counterfactual-contrastive). 
+
+\paragraph{Backbone fine-tuning objectives.}
+All fine-tuning objectives operate on the same representation: the
+encoder embedding $z = f_\theta(x)$ of \S\ref{sec:method-notation},
+instantiated as the 768-d CLS token the video backbone produces for a
+32-frame clip $x$, which is also exactly the feature later re-extracted for
+evaluation. A linear head $h$ maps $z$ to logits over the $C=|\mathcal{G}|$ glosses
+of the training vocabulary. Every run minimises a total loss of the form
+\begin{equation}
+\label{eq:master}
+\mathcal{L} \;=\; \mathcal{L}_{\mathrm{CE}}
+\;+\; \lambda_{\mathrm{cons}}\, \mathcal{L}_{\mathrm{cons}}
+\;+\; \lambda_{\mathrm{sup}}\, \mathcal{L}_{\mathrm{sup}}^{\mathrm{gloss}},
+\end{equation}
+where $\mathcal{L}_{\mathrm{cons}}$ stands for the run's
+appearance-invariance term (the cosine pull below, the CLS-level contrast
+that replaces it, or the pair of SDDA terms with their own weights),
+$\mathcal{L}_{\mathrm{sup}}^{\mathrm{gloss}}$ for the optional gloss-level
+contrastive auxiliary, and the runs differ only in which weights are
+non-zero and in what the invariance term treats as positives. The four
+paragraphs that follow define these ingredients; they belong to the
+backbone fine-tuning runs only, not to the video--text head.
+
+\paragraph{Cross-entropy (all backbone fine-tuning runs).}
+Standard softmax cross-entropy $\mathcal{L}_{\mathrm{CE}} =
+-\log p_{h(z)}(y)$ against the gloss label $y$. In paired runs the
+augmented copies are classified too, carrying their source video's label
+(augmentation-as-data), so CE is averaged over the $B$ originals and $M$
+augmentations jointly.
+
+\paragraph{Appearance-consistency pull (invariance option 1).}
+For each original $z_i$ and each of its appearance-augmented copies
+$z_i^{a} = f_\theta(T_a(x_i))$, $a \in \mathcal{A}(x_i)$, present in the batch, a
+positive-only cosine pull with no negatives:
+\begin{equation}
+\mathcal{L}_{\mathrm{cons}} \;=\;
+\frac{1}{|\mathcal{P}|}\sum_{(i,a)\in\mathcal{P}}
+\bigl(1 - \cos(z_i,\, z_i^{a})\bigr),
+\end{equation}
+weighted by $\lambda_{\mathrm{cons}}=0.5$. This directly asks the encoder
+to make $z$ invariant to the edited appearance attribute.
+
+\paragraph{CLS-token supervised contrast (invariance option 2).}
+A stronger variant that replaces the pull by adapting the SupCon
+objective~\cite{khosla2020supervised}: we keep its loss form over
+$\ell_2$-normalised tokens but redefine the positives so that an
+original and all its augmentations --- the counterfactual set
+$\mathcal{T}(x)$ --- share one \emph{instance} label (the positive set
+$P(u)$ of Eq.~\eqref{eq:positive-set}), and every other clip in the
+batch is a negative,
+\begin{equation}
+\label{eq:supcon}
+\mathcal{L}_{\mathrm{sup}} \;=\;
+\frac{1}{N}\sum_{u} \frac{-1}{|P(u)|} \sum_{p \in P(u)}
+\log \frac{\exp(z_u \cdot z_p / \tau)}
+{\sum_{v \neq u} \exp(z_u \cdot z_v / \tau)},
+\end{equation}
+with temperature $\tau = 0.07$, where $u$ and $v$ range over the $N$ clips
+in the batch (anchors with an empty positive set are excluded from the
+average). Here this term takes the pull's place in the total loss, with the
+same weight $\lambda_{\mathrm{cons}} = 0.5$. Unlike the consistency pull, this also
+repels different videos, preventing representation collapse.
+
+\paragraph{Gloss-level supervised contrast (optional auxiliary).}
+The same objective as Eq.~\eqref{eq:supcon}, but positives are defined by
+the gloss label $y$ instead of the source instance: all same-gloss clips in
+the batch are pulled together across signers. Off by default
+($\lambda_{\mathrm{sup}}=0$; the run that enables it uses
+$\lambda_{\mathrm{sup}}=1$).
+
+\paragraph{SDDA-style invariance (invariance option 3, adversarial).}
+Following Fu et al.~\cite{fuSignerDiversitydrivenData2024b}, this variant
+replaces the cosine pull with two terms: a KL-consistency loss between the
+gloss posteriors of an original and its augmented copy,
+$\mathrm{KL}\bigl(p_{h(z_i)} \,\|\, p_{h(z_i^a)}\bigr)$ (weight $1$), which
+enforces prediction-level rather than embedding-level agreement, and an
+adversarial original-vs-augmented discriminator trained on $z$ through a
+gradient-reversal layer (weight $10^{-4}$), so that the encoder is
+penalised for representations from which the discriminator can still tell
+originals from appearance-edited copies.
+
+\paragraph{View-contrastive objective.}
+Architecturally, the view-contrastive encoder is the \emph{video tower}
+of the same contrastive model used for the head experiments
+(Table~\ref{tab:objective_map}), consuming frozen backbone features
+through the identical input projection --- but trained from the standard
+language-model initialisation rather than from any text-aligned
+checkpoint, and with the text tower never called: the continuous corpus
+has no vocabulary to align against. It is trained
+with the same SupCon form as
+Eq.~\eqref{eq:supcon}, with positives defined by the sign-recording
+identity (the continuous-corpus label space $\mathcal{Y}$ of
+\S\ref{sec:method-notation}): all $K$ views of a sign (real cameras, avatar renders, or
+diffusion edits, depending on the arm) share one label, and views of
+other signs are negatives.
+At $K{=}1$ the positive set is empty and
+Eq.~\eqref{eq:supcon} yields no gradient, so the single-view baseline arm
+instead trains with a video-only InfoNCE: each clip in the batch is treated
+as its own class, and a cross-entropy is taken over the pairwise cosine
+similarities of the $\ell_2$-normalised embeddings, scaled by the same
+$\tau = 0.07$.
