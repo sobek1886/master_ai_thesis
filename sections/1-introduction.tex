@@ -145,13 +145,14 @@ counterfactual property by construction: record signing with motion
 capture, retarget the captured motion to synthetic avatars, and render the
 result in Unreal Engine. Every render then shows exactly the same signing
 motion under a freely chosen appearance --- motion preservation is a
-property of the pipeline, not an assumption. But this route cannot be
+property of the pipeline, not an assumption; we call these
+\emph{motion-locked re-renders}. But this route cannot be
 applied to an existing benchmark: benchmark videos are plain RGB with no
 motion capture attached, so the only way to use it at benchmark scale would
 be to record a new mocap corpus of comparable size.
 
-We therefore approximated it. Modern diffusion image editors can rewrite
-the appearance of an existing video frame by frame: we use Flux to edit
+We therefore approximated it. Modern generative image editors can rewrite
+the appearance of an existing video frame by frame: we edit
 real benchmark videos --- changing clothing, adding glasses, altering skin
 tone, swapping in a different signer --- while leaving the rest of each
 frame alone. This recovers the appearance-variation axis of the avatar
@@ -161,12 +162,12 @@ rewrites, so the signing motion is preserved only insofar as the editor
 leaves it untouched, not by construction as in the avatar renders.
 
 We test \todo{rewrite this, matching the reorder to focus on positive results first}
-whether the diffusion approximation actually changes anything on a real
+whether the generative approximation actually changes anything on a real
 benchmark --- ASL Citizen, large and signer-diverse, with signer-disjoint
 evaluation --- and we demonstrate the full mocap-plus-Unreal pipeline at
 the scale where its cost is feasible: a small, self-recorded Dutch Sign
 Language (NGT) corpus with few signers, evaluated across a real signer gap.
-SDDA follows the same instinct as our diffusion arm in a single setting ---
+SDDA follows the same instinct as our generative-edit arm in a single setting ---
 diffusion-generated signer variety with a consistency objective on one
 studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b} --- and we
 return to that comparison throughout. The two settings turn out to give
@@ -177,8 +178,8 @@ the thesis.
 
 This thesis asks whether appearance bias is measurable in modern sign
 language representations, and whether synthetic appearance counterfactuals
---- the diffusion approximation at benchmark scale, the full
-motion-preserving pipeline at small scale --- can reduce it. Concretely:
+--- the generative approximation at benchmark scale, the full
+motion-locked pipeline at small scale --- can reduce it. Concretely:
 
 \todome{ANSWERED 04.08 (checked both theses): keep the RQs
 model-agnostic. Ioannis's thesis (the close structural precedent: MRQ +
@@ -201,16 +202,16 @@ Contributions section, which both reference theses do.}
   --- encode signer identity beyond sign content, and to what degree?
 
 \item[RQ2 (Cross-signer intervention).] In a low-data, cross-signer setting
-  (NGT), do motion-preserving synthetic counterfactuals --- Unreal Engine
-  avatar renders driven by real motion capture, the approach we originally
+  (NGT), do motion-locked re-renders --- avatar renders
+  driven by real motion capture, the approach we originally
   set out to scale --- improve retrieval across
   a real-to-real signer gap when used as extra views under a supervised
   contrastive objective~\cite{khosla2020supervised}?
   
 \item[RQ3 (In-domain intervention).] In a high-data, signer-independent
-  setting (ASL Citizen), do diffusion-generated appearance augmentations
-  (Flux9B image edits: clothing, glasses, skin tone, signer swap) --- our
-  scalable approximation of motion-preserving synthesis --- improve
+  setting (ASL Citizen), do generative appearance edits
+  (clothing, glasses, skin tone, signer swap) --- our
+  scalable approximation of motion-locked synthesis --- improve
   retrieval, either as training data for a contrastive embedding head or as
   counterfactual supervision when fine-tuning the backbone itself?
 \todome{two review notes on the RQs (03.08): (i) RQ3 lists the
@@ -253,9 +254,9 @@ matched strength, and ...''; (iii) one long sentence --- split after
 \textbf{First, a positive in a low-diversity data setting.} 
 \todome{DRAFT START (Claude 04.08): contribution 1 body --- NGT headline numbers from the abstract, controls from the ladder section}
 On a self-recorded NGT corpus with four training signers and a single
-studio environment at train time, motion-preserving synthetic
-counterfactuals --- Unreal Engine avatar renders driven by the same
-motion capture, added as extra views under a supervised contrastive
+studio environment at train time, motion-locked re-renders --- Unreal
+Engine avatar renders driven by the same motion capture, added as extra
+views under a supervised contrastive
 objective --- more than double cross-signer retrieval
 (R@1 $0.23 \to 0.65$ test$\to$train; $0.25 \to 0.70$ train$\to$test,
 3 seeds).
@@ -268,9 +269,9 @@ is appearance and identity diversity.
 % Supported by the E2 discussion, lines 1525-1534 ("Extra viewpoints of
 % the same identities are therefore not what drives the effect;
 % appearance and identity diversity is.").
-At matched view count, content, and viewpoint, diffusion-based edits of
+At matched view count, content, and viewpoint, generative edits of
 the same videos retain roughly $65$--$80\%$ of this gain --- a
-substantial but incomplete substitute for the parametric renders.
+substantial but incomplete substitute for the motion-locked renders.
 % "65--80%" and "substantial but incomplete substitute" from lines
 % 1518-1524 (the E3-vs-E4 head-to-head).
 \todome{DRAFT END: the third sentence is the matched-$K$ Unreal-vs-Flux
@@ -280,9 +281,9 @@ saying it twice. Abstract rounds to 0.23/0.65; the tables print
 0.234/0.649 --- keep whichever precision you want consistent between
 Contributions and Abstract.}
 
-\textbf{Second, a benchmark-scale evaluation of the diffusion
+\textbf{Second, a benchmark-scale evaluation of the generative
 approximation in a high-diversity data setting.} On ASL Citizen we generate
-appearance counterfactuals with a modern open diffusion model
+appearance counterfactuals with a modern open generative image editor
 \todome{DRAFT START (Claude 04.08): contribution 2 body --- continues the existing half-sentence; states the null honestly with the small head-gain exception}
 (Flux) and evaluate them across every objective family we try ---
 augmentation-as-data, cosine consistency, supervised contrast, and

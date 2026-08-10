@@ -6,7 +6,7 @@
 
 % The class loads xcolor itself; pass the options the tables need up front.
 \PassOptionsToPackage{table,dvipsnames}{xcolor}
-\documentclass{mscaithesis}
+\documentclass[openany]{mscaithesis}  % openany: no forced blank pages between chapters
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -90,9 +90,9 @@ videos that change appearance while preserving the performed sign --- can
 remove this bias. We first diagnose the problem: signer
 identity is recoverable from every feature space we test, including
 pose-based ones. We then intervene with two synthesis pipelines:
-motion-preserving Unreal Engine avatar renders of a self-recorded Dutch
-Sign Language (NGT) corpus, and diffusion-based per-frame appearance
-edits (FLUX) of ASL Citizen videos. The outcome splits into two regimes.
+motion-locked avatar re-renders of a self-recorded Dutch Sign Language
+(NGT) corpus, and generative per-frame appearance edits of ASL Citizen
+videos. The outcome splits into two regimes.
 In the low-diversity NGT setting (4 training signers, one studio
 environment), synthetic signers more than double cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train;
 $0.25 \to 0.70$ train$\to$test, 3 seeds). On the large, signer- and
@@ -110,6 +110,8 @@ diversity is scarce --- and are largely redundant where it is not.
 
 \listoftables
 
+\include{sections/0-list-symbols}
+
 \setlength{\parskip}{5pt}
 
 \twocolumn
@@ -117,11 +119,9 @@ diversity is scarce --- and are largely redundant where it is not.
         \include{sections/1-introduction}
         \include{sections/2-related-work}
         \include{sections/3-methodology}
-        \include{sections/4-setup}
-        \include{sections/5-results}
-        \include{sections/6-discussion}
-        \include{sections/7-limitations}
-        \include{sections/8-conclusion}
+        \include{sections/4-results}
+        \include{sections/5-discussion}
+        \include{sections/6-conclusion}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bibliographies/bibentries}
@@ -129,6 +129,6 @@ diversity is scarce --- and are largely redundant where it is not.
 % Single-column appendix (template: choose one and stick to it)
 \onecolumn
 \appendix
-        \include{sections/9-appendix}
+        \include{sections/7-appendix}
 
 \end{document}
