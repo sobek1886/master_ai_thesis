@@ -7,7 +7,7 @@ synthetic appearance counterfactuals, edited copies of training videos in
 which appearance changes while the performed sign is preserved, can
 remove that bias. We pursued the question through one diagnosis and two
 interventions: motion-locked avatar re-renders of a
-self-recorded NGT775 corpus, where the counterfactual property holds by
+self-recorded NGT744 corpus, where the counterfactual property holds by
 construction, and generative per-frame appearance edits of ASL
 Citizen videos, the scalable approximation of the same idea at benchmark
 scale.
@@ -29,7 +29,7 @@ signer-separable of all, at $98.7\%$ decoding accuracy.
 % from lines 1359-1360.
 
 The two interventions returned two different answers. In the
-low-diversity NGT775 setting (four training signers, one studio
+low-diversity NGT744 setting (four training signers, one studio
 environment at train time), synthetic signers more than double
 cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train; $0.25 \to
 0.70$ train$\to$test, 3 seeds), a gain that a real-multiview control at
@@ -82,7 +82,7 @@ improving in-domain accuracy are dissociable outcomes here.
 The two regimes together give the thesis its answer. Appearance
 invariance is not a property a model has or lacks in the abstract; it is
 relative to the diversity already present in training. Where real signer
-diversity is scarce, as in our four-signer NGT775 corpus and the
+diversity is scarce, as in our four-signer NGT744 corpus and the
 few-signer studio corpora of prior positive results, synthetic
 appearance counterfactuals earn their cost, and motion-locked
 re-renders earn the most; where hundreds of pretraining signers and diverse

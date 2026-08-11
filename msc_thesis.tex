@@ -1,9 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For the use of University of Amsterdam
-% Master of AI thesis  --  ported from main-claude.tex into the new
-% mscaithesis template (structure follows template.tex)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % The class loads xcolor itself; pass the options the tables need up front.
 \PassOptionsToPackage{table,dvipsnames}{xcolor}
 \documentclass[openany]{mscaithesis}  % openany: no forced blank pages between chapters
@@ -44,7 +38,6 @@
 % option makes natbib accept it.
 \usepackage[numbers]{natbib}
 
-% ---- commands carried over from the old draft ----------------------------
 \definecolor{rowhl}{RGB}{209, 231, 255}
 \newcommand{\tbest}[1]{\cellcolor{rowhl}#1}  % table-wide best cell (per column)
 \newcommand{\pmsd}[1]{{\scriptsize$\pm$#1}}  % mean$\pm$sd in tables (seed spread)
@@ -63,16 +56,16 @@
 When Synthetic Counterfactuals Help and When They Don't}
 
 % Date on which the thesis is submitted
-\date{\red{2026/??/??}}
+\date{12/08/2026}
 
 \author{Piotr \textsc{Sobecki}}
 \studentnumber{15127206}
-\period{\red{Period in which the research was carried out}}
+\period{05/01/2026 - 12/08/2026}
 \credits{36 ECTS}
-\examiner{\red{Dr A. Person}}
+\examiner{Dr Marieke Schouwstra}
 \dailysupervisor{Casper Thuis}
-\uvasupervisor{Dr James Trujillo}   % NOTE: verify role mapping
-\addsupervisor{Angelos Nalmpantis}  % NOTE: class has no "second reader" slot
+\uvasupervisor{Dr James Trujillo}
+\addsupervisor{Angelos Nalmpantis}
 
 \begin{document}
 \maketitle
@@ -90,10 +83,10 @@ videos that change appearance while preserving the performed sign, can
 remove this bias. We first diagnose the problem: signer
 identity is recoverable from every feature space we test, including
 pose-based ones. We then intervene with two synthesis pipelines:
-motion-locked avatar re-renders of NGT775, a self-recorded Dutch Sign
+motion-locked avatar re-renders of NGT744, a self-recorded Dutch Sign
 Language (NGT) corpus, and generative per-frame appearance edits of ASL
 Citizen videos. The outcome splits into two regimes.
-In the low-diversity NGT775 setting (4 training signers, one studio
+In the low-diversity NGT744 setting (4 training signers, one studio
 environment), synthetic signers more than double cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train;
 $0.25 \to 0.70$ train$\to$test, 3 seeds). On the large, signer- and
 environment-diverse ASL Citizen benchmark, the counterfactuals leave
