@@ -384,12 +384,14 @@ $\tau = 0.07$.
 
 \section{Datasets}
 \label{sec:setup-datasets}
-\todome{REWRITE START (Claude 11.08): datasets section reordered (NGT first, per your request) and the NGT description condensed; the 364-sentence evaluation set is now attributed to the seen-signer removal only, and all synthetic-coverage phrasing is gone from this section. NOTE: the 744-sentence ladder training pool in Table~\ref{tab:ngt_setups} is now stated without its old explanation; flag if you want one.}
-\textbf{NGT} is an unreleased Dutch Sign Language corpus recorded by
-members of SignLab Amsterdam. The \emph{train} set consists of 775
-unique sentences performed by 4 signers in mocap suits (1{,}395
-front-view videos; VisLab studio, three camera angles, using the
-motion-capture setup described in \citet{NGT_motion_capture}). The
+\todome{REWRITE START (Claude 11.08): datasets section reordered (NGT first) and condensed; 364 attributed to the seen-signer removal only; corpus named NGT775 (renamed thesis-wide where it refers to the data, ~40 spots, grep NGT775); 1{,}395 now described as takes/performances from three cameras; ASL Citizen re-labelled high-diversity-regime benchmark. NOTE: the 744-sentence ladder pool in Table~\ref{tab:ngt_setups} is stated without its old coverage explanation; flag if you want one.}
+\textbf{NGT775} is an unreleased Dutch Sign Language (NGT) corpus
+recorded by members of SignLab Amsterdam, and the corpus of our
+low-diversity regime. The \emph{train} set consists of 775 unique
+sentences performed by 4 signers in mocap suits; repeated takes yield
+1{,}395 sentence performances, each recorded simultaneously from three
+camera angles (VisLab studio, using the motion-capture setup described
+in \citet{NGT_motion_capture}). The
 \emph{test} pool holds reference recordings of the same sentences by
 other signers (Bushuis studio, one camera angle), originally collected
 for the ZINinNGT learning app~\cite{ritmeester2024zininngt} and likewise
@@ -400,7 +402,7 @@ unseen during training. Evaluation on this corpus is therefore low-data,
 cross-signer, and cross-studio.
 \todome{REWRITE END}
 
-The NGT experiments use this corpus under two splits, summarised
+The NGT775 experiments use this corpus under two splits, summarised
 in Table~\ref{tab:ngt_setups}. The single-view ladder
 (Table~\ref{tab:ngt_ladder}) and the signer-count
 ablation (Table~\ref{tab:ngt_signer_count}) draw on all four
@@ -428,7 +430,7 @@ Views per item $K$ & 1--10 by arm & 1 vs.\ 7; 3 vs.\ 9 \\
 Sentences evaluated & 364 (frozen) & 364 (frozen across $S$) \\
 \bottomrule
 \end{tabular}
-\caption{The two NGT dataset splits. The single-view ladder and the
+\caption{The two NGT775 dataset splits. The single-view ladder and the
 signer-count ablation
 share one frozen 364-sentence evaluation protocol; the signer-count
 ablation additionally pins data volume at 180 sentences per condition. In
@@ -439,7 +441,8 @@ matched counterpart in the gallery.}
 \end{table}
 
 \todome{ADDITION 11.08: ASL Citizen/WLASL paragraph moved here unchanged (order swap only)}
-\textbf{ASL Citizen}~\cite{aslcitizen} is our primary benchmark: a
+\textbf{ASL Citizen}~\cite{aslcitizen} is the benchmark of our
+high-diversity regime: a
 large, signer-disjoint isolated American Sign Language dataset (train split:
 40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
 real-world conditions rather than in a single studio.
@@ -451,7 +454,7 @@ real-world conditions rather than in a single studio.
 We train three models using the synthetic counterfactuals of
 \S\ref{sec:setup-generation}: a fine-tuned Logos backbone and a
 SignCLIP-style video--text head on ASL Citizen, and a view-contrastive
-encoder on NGT. Two heads recur throughout: the SignCLIP-style
+encoder on NGT775. Two heads recur throughout: the SignCLIP-style
 video--text head described below, and a plain linear head, used both as
 the gloss classifier during backbone fine-tuning and as the probing
 instrument of the signer-decoding analyses.
@@ -500,7 +503,7 @@ structure in its feature space is trained in, not incidental.
 
 Logos is also the thesis's workhorse feature extractor: its frozen
 features, form-organised structure included, feed the video--text
-heads of the next subsection, the signer probes, and the NGT encoder.
+heads of the next subsection, the signer probes, and the NGT775 encoder.
 
 \subsection{SignCLIP-head training (ASL Citizen)}
 A video--text head is trained from scratch or fine-tuned on top of
@@ -541,10 +544,10 @@ and movement rather than camera framing) are evaluated directly in the
 signer probes of \S\ref{sec:results-diagnosis}, where the original
 SignCLIP model's embedding space is probed alongside them.
 
-\subsection{NGT view-contrastive training}
+\subsection{NGT775 view-contrastive training}
 The same SignCLIP-style
 video encoder (12 BERT layers over frozen 768-d Logos features) is
-trained \emph{without a text tower}: NGT has no gloss vocabulary, so the
+trained \emph{without a text tower}: NGT775 has no gloss vocabulary, so the
 unit of supervision is the sign-recording identity itself. Each training
 item bundles the $K$ views of one sign (the real front camera plus,
 depending on the arm, real side cameras, Unreal avatar renders, or Flux
@@ -621,15 +624,15 @@ generation quality at several output resolutions against the fixed
 smallest resolution that still preserved hand-shape and facial detail
 (720/1024\,px performed comparably; 224/384\,px visibly degraded these
 features).
-Frame rates and augmentation strides differ per corpus. NGT was recorded
+Frame rates and augmentation strides differ per corpus. NGT775 was recorded
 at 60\,fps and ASL Citizen at 30\,fps, while the Logos backbone was
 pretrained on 30\,fps video sampled at temporal stride 2. We therefore
-edit every 4th frame of NGT (stride 4) and every 2nd frame of ASL Citizen
+edit every 4th frame of NGT775 (stride 4) and every 2nd frame of ASL Citizen
 (stride 2), rather than augmenting all frames and discarding most of them
 downstream; the backbone fine-tuning then reads these already-subsampled
 augmented frames at stride 1, so that augmented clips span the same
 temporal window as their stride-2-sampled originals. This stride
-bookkeeping must be mirrored in the NGT experiments when pairing
+bookkeeping must be mirrored in the NGT775 experiments when pairing
 augmented with original frames.
 \begin{figure*}[t]
 \centering
@@ -644,7 +647,7 @@ resolution.}
 \label{fig:flux_res_sweep}
 \end{figure*}
 
-For NGT we propose a different, motion-capture-driven pipeline: real signers
+For NGT775 we propose a different, motion-capture-driven pipeline: real signers
 are recorded in mocap suits, and the captured motion is retargeted onto two
 CharacterCreator avatars (``Digits'' and ``Palmer'') and rendered in
 Unreal Engine~\cite{UnrealEngine57}\todome{ADDITION 11.08: engine doc-cite (candidates Tier 3 \#11); the MetaHuman doc entry stays uncited since this pipeline uses CharacterCreator} under three camera angles, giving six synthetic views per sentence in
@@ -659,7 +662,7 @@ three camera viewpoints for one of the avatars.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=.8\textwidth]{unreal_examples_grid.png}
-\caption{Motion-preserving Unreal Engine counterfactuals for one NGT
+\caption{Motion-preserving Unreal Engine counterfactuals for one NGT775
 training sentence (M20241210\_0257, session 251126, take 0). Top block:
 four aligned frames of the front-camera view, with indices on the common
 15\,fps timeline below the columns (the 60\,fps real recording is sampled
@@ -711,7 +714,7 @@ checking both papers and our eval code (a verified port of
 microsoft/ASL-citizen-code); the old A/B eval names are retired
 everywhere, they exist in no external work}
 
-For NGT we report cross-signer retrieval
+For NGT775 we report cross-signer retrieval
 (R@1/R@5/R@10, MRR) between a held-out real signer and reference-signer
 embeddings, in both directions. 
 

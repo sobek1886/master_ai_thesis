@@ -11,7 +11,7 @@ documented and released for bias-mitigation
 research~\cite{atwellStudyingMitigatingBiases2024}, appearance
 interventions bought
 little: +1.1 R@1 on a frozen-feature head, nothing at the backbone. In the
-low-data NGT setting, where the model must bridge a real signer gap from a
+low-data NGT775 setting, where the model must bridge a real signer gap from a
 handful of recordings, motion-preserving synthetic counterfactuals produced
 a clear gain. The simplest reading is that appearance invariance is not a
 property a model has or lacks in the abstract; it is relative to the
@@ -21,7 +21,7 @@ isolated-sign corpora (Logos, AUTSL, and WLASL); the Logos dataset alone
 contributes roughly 200{,}000 videos from 305 signers, and the other two corpora add 36 and 119 further signers on top, respectively. A
 backbone with that exposure has already
 consumed the invariance that our in-domain augmentations could have
-provided; the NGT model, seeing four signers, had not.
+provided; the NGT775 model, seeing four signers, had not.
 \todome{ADDITION START (Claude 11.08): sibling pretrains, candidates \#6 (Novopoltsev et al.\ skipped: metadata unverifiable tonight); makes the regime claim paradigm-level rather than Logos-specific}
 Nor is Logos unusual in this respect: large-scale sign pretraining is an
 active line, e.g.\ Uni-Sign's 1{,}985-hour CSL-News
@@ -45,8 +45,8 @@ makes sense once the pretraining recipe is considered: Logos is trained
 jointly with WLASL, and WLASL and ASL Citizen share a large fraction of
 their vocabulary: both are American Sign Language isolated-sign corpora
 drawn from an overlapping sign inventory, so the backbone has effectively
-already seen much of what ASL Citizen asks of it. The shift to NGT removes
-that overlap on three independent axes at once: NGT is a different sign
+already seen much of what ASL Citizen asks of it. The shift to NGT775 removes
+that overlap on three independent axes at once: NGT775 is in a different sign
 language entirely (Dutch Sign Language rather than American), its
 recordings come from a different capture setup (signers in motion-capture
 suits in a studio, rather than webcam video), and its unit of analysis is
@@ -55,13 +55,13 @@ clips both ASL Citizen and WLASL provide. Any one of these differences
 would weaken transfer; together they are a plausible reason why the same
 pretrained backbone that carries over to ASL Citizen with no
 target-corpus training needs
-the full synthetic-appearance intervention to bridge the NGT signer gap.
+the full synthetic-appearance intervention to bridge the NGT775 signer gap.
 
 This reading also explains why our ASL Citizen null differs from SDDA's positive
 result~\cite{fuSignerDiversitydrivenData2024b} on Phoenix2014T: their
 diffusion-augmented contrastive setup operates on a studio-recorded corpus
 with far less signer variety than ASL Citizen (PHOENIX-2014T contains nine signers in
-total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT
+total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT775
 % Nine signers verified 2026-07-12 in three independent sources: Camgoz et
 % al. 2018 §4 (primary; no bib entry yet — optional to add), the SDDA paper
 % itself ("includes data from only nine different signers"), and the Isharah
@@ -97,13 +97,13 @@ signers supply the training data (their Appendix~B, Table~7).
 % = five per split, with 7163/6639/6980/6880 samples, dev 411, test
 % 683/1207/866/966. Split totals equal 8257 = the full corpus.
 What separates their setting from ours is the diversity available during training, and five real
-signers places SDDA far closer to our NGT regime than to ASL
+signers places SDDA far closer to our NGT775 regime than to ASL
 Citizen.
 
 Recording conditions are held fixed (one studio, one camera
 setup, one weather-forecast register), so the shift their augmentation has
 to bridge is signer appearance and signing style alone, narrower than the
-corpus and viewpoint changes our NGT evaluation layers on top of it. How
+corpus and viewpoint changes our NGT775 evaluation layers on top of it. How
 much the held-out-signer choice matters on this corpus is documented
 independently: under a full signer-disjoint re-evaluation of
 PHOENIX-2014T, translation scores roughly halve and vary by a factor of
@@ -205,7 +205,7 @@ further to
 The same synthetic videos therefore help or hurt depending purely on
 the objective through which they enter (as data, a small gain; as
 forced positives, a large loss), mirroring the high-$K$ degradation
-in the NGT ladder (\S\ref{sec:future-work} discusses the candidate
+in the NGT775 ladder (\S\ref{sec:future-work} discusses the candidate
 discriminative fix). Our overall answer is accordingly narrow: a
 SignCLIP-style text-aligned head on frozen features is a cheap,
 slightly-better-than-neutral addition in this regime, it is the only
@@ -354,14 +354,14 @@ first and last sentences.}
 \section{Limitations}
 \label{sec:limitations}
 
-\textbf{Untrimmed NGT recordings.} The NGT training videos were not
+\textbf{Untrimmed NGT775 recordings.} The NGT775 training videos were not
 trimmed: each begins with a lengthy idle segment in which the signer
 stands watching the reference video before starting to sign, and ends
 with a reach toward the foot pedal used to stop the recording. Both add
 frames unrelated to signing (idle standing and extraneous motion),
 and because the idle portion differs in length per signer, no trivial
 automated trim existed; we judged manual cleaning not worth thesis time.
-The reported NGT numbers therefore include this noise floor.
+The reported NGT775 numbers therefore include this noise floor.
 \textbf{Frame-independent generative editing introduces flicker.} Our
 editing pipeline (\S\ref{sec:setup-generation}\todome{ref re-pointed
 03.08: pipeline instance detail moved to Setup; was sec:method-diffusion}) edits each frame of a
@@ -404,7 +404,7 @@ complexity.\todome{sentence added 04.08 from your todo}
 \label{sec:future-work}
 \todo{future work is too long, decide what is actually important. Make things less verbose}
 \textbf{Parametric avatars in place of per-avatar mocap retargeting.} The
-natural next step for the NGT pipeline is to replace hand-built
+natural next step for the NGT775 pipeline is to replace hand-built
 CharacterCreator avatars with parametric SMPL-X
 bodies~\cite{pavlakosExpressiveBodyCapture2019a}: the same Unreal rendering
 strengths, but with appearance and body shape as sampled parameters rather
@@ -421,7 +421,7 @@ capture, as our pipeline does.
 of that todo (``make sure it is also addressed in the discussion'') is
 still open --- the natural spot is the identity-diversity attribution in
 \S\ref{sec:results-crossdomain}/the regime discussion, which currently
-credits the NGT gain to identity diversity without acknowledging that
+credits the NGT775 gain to identity diversity without acknowledging that
 the avatars retain the source signer's motion signature} Even
 when signer identity is changed by re-rendering with a synthetic avatar,
 the avatar does not fully erase who provided the underlying motion
@@ -430,7 +430,7 @@ signing speed are all retargeted along with the sign itself, and all four
 remain visibly present in the render. This is not only a probe result
 (\S\ref{sec:results-diagnosis}) but a plain visual one: as someone with no
 knowledge of sign language, when looking at individual frames of our
-synthetic-signer renders I can still tell which of the real NGT signers
+synthetic-signer renders I can still tell which of the real NGT775 signers
 supplied the motion capture for a given avatar. The synthetic-signer
 intervention changes surface appearance (body model, clothing, skin
 tone) without fully removing the motion-level signature of the source
@@ -442,7 +442,7 @@ style the harder follow-up.
 
 \textbf{Scaling laws for synthetic signers.} The synthetic-signer
 dose-response (0/1/2 avatars, and beyond with new renders) remains the
-most valuable follow-up on the synthetic axis: does the NGT gain grow,
+most valuable follow-up on the synthetic axis: does the NGT775 gain grow,
 saturate, or invert as synthetic appearance diversity increases?
 
 \textbf{Augmenting the full ASL Citizen training set, not just a targeted
@@ -462,7 +462,7 @@ re-pointed 03.08: the compute-budget rationale moved to Setup; was
 sec:method-diffusion}) would need to be
 relaxed to test this directly.
 
-\textbf{End-to-end training for the NGT encoder.} All NGT results come
+\textbf{End-to-end training for the NGT775 encoder.} All NGT775 results come
 from an encoder trained on pre-extracted, frozen Logos clip features
 (\S\ref{sec:results-crossdomain}). An end-to-end variant that prepends
 the MViTv2-S backbone itself (a frozen-backbone control and a fully
@@ -473,7 +473,7 @@ visual backbone, giving the low-data regime its own counterpart to the
 in-domain contrast between frozen-feature heads and backbone
 fine-tuning (\S\ref{sec:discussion-regimes}).
 
-\textbf{A discriminative term for the high-$K$ arms.} \todo{can we just run it now since we have more compute?} In the NGT
+\textbf{A discriminative term for the high-$K$ arms.} \todo{can we just run it now since we have more compute?} In the NGT775
 ladder, retrieval falls as more counterfactual views are packed into
 each training item ($K{\geq}5$ arms below their $K{=}3$ counterparts),
 and the pair-SupCon head points the same way on ASL Citizen ($0.567$ at
@@ -483,7 +483,7 @@ drop the removed K=5 retrieval number; original cited K=3-to-K=5
 0.567-to-0.414} Our reading is that pure
 SupCon at high $K$ spends its capacity making views of the same item
 indistinguishable, at the cost of keeping different items apart. A
-natural test is to add a discriminative term to the NGT training setup
+natural test is to add a discriminative term to the NGT775 training setup
 (a 12-layer encoder trained with SupCon on frozen Logos clip features;
 \S\ref{sec:results-crossdomain}): cross-entropy on sentence
 (or gloss) identity plus $\lambda$ times the SupCon term, sweeping

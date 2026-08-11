@@ -63,16 +63,17 @@
 When Synthetic Counterfactuals Help and When They Don't}
 
 % Date on which the thesis is submitted
-\date{12/08/2026}
+\date{\red{2026/??/??}}
 
 \author{Piotr \textsc{Sobecki}}
 \studentnumber{15127206}
-\period{05/01/2026 - 12/08/2026}
+\period{\red{Period in which the research was carried out}}
 \credits{36 ECTS}
-\examiner{Dr Marieke Schouwstra}
+\examiner{\red{Dr A. Person}}
 \dailysupervisor{Casper Thuis}
-\uvasupervisor{Dr James Trujillo}
-\addsupervisor{Angelos Nalmpantis}
+\uvasupervisor{Dr James Trujillo}   % NOTE: verify role mapping
+\addsupervisor{Angelos Nalmpantis}  % NOTE: class has no "second reader" slot
+
 \begin{document}
 \maketitle
 
@@ -89,10 +90,10 @@ videos that change appearance while preserving the performed sign, can
 remove this bias. We first diagnose the problem: signer
 identity is recoverable from every feature space we test, including
 pose-based ones. We then intervene with two synthesis pipelines:
-motion-locked avatar re-renders of a self-recorded Dutch Sign Language
-(NGT) corpus, and generative per-frame appearance edits of ASL Citizen
-videos. The outcome splits into two regimes.
-In the low-diversity NGT setting (4 training signers, one studio
+motion-locked avatar re-renders of NGT775, a self-recorded Dutch Sign
+Language (NGT) corpus, and generative per-frame appearance edits of ASL
+Citizen videos. The outcome splits into two regimes.
+In the low-diversity NGT775 setting (4 training signers, one studio
 environment), synthetic signers more than double cross-signer retrieval (R@1 $0.23 \to 0.65$ test$\to$train;
 $0.25 \to 0.70$ train$\to$test, 3 seeds). On the large, signer- and
 environment-diverse ASL Citizen benchmark, the counterfactuals leave

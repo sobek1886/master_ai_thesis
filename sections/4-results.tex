@@ -5,7 +5,7 @@ We present results in three stages, following the two-regime story
 motivated in Chapter~\ref{chap:method}: first, diagnostic evidence that
 appearance/signer identity is measurable in every feature space we test
 (\S\ref{sec:results-diagnosis}); second, a low-diversity setting
-intervention on NGT where synthetic appearance augmentation produces a
+intervention on NGT775 where synthetic appearance augmentation produces a
 clear, sizeable gain (\S\ref{sec:results-crossdomain}); third, a high-diversity setting
 intervention on ASL Citizen where the same idea does not lead to improvements(\S\ref{sec:results-indomain}).
 \todome{stale pointer (03.08): ``the two-regime story motivated in
@@ -155,7 +155,7 @@ early instance of a pattern that recurs throughout the thesis: coarse
 distance statistics can stay static while the accessible signer
 information moves.
 
-\section{Cross-domain intervention: NGT}
+\section{Cross-domain intervention: NGT775}
 \label{sec:results-crossdomain}
 
 \subsection{Isolating the appearance axis: single-view arms}
@@ -220,7 +220,7 @@ E9 Unreal-only ($K{=}3$)     & 0.252\pmsd{0.017} & 0.484\pmsd{0.059} & 0.596\pms
 E10 Flux-only ($K{=}3$)      & 0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
 \bottomrule
 \end{tabular}
-\caption{Single-view NGT ladder: cross-signer retrieval (0--1 scale) with viewpoint
+\caption{Single-view NGT775 ladder: cross-signer retrieval (0--1 scale) with viewpoint
 held to the front camera, mean$\pm$sd over 3 seeds. Arm composition ($K$ =
 views per training item; every arm except E9/E10 includes the real
 front-view clip): E1 $=$ real front view only (video-only InfoNCE; all
@@ -255,7 +255,7 @@ by $|\Delta$ clip count$|$.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{ngt_ladder_r1_vs_k.png}
-\caption{Single-view NGT ladder: cross-signer R@1 against the number of
+\caption{Single-view NGT775 ladder: cross-signer R@1 against the number of
 views per training item $K$, by augmentation family (3-seed mean$\pm$sd;
 front-view evaluation as in Table~\ref{tab:ngt_ladder}, same 0--1 scale).
 Lines trace the
@@ -353,7 +353,7 @@ real-signer-count ablation}
 The two-regime reading predicts that the Unreal gain is a property of
 \emph{low real-signer diversity}: as genuine signer variety enters
 training, synthetic appearance variety should have progressively less to
-add. The NGT corpus permits a direct test: its training pool comprises
+add. The NGT775 corpus permits a direct test: its training pool comprises
 four recording sessions, each a distinct real signer. We propose a
 fixed-budget ablation design: we train at
 $S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
@@ -1064,7 +1064,7 @@ real-versus-synthetic separability is low, the counterfactuals are faithful and 
 saturation: the high-signer ASL Citizen backbone had already learned the
 invariance the edits supply, consistent with the marginal
 Table~\ref{tab:asl_citizen_retrieval} gain and with the opposite,
-low-signer NGT result (\S\ref{sec:results-crossdomain}). If instead the
+low-signer NGT775 result (\S\ref{sec:results-crossdomain}). If instead the
 displacement is highly separable, the edits
 carry a sim-to-real gap that offsets their benefit in feature space. This is
 the mechanistic evidence behind the reading in
