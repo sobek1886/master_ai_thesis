@@ -2,11 +2,15 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{mscaithesis}
 
-\LoadClass[10pt]{book}
-
 \newif\if@license{\@licensefalse}
 \DeclareOption{license}{\@licensetrue}
+% Forward any option we don't recognise (openany/openright, oneside/twoside, ...)
+% to the underlying book class instead of silently dropping it. This must happen
+% before \LoadClass, since options are only actually applied at load time.
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions\relax
+
+\LoadClass[10pt]{book}
 
 \RequirePackage[paper=a4paper,
                 top=2cm,
