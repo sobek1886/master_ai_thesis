@@ -5,11 +5,10 @@ Sign language recognition (SLR) faces two distinct problems that this
 thesis addresses together. The first is \emph{data scarcity}: compared to
 speech or text, annotated sign language corpora are small, expensive to
 collect, and dominated by a handful of recording setups and
-signers~\cite{DataProblem, desistoChallengesSignLanguage2022}\todome{ADDITION 11.08: De Sisto et al.\ added as the established anchor for the small-corpora claim (zotero candidates \#4)}; synthetic data generation can, in
-principle, fill this gap. The second is \emph{appearance bias}: independently of how
-much data it sees, a video model can score well on a benchmark by
+signers~\cite{DataProblem, desistoChallengesSignLanguage2022}; synthetic data generation can, in
+principle, fill this gap. The second is \emph{appearance bias}: a video model can score well on a benchmark by
 exploiting the static, incidental visual properties of whoever happened to
-be recorded (clothing, skin tone, body shape, background) rather than
+be recorded (clothing, skin tone, body shape, background) rather than focusing exclusively on
 the motion that carries the linguistic content. In the action-recognition
 literature this second phenomenon is well
 documented~\cite{leiRevealingSingleFrame2023, ilicAppearanceFreeAction2022,
@@ -29,14 +28,6 @@ al.~\cite{byvshevAre3DConvolutional2022a} established for 3D
 convolutional networks in general action recognition
 (\S\ref{sec:related-work-modality} reviews this evidence), has, to our
 knowledge, not been established.
-% Reworded 2026-07-12 per Piotr's todo: no "transformers dominate SLR" claim
-% (pose-based approaches are the more prevalent response to signer variation,
-% as the next paragraphs now say explicitly with the SignEval evidence).
-% Gap re-verified 2026-07-11 by fresh scholarly search (OpenAlex citation walk
-% of Byvshev et al.: 9 citing papers, none transformer-specific; keyword
-% searches likewise empty). Kowal et al. TPAMI 2025 (StaticDropout) is the
-% nearest adjacent work and is now cited; our own MViTv2 backbone results
-% remain the closest transformer-specific evidence.
 
 For sign language this is not an abstract concern. Signing is performed by
 people, and the appearance dimensions a model may latch onto (skin tone,
