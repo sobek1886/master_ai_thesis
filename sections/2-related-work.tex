@@ -113,29 +113,28 @@ preserved, a much stronger constraint than background replacement.
 % Synthetic data section.
 
 \section{Benchmarks}
-As surveyed in~\cite{kalinowskiMachineLearningSign2026}, a large share of
-continuous sign language recognition research has been conducted on two
+As surveyed by \citet{kalinowskiMachineLearningSign2026}, a large share of
+sign language recognition research has been conducted on two
 studio-recorded benchmarks, Phoenix2014~\cite{kollerContinuousSignLanguage2015}
-(extended to Phoenix2014T by the neural-translation work that established
-the SLT task~\cite{camgozNeuralSignLanguage2018})\todome{ADDITION 11.08: Camgoz et al.\ completes the benchmark lineage (candidates \#10)}
-and CSL-Daily~\cite{CSL-daily}. Jang et al.~\cite{jangSigningOutsideStudio2022}
+(extended to Phoenix2014T for the SLT task~\cite{camgozNeuralSignLanguage2018})\
+and CSL-Daily~\cite{CSL-daily}. \citet{jangSigningOutsideStudio2022}
 note the limitations of studio-based benchmarks, in particular their lack of
-variance in setting and background; Zhu et al.\ similarly identify the
+variance in setting and background; ~\citet{CE-CNSL} similarly identify the
 studio-setting nature of existing benchmarks as a bottleneck and release
-CE-CNSL to address it~\cite{CE-CNSL}. More recently, Isharah addresses the
+CE-CNSL to address it. More recently, \citet{alyamiIsharahLargeScaleMultiScene2026b} address the
 lack of diversity and the challenge of signer-independent
-evaluation~\cite{alyamiIsharahLargeScaleMultiScene2026b}, and is used in the
+evaluation, and their Isharah dataset is used in the
 CSLR track of the SignEval 2025
 Challenge~\cite{luqmanSignEval2025Challenge2025a}.
 
 ASL Citizen~\cite{aslcitizen} sits in the same lineage of ``harder'' benchmarks:
 it is signer-disjoint by construction and, unlike a single-studio corpus,
-aggregates recordings under varied real-world conditions. Atwell et al.\
+aggregates recordings under varied real-world conditions. \todo{check if this reference adds anything} ~\citet{atwellStudyingMitigatingBiases2024}
 document this directly, using ASL Citizen's participant demographic and
 lexical metadata to study and mitigate demographic disparities in models
 trained on it, and releasing that per-participant demographic information
-for future bias work~\cite{atwellStudyingMitigatingBiases2024}.
-
+for future bias work.
+\todo{this section reads kinda weirdly. It's original premise was showing that the RGB-based models performed better on those datasets with less variety, but then more diverse datasets came and with them a shift towards pose representation}
 We adopt ASL Citizen
 as a high-resource benchmark that captures the appearance-bias question
 this thesis targets: diverse signers, varied recording conditions, and
@@ -159,18 +158,16 @@ of whether the improved robustness of pose-based approaches stems solely
 from appearance invariance, or whether RGB-based models simply fail to
 capture motion cues in the presence of strong appearance signals.
 
-Byvshev et
-al.\ show that the appearance bias observed in 3D convolutional video models
+\citet{byvshevAre3DConvolutional2022a} show that the appearance bias observed in 3D convolutional video models
 is not an inherent architectural limitation but a consequence of the
-statistical structure of training data~\cite{byvshevAre3DConvolutional2022a}:
+statistical structure of training data:
 when motion and appearance are artificially decoupled, 3D CNNs learn
-temporally sensitive representations. Byvshev et al.\ are not alone in
-locating the bias in data rather than architecture: Kowal
-et al.\ find most spatiotemporal models dominated by static information and
+temporally sensitive representations. They are not alone in
+locating the bias in data rather than architecture: ~\citet{kowalQuantifyingLearningStatic2025} find most spatiotemporal models dominated by static information and
 reduce that dominance with a training-time
-intervention~\cite{kowalQuantifyingLearningStatic2025}; Li et al.\ show
+intervention; \citet{liMitigatingEvaluatingStatic2023a} show
 that a static-bias-mitigating augmentation works on a video Swin
-transformer~\cite{liMitigatingEvaluatingStatic2023a}; and a family of
+transformer~; and a family of
 methods spanning motion-coherent augmentation~\cite{zhangDontJudgeLook2024},
 tubelet-contrastive pre-training~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
 adversarial debiasing~\cite{fioresiALBARAdversarialLearning2025,
@@ -179,7 +176,7 @@ interventions~\cite{rastegarBackgroundNoMore2024} shows that the reliance on
 appearance can be reduced by reshaping the training signal
 (\S\ref{sec:related-appearance-bias} discusses these in detail).
 
-SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
+\todo{introducing signrep here really breaks the flow} SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
 modality choice is a false dichotomy. Its downstream model consumes RGB
 only, but its masked pretraining predicts pose-derived targets from the
 RGB input: normalised keypoints, hand and body joint angles,
