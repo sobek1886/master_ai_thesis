@@ -389,20 +389,14 @@ large, signer-disjoint isolated American Sign Language dataset (train split:
 40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
 real-world conditions rather than in a single studio.
 \textbf{WLASL} is used only for the signer-identity diagnostic probes
-(\S\ref{sec:results-diagnosis}). \textbf{NGT} is a unreleased Dutch Sign
-Language corpus
-\todome{ADDITION START (Claude 11.08): data provenance, candidates \#9; resolves part of the how-to-reference todo below. CONFIRM with Gomer/Floris/Jari which citation is primary and whether this describes the provenance correctly}
-recorded with the capture infrastructure of the same group's 3D-LEX
-mocap lexicons~\cite{ranum3DLEX2024} and NGT200 multi-view
-dataset~\cite{ranumNGT200Dataset2024}; the corpus used here is a
-distinct recording and should not be conflated with NGT200 itself.
-\todome{ADDITION END}
+(\S\ref{sec:results-diagnosis}). \textbf{NGT} is an unreleased Dutch Sign
+Language corpus.
 It consists of real signers performing
 a fixed set of sentences in mocap suits (VisLab studio, using the motion capture setup described in \citet{NGT_motion_capture}, three camera
 angles), the \emph{train} set, evaluated against a held-out \emph{test}
 set of unseen signers (recorded at the Bushuis studio, one camera angle),
 giving a genuine low-data, cross-signer,
-cross-studio evaluation setting. The train set comprises 775 unique
+cross-studio evaluation setting. The Bushuis test recordings were originally collected for the ZINinNGT learning app \cite{ritmeester2024zininngt}, but have not been released as a standalone corpus. The train set comprises 775 unique
 sentences performed by 4 signers (1{,}395 front-view videos). In the raw
 corpus, every training sentence has a matching reference recording in
 the test pool; we removed from the evaluation side all recordings by the
