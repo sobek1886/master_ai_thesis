@@ -5,7 +5,7 @@ Sign language recognition (SLR) faces two distinct problems that this
 thesis addresses together. The first is \emph{data scarcity}: compared to
 speech or text, annotated sign language corpora are small, expensive to
 collect, and dominated by a handful of recording setups and
-signers~\cite{DataProblem}; synthetic data generation can, in
+signers~\cite{DataProblem, desistoChallengesSignLanguage2022}\todome{ADDITION 11.08: De Sisto et al.\ added as the established anchor for the small-corpora claim (zotero candidates \#4)}; synthetic data generation can, in
 principle, fill this gap. The second is \emph{appearance bias}: independently of how
 much data it sees, a video model can score well on a benchmark by
 exploiting the static, incidental visual properties of whoever happened to
@@ -41,7 +41,8 @@ knowledge, not been established.
 For sign language this is not an abstract concern. Signing is performed by
 people, and the appearance dimensions a model may latch onto (skin tone,
 gender, clothing, recording environment) correlate directly
-with demographic groups. A sign language recognition system that implicitly
+with demographic groups~\cite{heldrethWhichSkinTone2024,
+schumannConsensusSubjectivitySkin2023}\todome{ADDITION 11.08: Monk-Skin-Tone-lineage fairness anchors for this previously uncited claim (candidates \#7)}. A sign language recognition system that implicitly
 keys on appearance will degrade unpredictably for signers who look unlike its
 training population. Signer variation itself is a long-standing focus of
 SLR research: signer-independent evaluation is an established protocol, and
@@ -71,6 +72,11 @@ extracted from the underlying (RGB-recorded) Isharah videos, citing signer
 overfitting and privacy~\cite{luqmanSignEval2025Challenge2025a,
 alyamiIsharahLargeScaleMultiScene2026b}: for that task, RGB-based
 approaches were excluded from the outset rather than tried and outperformed.
+\todome{ADDITION START (Claude 11.08): privacy-pivot anchor, candidates Tier 3 \#3}
+Privacy concerns have likewise motivated face-blurred self-supervised
+pretraining for sign language~\cite{rustPrivacyAwareSignLanguage2024a},
+a milder response than discarding the RGB signal altogether.
+\todome{ADDITION END}
 % Verified 2026-07-12 against the challenge report + Isharah paper (Zotero):
 % Track 01 Task 01 (signer-independent CSLR on Isharah); all listed systems
 % pose/keypoint-input; organisers extracted MediaPipe Holistic pose from the

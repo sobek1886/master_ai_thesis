@@ -176,6 +176,12 @@ eyes), \emph{skin tone} (the highest-risk edit for hallucination, e.g.\
 occasional extra or malformed hand shapes), and \emph{signer swap} (a full
 identity change, carrying the highest potential benefit for a
 signer-independent task alongside the highest hallucination risk).
+\todome{ADDITION START (Claude 11.08): methodological anchor for the skin-tone edit, candidates \#7; VERIFY this matches the pipeline's skin\_mst bins before keeping}
+The skin-tone edit follows the motivation of the Monk Skin Tone scale
+for inclusive coverage of apparent skin
+tones~\cite{heldrethWhichSkinTone2024,
+schumannConsensusSubjectivitySkin2023}.
+\todome{ADDITION END}
 
 \subsection{Motion-locked re-renders}
 For the continuous corpus we propose a second, motion-capture-driven
@@ -384,7 +390,14 @@ large, signer-disjoint isolated American Sign Language dataset (train split:
 real-world conditions rather than in a single studio.
 \textbf{WLASL} is used only for the signer-identity diagnostic probes
 (\S\ref{sec:results-diagnosis}). \textbf{NGT} is a unreleased Dutch Sign
-Language corpus: real signers performing
+Language corpus
+\todome{ADDITION START (Claude 11.08): data provenance, candidates \#9; resolves part of the how-to-reference todo below. CONFIRM with Gomer/Floris/Jari which citation is primary and whether this describes the provenance correctly}
+recorded with the capture infrastructure of the same group's 3D-LEX
+mocap lexicons~\cite{ranum3DLEX2024} and NGT200 multi-view
+dataset~\cite{ranumNGT200Dataset2024}; the corpus used here is a
+distinct recording and should not be conflated with NGT200 itself.
+\todome{ADDITION END}
+It consists of real signers performing
 a fixed set of sentences in mocap suits (VisLab studio, three camera
 angles), the \emph{train} set, evaluated against a held-out \emph{test}
 set of unseen signers (recorded at the Bushuis studio, one camera angle),
@@ -506,7 +519,8 @@ heads of the next subsection, the signer probes, and the NGT encoder.
 A video--text head is trained from scratch or fine-tuned on top of
 frozen features. The head is the SignCLIP dual-encoder
 architecture~\cite{jiangSignCLIPConnectingText2024}, built on
-VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021} (12-layer BERT
+VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021}, itself the
+video descendant of CLIP~\cite{radfordLearningTransferableVisual2021}\todome{ADDITION 11.08: CLIP was discussed via SignCLIP but never cited (candidates Tier 3 \#2); CLIP-to-sign adaptation is an active line~\cite{alyamiCLIPSLAParameterEfficientCLIP2025}} (12-layer BERT
 video encoder, 12-layer BERT text encoder, video--text InfoNCE),
 adapted to take video features other than its original MediaPipe pose
 input by swapping the first linear layer of its video-token projection
@@ -551,7 +565,12 @@ appearance edits), and a supervised contrastive loss pulls all $K$
 views of a sign together while pushing other signs apart (video-only
 InfoNCE at $K{=}1$, where no positive pairs exist). The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
-(\S\ref{sec:eval-protocols}); the ladder trains on 744
+(\S\ref{sec:eval-protocols});
+\todome{ADDITION START (Claude 11.08): multi-view contrastive precedent, candidates Tier 3 \#7}
+treating simultaneous views of one performance as contrastive positives
+follows multi-view contrastive action
+recognition~\cite{shahMultiViewActionRecognition2023};
+\todome{ADDITION END} the ladder trains on 744
 sentence-recordings and the signer-count ablation on 180 per condition,
 $K$ views each. Loss details are given in \S\ref{sec:method-losses}.
 
@@ -640,8 +659,8 @@ resolution.}
 
 For NGT we propose a different, motion-capture-driven pipeline: real signers
 are recorded in mocap suits, and the captured motion is retargeted onto two
-CharacterCreator avatars (``Digits'' and ``Palmer'') and rendered in Unreal
-Engine under three camera angles, giving six synthetic views per sentence in
+CharacterCreator avatars (``Digits'' and ``Palmer'') and rendered in
+Unreal Engine~\cite{UnrealEngine57}\todome{ADDITION 11.08: engine doc-cite (candidates Tier 3 \#11); the MetaHuman doc entry stays uncited since this pipeline uses CharacterCreator} under three camera angles, giving six synthetic views per sentence in
 addition to the three real camera views ($K=9$ views total per sign, versus
 $K=3$ for the real-only baseline). Because this route starts from ground-truth
 3D motion rather than a 2D image edit, it can vary camera viewpoint as well

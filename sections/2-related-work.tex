@@ -89,7 +89,19 @@ single studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}
 \emph{motion-locked} re-renders (mocap-driven avatar renders)
 alongside generative edits, and in asking what the intervention does to
 the learned embedding space, across two data regimes, rather than only to
-task accuracy. Nor do the action-recognition interventions above transfer
+task accuracy.
+\todome{ADDITION START (Claude 11.08): nearest-neighbour precedents, candidates \#2--\#3; pre-empts the ``is this not just anonymization?'' question}
+Appearance editing of sign video itself has precedent, with a different
+goal: diffusion-based editing has been used to \emph{anonymize} sign
+video, changing signer appearance while preserving the linguistic
+content~\cite{xiaDiffusionModelsSign2024}, and pose-based appearance
+transfer re-renders one signer's motion under another signer's
+appearance in skeleton space~\cite{moryossefPoseBasedSignLanguage2025}.
+This thesis repurposes the same edit family as training-time
+counterfactuals, realised in pixel space so that the RGB modality the
+rest of the pipeline consumes is retained, and asks what the edits buy
+the recognizer rather than the privacy of the signer.
+\todome{ADDITION END} Nor do the action-recognition interventions above transfer
 one-to-one: they separate the actor from a biased background or scene,
 whereas in signing the confound sits on the signer's own body, so
 appearance must change while fine-grained hand and face motion is
@@ -104,6 +116,8 @@ preserved, a much stronger constraint than background replacement.
 As surveyed in~\cite{kalinowskiMachineLearningSign2026}, a large share of
 continuous sign language recognition research has been conducted on two
 studio-recorded benchmarks, Phoenix2014~\cite{kollerContinuousSignLanguage2015}
+(extended to Phoenix2014T by the neural-translation work that established
+the SLT task~\cite{camgozNeuralSignLanguage2018})\todome{ADDITION 11.08: Camgoz et al.\ completes the benchmark lineage (candidates \#10)}
 and CSL-Daily~\cite{CSL-daily}. Jang et al.~\cite{jangSigningOutsideStudio2022}
 note the limitations of studio-based benchmarks, in particular their lack of
 variance in setting and background; Zhu et al.\ similarly identify the
@@ -112,7 +126,7 @@ CE-CNSL to address it~\cite{CE-CNSL}. More recently, Isharah addresses the
 lack of diversity and the challenge of signer-independent
 evaluation~\cite{alyamiIsharahLargeScaleMultiScene2026b}, and is used in the
 CSLR track of the SignEval 2025
-Challenge~\cite{luqmanSignEval2025Challenge2025b}.
+Challenge~\cite{luqmanSignEval2025Challenge2025a}.
 
 ASL Citizen~\cite{aslcitizen} sits in the same lineage of ``harder'' benchmarks:
 it is signer-disjoint by construction and, unlike a single-studio corpus,
@@ -196,7 +210,8 @@ A natural alternative is
 to combine RGB and pose in hybrid architectures, e.g.\ a two-stream
 network~\cite{chenTwoStreamNetworkSign}; we do not pursue this, preferring a
 single-stream RGB approach for its lower inference cost and simpler
-pipeline. Throughout this thesis we therefore consider \emph{single-stream}
+pipeline, considerations that real-time sign language processing makes
+explicit~\cite{moryossefRealTimeMultilingualSign2024}.\todome{ADDITION 11.08: efficiency anchor for the single-stream choice (candidates Tier 3 \#12); drop if you find the fit loose} Throughout this thesis we therefore consider \emph{single-stream}
 methods only: every backbone we train, probe, or compare consumes one input
 stream (RGB video or pose), and multi-stream or hybrid architectures are
 out of scope on compute and inference-cost grounds.
@@ -222,6 +237,14 @@ those that have so far been unable to exploit the full potential of
 synthetic video, as generated human motion suffers from uncanny
 artefacts~\cite{knapp2025synthetic}; this thesis addresses that gap.
 
+\todome{ADDITION START (Claude 11.08): general-vision diffusion-augmentation lineage, candidates \#8}
+In general vision, generative augmentation is itself an established
+line: DA-Fusion edits real training images with a diffusion model and
+improves few-shot classification, while cautioning that the gains are
+task- and regime-dependent~\cite{trabuccoEffectiveDataAugmentation2024},
+a caveat our two-regime result echoes in the sign domain.
+\todome{ADDITION END}
+
 \subsection{Sign language data augmentation approaches}
 Walsh et al.\ show that sign language production can generate useful
 synthetic augmentations for sign language translation, with a revealing
@@ -231,7 +254,9 @@ photo-realistic RGB augmentation, via a GAN-based renderer (SignGAN) and
 a Gaussian-splatting renderer
 (SignSplat~\cite{ivashechkinSignSplatRenderingSign2025}), yields smaller
 and mixed improvements, with GAN artefacts sometimes degrading
-performance~\cite{walshUsingSignLanguage2025}.
+performance~\cite{walshUsingSignLanguage2025}. Diffusion-based sign
+production continues this photo-realistic generation
+line~\cite{SignDiff}.\todome{ADDITION 11.08: SignDiff was in the bib, uncited (candidates Tier 3 \#9)}
 % Verified against the paper (2026-07-11): pose-vs-RGB contrast confirmed,
 % but the RGB methods compared are SignGAN + SignSplat — NOT diffusion.
 % Story point 8 says "(Gaussian splatting, diffusion) don't work as well";
@@ -278,7 +303,9 @@ Prior work has built gesture-producing virtual avatar systems using Unreal
 Engine and motion capture~\cite{messinaModularSignLanguage2025}, and has
 used Unreal-rendered virtual agents, animated from mocap and varied in
 skin tone, lighting, background, and camera angle, as a scalable source
-of training data for gesture recognition~\cite{loyVirtualAgentsScalable}.
+of training data for gesture recognition~\cite{loyVirtualAgentsScalable};
+general-purpose Unreal-based synthetic-data generation frameworks make
+this machinery broadly accessible~\cite{Unrealgensyn}.\todome{ADDITION 11.08: Unrealgensyn was in the bib, uncited (candidates Tier 3 \#10)}
 
 What our work adds to this line is the counterfactual construction and
 its controlled evaluation. Prior avatar pipelines generate synthetic

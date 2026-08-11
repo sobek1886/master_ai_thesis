@@ -22,6 +22,13 @@ contributes roughly 200{,}000 videos from 305 signers, and the other two corpora
 backbone with that exposure has already
 consumed the invariance that our in-domain augmentations could have
 provided; the NGT model, seeing four signers, had not.
+\todome{ADDITION START (Claude 11.08): sibling pretrains, candidates \#6 (Novopoltsev et al.\ skipped: metadata unverifiable tonight); makes the regime claim paradigm-level rather than Logos-specific}
+Nor is Logos unusual in this respect: large-scale sign pretraining is an
+active line, e.g.\ Uni-Sign's 1{,}985-hour CSL-News
+pretraining~\cite{liUniSignUnifiedSign2025}, so the regime question of
+what such exposure has already bought applies to the paradigm, not to
+one checkpoint.
+\todome{ADDITION END}
 % Signer count verified against the Logos paper §3.1 (2026-07-11):
 % 199,668 videos, 381 signers, 2,863 lemmas; "the most extensive available
 % ISLR dataset by the number of signers.
@@ -388,7 +395,8 @@ consequence of editing each frame independently rather than conditioning
 on the sign actually being performed.
 \todo{example frames:  source frames from nano\_banana/output/flux-aug} A more heavily
 constrained editing pipeline (for instance, conditioning the editor
-on the source pose via ControlNet) could reduce these hallucinations
+on the source pose via ControlNet-style
+conditioning~\cite{zhangAddingConditionalControl2023}\todome{ADDITION 11.08: ControlNet was named but uncited (candidates \#1)}) could reduce these hallucinations
 further, but their prevalence was not high enough to justify the added
 complexity.\todome{sentence added 04.08 from your todo}
 
@@ -404,7 +412,7 @@ than authored assets, enabling appearance sweeps at scale. Diffusion-based
 sign production directly in SMPL-X pose
 space~\cite{baltatzisNeuralSignActors2024a} and large 3D sign
 corpora~\cite{yuSignAvatarsLargeScale3D2025} make this increasingly
-practical, though driving avatars from estimated or generated SMPL-X
+practical, though driving avatars from estimated~\cite{kanazawaEndtoEndRecoveryHuman2018} or generated SMPL-X
 parameters remains harder than working directly with recorded motion
 capture, as our pipeline does.
 
