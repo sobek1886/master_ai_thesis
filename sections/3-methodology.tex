@@ -1,6 +1,42 @@
 \chapter{Methodology}
 \label{chap:method}
-\todo{Add a method overview figure} This chapter presents the methodological contribution of the thesis: a
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{method_overview.pdf}
+\caption[Method overview: appearance counterfactuals in contrastive
+training]{\textbf{Method overview.} Synthetic appearance counterfactuals
+enter training as additional positives in two settings.
+\emph{Setting A (ASL Citizen, top):} an isolated-sign video and its four
+generative appearance edits (shirt, glasses, signer swap, skin tone) form one
+positive set that the objective pulls together; other real recordings of
+the same sign are optional gloss-level positives (dashed, weight
+$\lambda_{\mathrm{sup}}$), and clips of a different sign are pushed
+apart. Features come from the Logos MViTv2-S backbone, which is frozen
+under a trained SignCLIP head in the \emph{head runs} and fine-tuned
+directly, with the contrast applied to its CLS embedding, in the
+\emph{FT runs}.
+\emph{Setting B (NGT744, bottom):} for a continuous, full-sentence
+recording the positive set consists of $K$ views of the same take, namely
+real camera views, motion-preserving Unreal avatar renders (``Palmer'',
+``Digits'') and generative appearance edits, with $K$ varied per arm; a
+view-contrastive encoder is trained on frozen backbone features and other
+sentences are negatives.
+\emph{Objectives.} The head runs use the video--text InfoNCE
+(Eq.~\eqref{eq:nce}) with the edits as additional video--text pairs, or a
+second stage in which pair-SupCon (Eq.~\eqref{eq:supcon}) replaces it.
+The FT runs optimise Eq.~\eqref{eq:master}, where the edits also enter
+the cross-entropy as extra labelled data and the optional invariance term
+is one of: the cosine consistency pull
+($\lambda_{\mathrm{cons}}{=}0.5$), CLS-token SupCon ($0.5$), or the
+SDDA pair of a KL prediction consistency (weight $1$) with an adversarial
+original-versus-edit discriminator trained through gradient reversal
+(weight $10^{-4}$); $\lambda_{\mathrm{sup}}{\in}\{0,1\}$. Setting B
+trains with SupCon over the $K$ views alone (Eq.~\eqref{eq:supcon};
+video-only InfoNCE at $K{=}1$). Embedding spaces are per trained model;
+the two settings share the recipe but are never mixed.}
+\label{fig:method_overview}
+\end{figure*}
+This chapter presents the methodological contribution of the thesis: a
 formal framing of signer appearance as an intervenable nuisance factor
 (\S\ref{sec:method-notation}), a taxonomy of appearance counterfactuals
 together with two synthesis routes that realise them
