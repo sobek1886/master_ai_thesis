@@ -398,7 +398,7 @@ dataset~\cite{ranumNGT200Dataset2024}; the corpus used here is a
 distinct recording and should not be conflated with NGT200 itself.
 \todome{ADDITION END}
 It consists of real signers performing
-a fixed set of sentences in mocap suits (VisLab studio, three camera
+a fixed set of sentences in mocap suits (VisLab studio, using the motion capture setup described in \citet{NGT_motion_capture}, three camera
 angles), the \emph{train} set, evaluated against a held-out \emph{test}
 set of unseen signers (recorded at the Bushuis studio, one camera angle),
 giving a genuine low-data, cross-signer,
@@ -456,8 +456,6 @@ over the identical evaluated-sentence set, so each query always has its
 matched counterpart in the gallery.}
 \label{tab:ngt_setups}
 \end{table}
-
-\todo{email Gomer to ask how this NGT data should be referenced, who to give credit for collecting the dataset, whether I am allowed to include example frames in my thesis, whether I am allowed to share the augmented data (is there a difference whether the signer is swapped fully with a synthetic avatar vs when signer appearance is adjusted via diffusion methods, but the real signer is clearly distingushable anyways (adding glasses, changing shirt colour, changing skin colour)}
 
 \section{Models and training settings}
 \label{sec:setup-training}
