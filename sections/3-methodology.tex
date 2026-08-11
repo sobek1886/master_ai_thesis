@@ -384,40 +384,28 @@ $\tau = 0.07$.
 
 \section{Datasets}
 \label{sec:setup-datasets}
-\textbf{ASL Citizen}~\cite{aslcitizen} is our primary benchmark: a
-large, signer-disjoint isolated American Sign Language dataset (train split:
-40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
-real-world conditions rather than in a single studio.
-\textbf{WLASL} is used only for the signer-identity diagnostic probes
-(\S\ref{sec:results-diagnosis}). \textbf{NGT} is an unreleased Dutch Sign
-Language corpus.
-It consists of real signers performing
-a fixed set of sentences in mocap suits (VisLab studio, using the motion capture setup described in \citet{NGT_motion_capture}, three camera
-angles), the \emph{train} set, evaluated against a held-out \emph{test}
-set of unseen signers (recorded at the Bushuis studio, one camera angle),
-giving a genuine low-data, cross-signer,
-cross-studio evaluation setting. The Bushuis test recordings were originally collected for the ZINinNGT learning app \cite{ritmeester2024zininngt}, but have not been released as a standalone corpus. The train set comprises 775 unique
-sentences performed by 4 signers (1{,}395 front-view videos). In the raw
-corpus, every training sentence has a matching reference recording in
-the test pool; we removed from the evaluation side all recordings by the
-four training signers, so that retrieval is always scored against
-signers unseen during training. After this signer filter (and the
-synthetic-coverage restriction described below), the evaluation set
-provides, for 364 of these sentences, exactly one reference video by an
-unseen signer (six held-out signers in total).\todome{clarified 04.08
-from your todo --- please verify the filter chain: is 364 produced by
-the seen-signer filter alone, or jointly with the synthetic-coverage
-intersection mentioned two paragraphs down? The text now names both
-without attributing the count to either.}
+\todome{REWRITE START (Claude 11.08): datasets section reordered (NGT first, per your request) and the NGT description condensed; the 364-sentence evaluation set is now attributed to the seen-signer removal only, and all synthetic-coverage phrasing is gone from this section. NOTE: the 744-sentence ladder training pool in Table~\ref{tab:ngt_setups} is now stated without its old explanation; flag if you want one.}
+\textbf{NGT} is an unreleased Dutch Sign Language corpus recorded by
+members of SignLab Amsterdam. The \emph{train} set consists of 775
+unique sentences performed by 4 signers in mocap suits (1{,}395
+front-view videos; VisLab studio, three camera angles, using the
+motion-capture setup described in \citet{NGT_motion_capture}). The
+\emph{test} pool holds reference recordings of the same sentences by
+other signers (Bushuis studio, one camera angle), originally collected
+for the ZINinNGT learning app~\cite{ritmeester2024zininngt} and likewise
+not released as a standalone corpus. From this pool we removed every
+recording by the four training signers, leaving an evaluation set of 364
+sentences, each with exactly one reference video by one of six signers
+unseen during training. Evaluation on this corpus is therefore low-data,
+cross-signer, and cross-studio.
+\todome{REWRITE END}
 
-The NGT experiments use this corpus under two distinct splits, summarised
+The NGT experiments use this corpus under two splits, summarised
 in Table~\ref{tab:ngt_setups}. The single-view ladder
 (Table~\ref{tab:ngt_ladder}) and the signer-count
 ablation (Table~\ref{tab:ngt_signer_count}) draw on all four
-signers and are scored on a frozen \emph{364-sentence} evaluation set:
-the intersection of the recorded test pool with the 744 training sentences
-having complete synthetic coverage. The same 364 sentences are
-used for every arm and condition, so train and test counts no longer
+signers and are scored on the same frozen 364-sentence evaluation set,
+used for every arm and condition, so train and test counts need not
 match. 
 The signer-count ablation additionally fixes data
 volume: every condition trains on exactly 180 sentences (one deterministic
@@ -442,14 +430,21 @@ Sentences evaluated & 364 (frozen) & 364 (frozen across $S$) \\
 \end{tabular}
 \caption{The two NGT dataset splits. The single-view ladder and the
 signer-count ablation
-share one frozen 364-sentence evaluation protocol (the intersection of the
-current test set with the 744 render-complete sentences); the signer-count
+share one frozen 364-sentence evaluation protocol; the signer-count
 ablation additionally pins data volume at 180 sentences per condition. In
 every setup and both retrieval directions, query and gallery are built
 over the identical evaluated-sentence set, so each query always has its
 matched counterpart in the gallery.}
 \label{tab:ngt_setups}
 \end{table}
+
+\todome{ADDITION 11.08: ASL Citizen/WLASL paragraph moved here unchanged (order swap only)}
+\textbf{ASL Citizen}~\cite{aslcitizen} is our primary benchmark: a
+large, signer-disjoint isolated American Sign Language dataset (train split:
+40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
+real-world conditions rather than in a single studio.
+\textbf{WLASL} is used only for the signer-identity diagnostic probes
+(\S\ref{sec:results-diagnosis}).
 
 \section{Models and training settings}
 \label{sec:setup-training}
