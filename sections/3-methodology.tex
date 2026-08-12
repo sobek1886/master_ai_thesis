@@ -697,14 +697,14 @@ bookkeeping must be mirrored in the NGT744 experiments when pairing
 augmented with original frames.
 \begin{figure*}[t]
 \centering
-\includegraphics[width=.85\textwidth]{flux_resolution_sweep.png}
-\caption[Edited frame at three generation resolutions]{The same edited frame generated at 224, 512, and 1024\,px
-longest side (top row), with a zoom inset on the face-and-hand region
-(bottom row). At 224\,px the editor visibly degrades face and glasses
-detail (detail the 224-input downstream model still depends on),
-whereas the 512\,px output is visually indistinguishable from 1024\,px;
-512\,px was therefore selected as the smallest safe generation
-resolution.}
+\includegraphics[width=\textwidth]{flux_resolution_sweep.png}
+\caption[Unedited frame and five generation resolutions]{The glasses edit on
+one NGT744 frame, the same signer as Fig.~\ref{fig:unreal_examples}, at every
+swept generation resolution, with the head-and-hand region enlarged below. The
+unedited panel is the front-camera view of the same take and instant, so its
+framing differs slightly from the right-camera view the edits were generated
+from. At 224\,px the spectacle frames render as heavy blocks and facial detail
+flattens; from 512\,px upward the output is stable.}
 \label{fig:flux_res_sweep}
 \end{figure*}
 

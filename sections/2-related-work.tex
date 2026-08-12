@@ -53,19 +53,31 @@ altogether~\cite{kratimenosIndependentSignLanguage2020,
 tranRegionAwarePoseModeling2025}, at the cost examined in
 \S\ref{sec:related-work-modality}.
 
-These lines share a view of the signer as a nuisance to be held out,
-removed, or averaged over. What they rarely examine is the appearance
-content itself: which incidental visual properties a model actually keys
-on, and whether controlled variation of exactly those properties, with
-the signing held fixed, removes the shortcut. That question is where the
-appearance-bias literature of the next section comes in.
+What these approaches share is that appearance is handled wholesale: held
+out with the signer, removed adversarially, averaged over by adding
+signers, or discarded along with the pixels. None isolates which visual
+properties carry the signal, or tests whether changing exactly those,
+with the signing held fixed, removes the shortcut.
+\S\ref{sec:related-appearance-bias} takes up that question.
 \section{Addressing appearance bias}
 \label{sec:related-appearance-bias}
 That action-recognition benchmarks reward static appearance cues is an
 empirical finding rather than an assumption: RESOUND quantifies the
 representation bias of action datasets and shows the standard ones are
 skewed towards static objects, scenes and
-people~\cite{liRESOUNDActionRecognition2018}. Crucially for this thesis,
+people~\cite{liRESOUNDActionRecognition2018}. The effect is severe enough
+that action labels remain partly recoverable from background sequences
+with the actor removed
+altogether~\cite{heHumanActionRecognition2016}.
+\todome{ADDITION (12.08): the ``action recognition without human'' result
+from your presentation, which was not cited anywhere in the thesis.
+Metadata correction: it is He, Shirakabe, Satoh and Kataoka, ECCV 2016
+Workshops, not ``Kataoka et al.\ 2024'' as the slide has it (Kataoka is
+last author). I have deliberately not quoted a figure: the slide says
+$65.5\%$ masked versus just over $70\%$, whereas the paper's two-stream
+CNN result is $47.42\%$ without the human against $56.91\%$ with, so
+check which table your slide number came from before reusing it.}
+Crucially for this thesis,
 the bias is a property of the training data rather than of the
 architecture: \citet{byvshevAre3DConvolutional2022a} show that 3D
 convolutional models learn temporally sensitive representations once

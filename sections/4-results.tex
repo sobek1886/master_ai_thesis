@@ -582,6 +582,10 @@ towers from pretrained BERT rather than randomly, and \emph{synth.\ data
 only} trains on 450 of the 2{,}731 glosses, which is the real reason it
 scores low. A separate check on whether the recipe search used the
 preprocessing the Logos authors use is still open.}
+Every cell in both tables is a single training run, without seeds or
+confidence intervals, and the same configuration appears twice at $0.800$
+and $0.818$ under the two frame preprocessings, so differences below
+roughly two points are not interpreted below.
 The five rows differ in only two respects: how many training stages the
 head gets, and which clips it sees. All of them share the architecture,
 the frozen features, the contrastive loss, the batch size and the
@@ -591,7 +595,9 @@ language rather than randomly initialised. \emph{Fine-tuned} adds a
 second stage that resumes the first at a fifth of the learning rate, with
 weight decay and a shorter annealing schedule. \emph{$+$ synth.\ data}
 changes nothing but the training split, adding $8{,}989$ edited clips to
-the $40{,}154$ real ones. \emph{Synth.\ data only} replaces the real
+the $40{,}154$ real ones. Those clips are edits of $450$ of the $2{,}731$
+glosses, so the intervention reaches a sixth of the vocabulary in every
+row that uses it, not only in the row named after it. \emph{Synth.\ data only} replaces the real
 videos with the edits, and is not a like-for-like comparison: the edited
 subset covers $450$ of the $2{,}731$ glosses, so that row trains on a
 sixth of the vocabulary.
@@ -605,15 +611,18 @@ $0.750$ on frozen Logos ones, and the published pose-input SignCLIP
 models $0.39$--$0.60$.
 
 Carrying those recipes onto fine-tuned backbones shows that the two do
-not stack. A from-scratch head does gain from a fine-tuned backbone ($0.744$
-on the matched frozen control against $0.772$--$0.782$), but the best head
-recipe does not: it scores highest on the frozen backbone ($0.818$) and
-slightly lower on every fine-tuned one ($0.809$--$0.812$). Whatever
-backbone fine-tuning has to contribute at this point, the head has
-already contributed.
+not stack. At R@1 a from-scratch head gains from a fine-tuned backbone
+($0.744$ on the matched frozen control against $0.772$--$0.782$), but the
+ordering reverses at R@5 and R@10, where the frozen backbone leads
+($0.966/0.977$ against $0.927$--$0.958$ and $0.943$--$0.970$), so the gain
+is a top-1 effect rather than a better-ordered gallery. The best head
+recipe shows no gain at all: it scores highest on the frozen backbone
+($0.818$) and slightly lower on every fine-tuned one ($0.809$--$0.812$),
+all within the two-point range above. Whatever backbone fine-tuning has
+to contribute at this point, the head has already contributed.
 
-The pair-SupCon rows are the largest effect in the table, and they are a
-clean comparison: they resume the same from-scratch head as the
+The pair-SupCon rows are the largest effect among the head recipes on
+Logos features, and they are the cleanest comparison in the table: they resume the same from-scratch head as the
 fine-tuned rows, so all of these runs are second stages from one
 checkpoint and differ only in what that stage optimises. Keeping the
 video--text loss and adding the edits as data carries the head from
@@ -702,13 +711,28 @@ again to $0.919$, the strongest configuration on every metric (Mean~R
 $1.128$), and adding them during the first stage instead is worth less
 ($0.883$). The vocabulary-limited row ($0.884$) is no more comparable
 here than it was above. Carried onto the fine-tuned backbones, the same recipe reaches
-P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour. Which backbone leads does depend on the direction, however: the frozen
+P@1 $0.928$--$0.935$, against $0.925$ on the frozen backbone. Which
+backbone leads is the one place the two directions disagree: the frozen
 backbone is strongest video-to-text ($0.818$ against $0.809$ on CE-FT)
-while CE-FT is strongest text-to-video ($0.935$ against $0.925$), so the
-shaded row differs between the two tables.
-\todome{DRAFT PROPOSAL END. Interpretive reading (why T2V moves more
-than V2T --- the anchor-neighbourhood argument) was cut in the 03.08
-cleanup; reconnect it here or leave the paragraph descriptive.}
+while CE-FT is strongest text-to-video ($0.935$ against $0.925$). Both
+margins are about one point, so we note the disagreement without reading
+a preference into it.
+\todome{ADDED 12.08, replacing a proposed error-reduction paragraph. An
+examiner pass rejected that version: the two error rates are computed
+over different query sets ($32{,}941$ videos against $2{,}731$ glosses),
+so the ratio between their error reductions is not a quantity, and the
+mechanism it offered was circular. The likeliest explanation, that in
+text-to-video the queries \emph{are} glosses and only $450$ of $2{,}731$
+were edited, is stated here as a conjecture; splitting P@1 by edited and
+untouched glosses would test it directly and is an afternoon's work.}
+The edits move P@1 more than they move R@1 ($0.024$ against $0.011$). We
+do not read a ratio between the two: the two error rates are computed over
+different query sets, and both effects are of the same order as the
+$0.018$ that a change of preprocessing alone moves the same configuration
+in Table~\ref{tab:asl_citizen_retrieval}. One structural difference is
+worth recording for future work: the edits cover $450$ of the $2{,}731$
+glosses, and in text-to-video the queries are glosses, so most of that
+query set was never touched by the intervention.
 
 \begin{table*}[t]
   \centering
@@ -734,8 +758,13 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \end{tabular}
   }
   \caption[Text-to-video retrieval on ASL Citizen]{Text-to-video
-  retrieval on ASL Citizen, same configurations as
-  Table~\ref{tab:asl_citizen_retrieval} and the same marking convention.}
+  retrieval on ASL Citizen for a subset of the configurations of
+  Table~\ref{tab:asl_citizen_retrieval}; the pose, I3D and pair-SupCon
+  rows are not repeated here. Bold marks the best value per column within
+  a block and a blue cell the best in the column. As in
+  Table~\ref{tab:asl_citizen_retrieval}, the lower block was generated
+  with a different frame preprocessing from the rows above and is read
+  within the block.}
   \label{tab:asl_citizen_t2v}
 \end{table*}
 
