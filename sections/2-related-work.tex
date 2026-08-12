@@ -1,5 +1,19 @@
 \chapter{Related Work}
-\todo{briefly describe what is covered in related work sections}
+\todome{ADDITION (12.08): chapter roadmap, resolving the \todo\ that asked
+for one. Order now follows the introduction's argument.}
+This chapter follows the argument of the introduction. We begin with how
+SLR has treated signer variation, as an evaluation protocol and as
+something to suppress (\S\ref{sec:related-signer-independent}). We then
+turn to appearance bias itself, which is well studied in action
+recognition and barely touched in sign language, and to why the action
+recognition remedies do not transfer
+(\S\ref{sec:related-appearance-bias}). We then trace how benchmarks became
+more diverse and what that did to modality preference
+(\S\ref{sec:related-work-benchmarks}), examine the resulting move from RGB
+to pose and what it costs (\S\ref{sec:related-work-modality}), and close
+with synthetic data as the intervention family this thesis draws on
+(\S\ref{sec:related-work-synthetic}).
+
 \section{Signer-independent SLR}
 \label{sec:related-signer-independent}
 Signer variation is a long-standing generalisation axis in SLR, and the
@@ -53,7 +67,15 @@ That action-recognition benchmarks reward static appearance cues is an
 empirical finding rather than an assumption: RESOUND quantifies the
 representation bias of action datasets and shows the standard ones are
 skewed towards static objects, scenes and
-people~\cite{liRESOUNDActionRecognition2018}.
+people~\cite{liRESOUNDActionRecognition2018}. Crucially for this thesis,
+the bias is a property of the training data rather than of the
+architecture: \citet{byvshevAre3DConvolutional2022a} show that 3D
+convolutional models learn temporally sensitive representations once
+motion and appearance are artificially decoupled, and
+\citet{kowalQuantifyingLearningStatic2025} find most spatiotemporal
+models dominated by static information but reduce that dominance with a
+training-time intervention. If the bias is inherited from data, it can be
+attacked by reshaping data.
 
 Remedies in action recognition fall into two families. The first
 restructures the training signal so that positives share motion content
@@ -83,9 +105,8 @@ SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} intervenes on the
 representation instead, suppressing appearance with an adversarial style
 loss during self-supervised pretraining
 (\S\ref{sec:related-work-modality}). The closest data-side intervention
-is SDDA, which pairs diffusion-generated signer variety with a
-consistency objective on a single studio-recorded
-corpus~\cite{fuSignerDiversitydrivenData2024b}.
+is SDDA~\cite{fuSignerDiversitydrivenData2024b}, treated with the other
+synthetic-data work in \S\ref{sec:related-work-synthetic}.
 
 Editing the appearance of sign video has precedent, with a different
 goal: diffusion-based editing has been used to \emph{anonymise} sign
@@ -106,42 +127,51 @@ both across two diversity regimes.
 % true; aligned with the SDDA scoping in the intro (pivot paragraph) and the
 % Synthetic data section.
 
-\section{Benchmarks}
+\section{Benchmarks and the diversity axis}
+\label{sec:related-work-benchmarks}
+\todome{REWRITE (12.08): restored the arc your \\todo\\ asked for (studio
+corpora where RGB did well, then diverse corpora and the pose shift), and
+removed the duplicate Atwell mention; the bias-mitigation result is cited
+once, in \S\ref{sec:related-appearance-bias}.}
 As surveyed by \citet{kalinowskiMachineLearningSign2026}, a large share of
 sign language recognition research has been conducted on two
 studio-recorded benchmarks, Phoenix2014~\cite{kollerContinuousSignLanguage2015}
-(extended to Phoenix2014T for the SLT task~\cite{camgozNeuralSignLanguage2018})\
-and CSL-Daily~\cite{CSL-daily}. \citet{jangSigningOutsideStudio2022}
-note the limitations of studio-based benchmarks, in particular their lack of
-variance in setting and background; ~\citet{CE-CNSL} similarly identify the
-studio-setting nature of existing benchmarks as a bottleneck and release
-CE-CNSL to address it. More recently, \citet{alyamiIsharahLargeScaleMultiScene2026b} address the
-lack of diversity and the challenge of signer-independent
-evaluation, and their Isharah dataset is used in the
-CSLR track of the SignEval 2025
-Challenge~\cite{luqmanSignEval2025Challenge2025a}.
+(extended to Phoenix2014T for the SLT task~\cite{camgozNeuralSignLanguage2018})
+and CSL-Daily~\cite{CSL-daily}. These corpora hold recording conditions
+almost constant, and on them RGB architectures were competitive
+(\S\ref{sec:related-work-modality}). Their homogeneity is also their
+documented weakness: \citet{jangSigningOutsideStudio2022} note the lack of
+variance in setting and background, and \citet{CE-CNSL} identify the
+studio setting as a bottleneck and release CE-CNSL to address it. More
+recently, \citet{alyamiIsharahLargeScaleMultiScene2026b} target both the
+lack of diversity and signer-independent evaluation, and their Isharah
+dataset supplies the CSLR track of the SignEval 2025
+Challenge~\cite{luqmanSignEval2025Challenge2025a}. As benchmarks grew more
+varied, the field's preference shifted towards pose input, whose
+appearance invariance is most valuable exactly where appearance varies
+most.
 
-ASL Citizen~\cite{aslcitizen} sits in the same lineage of ``harder'' benchmarks:
-it is signer-disjoint by construction and, unlike a single-studio corpus,
-aggregates recordings under varied real-world conditions. \todo{check if this reference adds anything} ~\citet{atwellStudyingMitigatingBiases2024}
-document this directly, using ASL Citizen's participant demographic and
-lexical metadata to study and mitigate demographic disparities in models
-trained on it, and releasing that per-participant demographic information
-for future bias work.
-\todo{this section reads kinda weirdly. It's original premise was showing that the RGB-based models performed better on those datasets with less variety, but then more diverse datasets came and with them a shift towards pose representation}
-We adopt ASL Citizen
-as a high-resource benchmark that captures the appearance-bias question
-this thesis targets: diverse signers, varied recording conditions, and
-substantial signer-dependent variation.
+ASL Citizen~\cite{aslcitizen} belongs to this harder lineage: it is
+signer-disjoint by construction and, unlike a single-studio corpus,
+aggregates recordings made by participants on their own webcams, so
+lighting, framing and background vary along with the signer. It also
+ships per-participant demographic metadata, which makes the composition
+of its signer population inspectable rather than
+assumed~\cite{atwellStudyingMitigatingBiases2024}. We adopt it as the
+high-diversity setting of this thesis, and NGT744, recorded from four
+signers in one studio, as the low-diversity setting: the two mark
+opposite ends of the axis this thesis is about, while both evaluate
+signer-independently.
 
 \section{Input modality}
 \label{sec:related-work-modality}
-On early CSLR benchmarks such as Phoenix2014 and CSL-Daily, RGB-based CNN
-architectures such as SlowFastSign~\cite{ahnSlowFastNetworkContinuous2023}
-achieved strong performance. On more recent, more challenging datasets,
-pose-based representations have shown improved robustness and competitive
-recognition accuracy~\cite{minCloserLookSkeletonbased2025}, and this trend
-is often attributed to the inherent
+That shift has a clear empirical basis. On the studio benchmarks, RGB CNN
+architectures such as
+SlowFastSign~\cite{ahnSlowFastNetworkContinuous2023} achieved strong
+performance; on the more varied ones, pose-based representations show
+improved robustness at competitive
+accuracy~\cite{minCloserLookSkeletonbased2025}, a trend usually
+attributed to the inherent
 invariance of pose representations to appearance factors such as clothing,
 background, and
 lighting~\cite{moryossefEvaluatingImmediateApplicability2021,
@@ -174,25 +204,16 @@ extraction MediaPipe produced no usable feature file for $8\%$ of ASL
 Citizen training videos (Table~\ref{tab:raw_feature_l2_probe}).
 \todome{END MOVED BLOCK}
 
-\citet{byvshevAre3DConvolutional2022a} show that the appearance bias observed in 3D convolutional video models
-is not an inherent architectural limitation but a consequence of the
-statistical structure of training data:
-when motion and appearance are artificially decoupled, 3D CNNs learn
-temporally sensitive representations. They are not alone in
-locating the bias in data rather than architecture: ~\citet{kowalQuantifyingLearningStatic2025} find most spatiotemporal models dominated by static information and
-reduce that dominance with a training-time
-intervention; \citet{liMitigatingEvaluatingStatic2023a} show
-that a static-bias-mitigating augmentation works on a video Swin
-transformer~; and a family of
-methods spanning motion-coherent augmentation~\cite{zhangDontJudgeLook2024},
-tubelet-contrastive pre-training~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
-adversarial debiasing~\cite{fioresiALBARAdversarialLearning2025,
-duanMitigatingRepresentationBias2023}, and causal background
-interventions~\cite{rastegarBackgroundNoMore2024} shows that the reliance on
-appearance can be reduced by reshaping the training signal
-(\S\ref{sec:related-appearance-bias} discusses these in detail).
+The appearance bias of RGB models is, however, a property of their
+training data rather than of the modality itself
+(\S\ref{sec:related-appearance-bias}); the same evidence shows it
+survives the move to transformer backbones, which
+\citet{liMitigatingEvaluatingStatic2023a} mitigate with augmentation on a
+video Swin transformer. That is the question we ask of the transformer
+backbones now common in SLR.
 
-\todo{introducing signrep here really breaks the flow} SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
+\subsection{Pose as supervision rather than input}
+SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
 modality choice is a false dichotomy. Its downstream model consumes RGB
 only, but its masked pretraining predicts pose-derived targets from the
 RGB input: normalised keypoints, hand and body joint angles,
@@ -215,10 +236,7 @@ sign representation drifts toward appearance unless actively
 constrained. SignRep constrains it with an inferred style statistic; our
 counterfactuals supply the constraint as data.
 
-Motivated
-by this body of evidence, we ask whether the
-same holds for the transformer-based backbones now common in SLR.
-
+\subsection{Single-stream scope}
 A natural alternative is
 to combine RGB and pose in hybrid architectures, e.g.\ a two-stream
 network~\cite{chenTwoStreamNetworkSign}; we do not pursue this, preferring a
@@ -231,10 +249,9 @@ out of scope on compute and inference-cost grounds.
 
 \section{Synthetic data}
 \label{sec:related-work-synthetic}
-Byvshev et al.'s finding that appearance bias is shaped by training-data
-statistics~\cite{byvshevAre3DConvolutional2022a} suggests that reshaping the
-training distribution, rather than only the architecture, can reduce
-appearance reliance. Sign language recognition, however, lacks a counterpart
+If appearance bias is inherited from training-data statistics
+(\S\ref{sec:related-appearance-bias}), reshaping the training
+distribution is a way to reduce it. Sign language recognition, however, lacks a counterpart
 to the large, temporally rich pretraining corpora available in general video
 understanding, motivating the use of \emph{synthetic} data to reshape the
 training distribution directly. Knapp and Bohacek~\cite{knapp2025synthetic}
