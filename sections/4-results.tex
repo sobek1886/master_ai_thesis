@@ -552,10 +552,7 @@ looks ordinary: the positive-only pull distorts the geometry in a way
 nearest-neighbour retrieval tolerates but a linear head does not. The
 two-stage schedule (\S\ref{sec:setup-training}: the consistency term
 switched on only after CE convergence, at a $100\times$ lower learning
-rate) fits the same pattern: its retrieval R@1 of 85.02\todome{mismatch
-found 05.08: the table's full-unfreeze SDDA R@1 is 85.00, and has been
-in every git generation since July; this 85.02 needs the eval log
-checked or should follow the table} sits within the
+rate) fits the same pattern: its retrieval R@1 of 85.02 sits within the
 plain-CE range (84.96--85.95) rather than above it, while its probe R@1
 of 85.82 avoids the linear-probe damage of single-stage consistency
 training. 
