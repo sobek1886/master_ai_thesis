@@ -612,11 +612,16 @@ slightly lower on every fine-tuned one ($0.809$--$0.812$). Whatever
 backbone fine-tuning has to contribute at this point, the head has
 already contributed.
 
-The pair-SupCon rows are the exception and the largest effect in the
-table: the same edits, entering as explicit positives instead of as data,
-cost $0.233$ R@1 at $K{=}3$ and $0.386$ at $K{=}5$ against the $0.800$
-they support as data (\S\ref{sec:results-iconicity-main} returns to
-why).
+The pair-SupCon rows are the largest effect in the table, and they are a
+clean comparison: they resume the same from-scratch head as the
+fine-tuned rows, so all of these runs are second stages from one
+checkpoint and differ only in what that stage optimises. Keeping the
+video--text loss and adding the edits as data carries the head from
+$0.750$ to $0.800$. Replacing that loss with SupCon over each video and
+its own edits leaves it below where it started: $0.567$ with two edits
+and $0.414$ with four. The same clips therefore help or hurt according to
+the objective they enter through, and within the SupCon runs more of them
+is worse (\S\ref{sec:results-iconicity-main} returns to why).
 
 % TABLE CONVENTION (updated 2026-08-05 per Piotr):
 % - \textbf on a data cell = best value in that metric column within its
@@ -680,8 +685,10 @@ configuration.}
 
 
 \paragraph{The effect of augmentations on T2V retrieval performance}
-\todome{DRAFT PROPOSAL START (03.08): this paragraph header had no body;
-the text below states only what the two tables show, no new claims.}
+\todome{CORRECTED 12.08: this paragraph said ``fine-tuning alone lifts''
+(it is the head's second training stage, not backbone fine-tuning) and
+read the synth-only row as evidence that synthetic data adds little,
+which it cannot be, since that run sees 450 of the 2{,}731 glosses.}
 Table~\ref{tab:asl_citizen_t2v} repeats the comparison in the
 text-to-video direction, where precision@$k$ replaces recall@$k$: the
 gallery holds several correct videos per gloss query, so recall@1 is
@@ -689,11 +696,12 @@ capped by gallery multiplicity however good the model is, while
 precision@$k$ measures directly whether the top-ranked videos are
 correct. The original SignCLIP work does not report this direction on ASL
 Citizen at full scale. The ordering
-matches the video-to-text table: fine-tuning alone lifts P@1 from
-$0.871$ to $0.895$, synthetic data alone adds little ($0.883$ from
-scratch, $0.884$ as the only fine-tuning data), and the combination is
-the strongest configuration on every metric (P@1 $0.919$, Mean~R
-$1.128$). Carried onto the fine-tuned backbones, the same recipe reaches
+matches the video-to-text table: the second training stage lifts P@1 from
+$0.871$ to $0.895$, adding the edits as data during that stage lifts it
+again to $0.919$, the strongest configuration on every metric (Mean~R
+$1.128$), and adding them during the first stage instead is worth less
+($0.883$). The vocabulary-limited row ($0.884$) is no more comparable
+here than it was above. Carried onto the fine-tuned backbones, the same recipe reaches
 P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour. Which backbone leads does depend on the direction, however: the frozen
 backbone is strongest video-to-text ($0.818$ against $0.809$ on CE-FT)
 while CE-FT is strongest text-to-video ($0.935$ against $0.925$), so the

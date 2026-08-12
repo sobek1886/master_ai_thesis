@@ -630,20 +630,12 @@ pipeline.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=.8\textwidth]{unreal_examples_grid.png}
-\caption[Motion-locked re-renders of an NGT744 sentence]{Motion-locked re-renders for one NGT744
-training sentence (M20241210\_0257, session 251126, take 0). Top block:
-four aligned frames of the front-camera view, with indices on the common
-15\,fps timeline below the columns (the 60\,fps real recording is sampled
-at its temporally aligned frames); the top row shows the real recording of
-the mocap-suited signer, and the two rows below show the ``Palmer'' and
-``Digits'' avatars driven by the motion captured in that same take.
-Because the avatars are animated by retargeting the recorded mocap onto
-the avatar skeleton, the signing motion is identical across rows by
-construction, unlike the generative edits of Fig.~\ref{fig:aug_examples},
-whose motion preservation is an empirical property that must be verified. Bottom strip: the same avatar and
-frame rendered from the three camera positions, the viewpoint axis that
-this route adds and that a 2D image edit cannot reach from a single input
-view; clothing colour additionally varies across the rendered views.}
+% Source recording for this figure: M20241210_0257, session 251126, take 0.
+\caption[Motion-locked re-renders of an NGT744 sentence]{One NGT744
+training sentence through the re-render pipeline. The top block is the
+front-camera view, with frame indices on the common 15\,fps timeline at
+which the 60\,fps real recording is sampled; both avatars are driven by
+the same take as the real recording.}
 \label{fig:unreal_examples}
 \end{figure*}
 
