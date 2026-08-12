@@ -588,16 +588,20 @@ video encoder (12 BERT layers over frozen 768-d Logos features) is
 trained \emph{without a text tower}: NGT744 has no gloss vocabulary, so the
 unit of supervision is the sign-recording identity itself. Each training
 item bundles the $K$ views of one sign (the real front camera plus,
-depending on the arm, real side cameras, motion locked re-renders, or generative appearance edits, and a supervised contrastive loss pulls all $K$
+depending on the arm, real side cameras, motion-locked re-renders, or
+generative appearance edits), and a supervised contrastive loss pulls all $K$
 views of a sign together while pushing other signs apart (video-only
-InfoNCE at $K{=}1$, where no positive pairs exist). The trained encoder
+InfoNCE at $K{=}1$, where no positive pairs exist).
+\todome{ADDITION START (Claude 11.08, reworded 12.08): multi-view
+contrastive precedent, candidates Tier 3 \#7. Moved here from the
+semicolon chain below, where it separated the evaluation protocol from the
+training counts.}
+Using simultaneous views of one performance as positives is established
+practice in action recognition~\cite{shahMultiViewActionRecognition2023}.
+\todome{ADDITION END}
+The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
-(\S\ref{sec:eval-protocols});
-\todome{ADDITION START (Claude 11.08): multi-view contrastive precedent, candidates Tier 3 \#7}
-treating simultaneous views of one performance as contrastive positives
-follows multi-view contrastive action
-recognition~\cite{shahMultiViewActionRecognition2023};
-\todome{ADDITION END} the ladder trains on 744
+(\S\ref{sec:eval-protocols}); the ladder trains on 744
 sentence-recordings and the signer-count ablation on 180 per condition,
 $K$ views each. Loss details are given in \S\ref{sec:method-losses}.
 
