@@ -163,14 +163,10 @@ reach from a single input view. It requires motion-capture recordings, so
 it applies only where capture is controlled.
 
 \subsection{Generative appearance editing}
-\todome{REWRITE START (Claude 12.08): opener no longer binds this route to
-the isolated corpus; it also ran on NGT744, and Setup says which route ran
-where. Resolves the 03.08 proposal.}
 The second route edits real training videos frame-by-frame with an open
 generative image editor. It needs nothing beyond the RGB video, so it
 applies to any corpus. The model, compute and edited-subset statistics are
 given in \S\ref{sec:setup-generation}.
-\todome{REWRITE END}
 Rather than
 augmenting a uniform sample, targets are chosen worst-first
 at the class level: every gloss is ranked by its number of distinct training
@@ -195,11 +191,6 @@ for inclusive coverage of apparent skin
 tones~\cite{heldrethWhichSkinTone2024,
 schumannConsensusSubjectivitySkin2023}.
 
-\todome{ADDITION START (Claude 12.08): edit vocabularies, prompt design and
-frame-conditioning, read off flux\_augment/config.py and augment\_flux.py.
-Counts and the "no anchoring in the shipped runs" claim are verified against
-the code; the one thing to confirm from memory is whether the two anchoring
-variants were only piloted or never run at all.}
 \paragraph{Edit vocabularies.}
 Three of the four edit types are parametric. \emph{Shirt} recolours the
 garment to one of ten saturated colours; \emph{skin tone} targets one of
@@ -209,12 +200,8 @@ tones are already over-represented among the corpus signers); and
 specified in detail over age, gender presentation, ethnicity, hair,
 eyewear and clothing, since underspecified identities drift more between
 independently edited frames. \emph{Glasses} is a single fixed edit. Each
-video is assigned one shirt colour, one skin-tone tier and one identity,
-drawn by seeding on its identifier so the assignment is reproducible
-without storing a mapping, and that target is then applied to every frame
-of the clip. Holding it fixed across frames is what makes the result a
-counterfactual, an alternative version of the same recording, rather than
-frame-level appearance noise.
+video is assigned one shirt colour, one skin-tone tier and one identity. That target is then applied to every frame
+of the clip.
 
 \paragraph{Prompt design.}
 Every prompt pairs the requested change with a clause enumerating what
@@ -236,9 +223,7 @@ the residual flicker reported in \S\ref{sec:limitations}; the compensating
 property is that a bad edit cannot propagate along the clip. Two anchoring
 schemes were implemented and piloted but are not used here, a frame-0
 reference image and a per-identity portrait bank, because both stabilise
-appearance at the cost of facial motion, which is linguistically
-contrastive.
-\todome{ADDITION END}
+appearance at the cost of keeping facial expression fixed.
 
 \section{Counterfactual-aware training objectives}
 \label{sec:method-objectives}
