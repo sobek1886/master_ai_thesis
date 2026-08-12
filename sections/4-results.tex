@@ -1184,30 +1184,49 @@ We quantify this treatment with the form-dose measure of
 Appendix~\ref{sec:results-iconicity}: bucket every pair of gloss
 centroids by how many of the five form features the glosses share and
 trace cosine similarity against that count.
-Figure~\ref{fig:form_dose_ft} compares the frozen backbone with the two
-fine-tuning recipes. The frozen space responds strongly: mean centroid
-similarity climbs from $0.01$ at zero shared features to $0.18$ at five
-(Spearman $\rho=.06$ over all pairs, $n{=}2{,}178$ at dose five). Both
-fine-tuning recipes flatten the response, CE almost completely ($0.09$
-at dose five, $\rho=.00$), SDDA partially ($0.13$, $\rho=.03$). The
-form and iconicity organisation is therefore a property of the
-pretrained space, and in-domain training weakens it rather than
-building on it; none of our interventions raises it above the frozen
-level. The full thirteen-space grid, and the matched-pair iconicity
-battery behind that last claim (the high-versus-low-iconicity contrast
-is present in the frozen space, washed out by text alignment, and only
-partially restored by pair training), are in
-Appendix~\ref{sec:results-iconicity}.
+Figure~\ref{fig:form_dose_ft} places the frozen backbone between the two
+kinds of training we apply to it, and they move in opposite directions.
+The frozen space responds strongly on its own: mean centroid similarity
+climbs from $0.01$ at zero shared features to $0.18$ at five (Spearman
+$\rho=.06$ over all pairs, $n{=}2{,}178$ at dose five). Fine-tuning the
+backbone flattens that response, and plain cross-entropy flattens it
+most ($0.09$ at dose five, $\rho=.00$), with SDDA retaining about half
+the frozen slope ($0.13$, $\rho=.03$); the same holds for the two
+recipes not shown here, aug-as-data and cosine consistency
+($\rho=.01$ each, Appendix~\ref{sec:results-iconicity}). Training a head
+with the counterfactuals as explicit positives does the reverse and
+overshoots the frozen level, more so with more positives per item
+($0.25$ at $K{=}3$, $\rho=.09$; $0.39$ at $K{=}5$, $\rho=.16$).
+
+This is the same trade-off the retrieval tables record, seen from the
+other side. The pair-SupCon objective replaces the video--text loss
+entirely (\S\ref{sec:method-objectives}), so nothing in it tells the
+model that GUN1 and LIGHTER are different words; visual form is the only
+axis left, and the space duly organises by it, at a cost of $0.567$
+against $0.800$ V2T R@1 for the same edits used as ordinary training
+data. Cross-entropy fine-tuning applies the opposite pressure, pulling
+glosses apart whatever they look like, and buys $2.4$ retrieval points
+while taking the form response to zero. Neither extreme is the goal:
+form organisation is what makes an embedding space look semantic on
+iconic vocabulary, and it is also what makes form-similar signs hard to
+tell apart. The matched-pair iconicity battery in
+Appendix~\ref{sec:results-iconicity} shows the consequence for iconicity
+itself, present in the frozen space, washed out by text alignment, and
+partially restored by pair training.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{violin_raw_ce_sdda.png}
-\caption[Form-dose response: frozen vs fine-tuned]{Centroid cosine
+\includegraphics[width=\textwidth]{form_dose_main.png}
+\caption[Form-dose response across training recipes]{Centroid cosine
 similarity against the number of shared ASL-LEX form features (pair
-counts below each level), for the frozen backbone and the two
-fine-tuning recipes. Fine-tuning flattens the dose-response: at five
-shared features the mean drops from $0.18$ (frozen) to $0.13$ (SDDA)
-and $0.09$ (CE).}
+counts below each level; $\rho$ is the Spearman correlation over all
+centroid pairs). The frozen backbone sits between two opposite
+pressures: fine-tuning the backbone flattens the response, most
+completely with plain cross-entropy, while training a head with the
+appearance counterfactuals as explicit positives amplifies it beyond
+the frozen level and increasingly so with $K$. The pair-SupCon panels
+also start higher at zero shared features, so the claim concerns the
+slope rather than the absolute level.}
 \label{fig:form_dose_ft}
 \end{figure*}
 \todome{ADDITION END}
