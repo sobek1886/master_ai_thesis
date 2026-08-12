@@ -262,10 +262,13 @@ positives} \\
 \bottomrule
 \end{tabular}
 \caption{Which objective trains which component. The SupCon form of
-Eq.~\eqref{eq:supcon} is shared by two components; what differs is the
-positive-defining equivalence of Eq.~\eqref{eq:positive-set}:
-counterfactual instance for the head and backbone runs,
-recording identity for the view-contrastive encoder.}
+Eq.~\eqref{eq:supcon} is shared by all three; what differs is the
+positive-defining equivalence of Eq.~\eqref{eq:positive-set} and the
+term's role. Positives are the counterfactual instance for the head and
+backbone runs and the recording identity for the view-contrastive
+encoder; the term is one weighted ingredient of Eq.~\eqref{eq:master} in
+the backbone runs, and the entire objective in the two head runs that
+use it.}
 \label{tab:objective_map}
 \end{table*}
 
