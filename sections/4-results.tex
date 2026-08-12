@@ -188,53 +188,47 @@ per-sentence ranks, enabling paired comparisons (exact McNemar on top-1 correctn
 a bootstrap CI on the R@1 difference) rather than seed-mean gaps alone.
 \begin{table*}[t]
 \centering
-\small
-\begin{tabular}{lcccc}
+\footnotesize
+\begin{tabular}{llcccc}
 \toprule
-\textbf{Arm} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{MRR} \\
+\textbf{Arm} & \textbf{Training views ($K$ per item)} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{MRR} \\
 \midrule
-\multicolumn{5}{l}{\textit{Test $\to$ Train \; (query: test set, gallery: train set)}} \\
+\multicolumn{6}{l}{\textit{Test $\to$ Train \; (query: test set, gallery: train set)}} \\
 \midrule
-E1 real ($K{=}1$)            & 0.234\pmsd{0.025} & 0.420\pmsd{0.040} & 0.506\pmsd{0.054} & 0.325\pmsd{0.027} \\
-E2 real multiview ($K{=}3$)  & 0.266\pmsd{0.013} & 0.453\pmsd{0.024} & 0.544\pmsd{0.021} & 0.361\pmsd{0.002} \\
+E1  & 1 real front view (baseline), $K{=}1$ &  0.234\pmsd{0.025} & 0.420\pmsd{0.040} & 0.506\pmsd{0.054} & 0.325\pmsd{0.027} \\
+E2  & E1 $+$ 2 real side views (baseline), $K{=}3$ &  0.266\pmsd{0.013} & 0.453\pmsd{0.024} & 0.544\pmsd{0.021} & 0.361\pmsd{0.002} \\
 \rowcolor{rowhl}
-E3 $+$Unreal ($K{=}3$)       & \textbf{0.649}\pmsd{0.044} & 0.836\pmsd{0.026} & 0.899\pmsd{0.018} & 0.738\pmsd{0.033} \\
-E4 $+$Flux ($K{=}3$)         & 0.505\pmsd{0.010} & 0.729\pmsd{0.010} & 0.808\pmsd{0.011} & 0.607\pmsd{0.009} \\
-E5 $+$Unreal full ($K{=}7$)  & 0.437\pmsd{0.018} & 0.676\pmsd{0.019} & 0.783\pmsd{0.032} & 0.553\pmsd{0.018} \\
-E6 $+$Flux full ($K{=}4$)    & 0.491\pmsd{0.025} & 0.713\pmsd{0.028} & 0.788\pmsd{0.030} & 0.593\pmsd{0.020} \\
-E7 $+$Flux glasses ($K{=}5$) & 0.461\pmsd{0.023} & 0.691\pmsd{0.015} & 0.771\pmsd{0.023} & 0.568\pmsd{0.012} \\
-E8 combined ($K{=}10$)       & 0.525\pmsd{0.022} & 0.770\pmsd{0.016} & 0.855\pmsd{0.018} & 0.636\pmsd{0.021} \\
-E9 Unreal-only ($K{=}3$)     & 0.296\pmsd{0.022} & 0.545\pmsd{0.014} & 0.662\pmsd{0.027} & 0.414\pmsd{0.018} \\
-E10 Flux-only ($K{=}3$)      & 0.452\pmsd{0.044} & 0.671\pmsd{0.050} & 0.750\pmsd{0.039} & 0.554\pmsd{0.039} \\
+E3  & E1 $+$ 2 front re-renders, $K{=}3$ &  \textbf{0.649}\pmsd{0.044} & 0.836\pmsd{0.026} & 0.899\pmsd{0.018} & 0.738\pmsd{0.033} \\
+E4  & E1 $+$ 2 front edits (signer swap, skin tone), $K{=}3$ &  0.505\pmsd{0.010} & 0.729\pmsd{0.010} & 0.808\pmsd{0.011} & 0.607\pmsd{0.009} \\
+E5  & E3 $+$ those 2 re-renders at both side views, $K{=}7$ &  0.437\pmsd{0.018} & 0.676\pmsd{0.019} & 0.783\pmsd{0.032} & 0.553\pmsd{0.018} \\
+E6  & E4 $+$ shirt edit, $K{=}4$ &  0.491\pmsd{0.025} & 0.713\pmsd{0.028} & 0.788\pmsd{0.030} & 0.593\pmsd{0.020} \\
+E7  & E6 $+$ glasses edit (all 4 edits), $K{=}5$ &  0.461\pmsd{0.023} & 0.691\pmsd{0.015} & 0.771\pmsd{0.023} & 0.568\pmsd{0.012} \\
+E8  & E5 $+$ E6's 3 edits, $K{=}10$ &  0.525\pmsd{0.022} & 0.770\pmsd{0.016} & 0.855\pmsd{0.018} & 0.636\pmsd{0.021} \\
+E9  & 1 re-render $\times$ 3 views, no real video, $K{=}3$ &  0.296\pmsd{0.022} & 0.545\pmsd{0.014} & 0.662\pmsd{0.027} & 0.414\pmsd{0.018} \\
+E10 & E6's 3 edits only, no real video, $K{=}3$ &  0.452\pmsd{0.044} & 0.671\pmsd{0.050} & 0.750\pmsd{0.039} & 0.554\pmsd{0.039} \\
 
 \midrule
-\multicolumn{5}{l}{\textit{Train $\to$ Test \; (query: train set, gallery: test set)}} \\
+\multicolumn{6}{l}{\textit{Train $\to$ Test \; (query: train set, gallery: test set)}} \\
 \midrule
-E1 real ($K{=}1$)            & 0.247\pmsd{0.035} & 0.446\pmsd{0.043} & 0.547\pmsd{0.037} & 0.347\pmsd{0.037} \\
-E2 real multiview ($K{=}3$)  & 0.420\pmsd{0.016} & 0.721\pmsd{0.018} & 0.805\pmsd{0.005} & 0.551\pmsd{0.014} \\
+E1  & 1 real front view (baseline), $K{=}1$ &  0.247\pmsd{0.035} & 0.446\pmsd{0.043} & 0.547\pmsd{0.037} & 0.347\pmsd{0.037} \\
+E2  & E1 $+$ 2 real side views (baseline), $K{=}3$ &  0.420\pmsd{0.016} & 0.721\pmsd{0.018} & 0.805\pmsd{0.005} & 0.551\pmsd{0.014} \\
 \rowcolor{rowhl}
-E3 $+$Unreal ($K{=}3$)       & \textbf{0.695}\pmsd{0.030} & 0.886\pmsd{0.025} & 0.934\pmsd{0.015} & 0.779\pmsd{0.024} \\
-E4 $+$Flux ($K{=}3$)         & 0.606\pmsd{0.006} & 0.827\pmsd{0.025} & 0.889\pmsd{0.011} & 0.705\pmsd{0.002} \\
-E5 $+$Unreal full ($K{=}7$)  & 0.482\pmsd{0.025} & 0.766\pmsd{0.022} & 0.859\pmsd{0.030} & 0.615\pmsd{0.023} \\
-E6 $+$Flux full ($K{=}4$)    & 0.610\pmsd{0.017} & 0.836\pmsd{0.014} & 0.902\pmsd{0.020} & 0.713\pmsd{0.012} \\
-E7 $+$Flux glasses ($K{=}5$) & 0.581\pmsd{0.019} & 0.807\pmsd{0.030} & 0.881\pmsd{0.003} & 0.683\pmsd{0.014} \\
-E8 combined ($K{=}10$)       & 0.579\pmsd{0.004} & 0.831\pmsd{0.010} & 0.901\pmsd{0.005} & 0.690\pmsd{0.005} \\
-E9 Unreal-only ($K{=}3$)     & 0.252\pmsd{0.017} & 0.484\pmsd{0.059} & 0.596\pmsd{0.063} & 0.367\pmsd{0.032} \\
-E10 Flux-only ($K{=}3$)      & 0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
+E3  & E1 $+$ 2 front re-renders, $K{=}3$ &  \textbf{0.695}\pmsd{0.030} & 0.886\pmsd{0.025} & 0.934\pmsd{0.015} & 0.779\pmsd{0.024} \\
+E4  & E1 $+$ 2 front edits (signer swap, skin tone), $K{=}3$ &  0.606\pmsd{0.006} & 0.827\pmsd{0.025} & 0.889\pmsd{0.011} & 0.705\pmsd{0.002} \\
+E5  & E3 $+$ those 2 re-renders at both side views, $K{=}7$ &  0.482\pmsd{0.025} & 0.766\pmsd{0.022} & 0.859\pmsd{0.030} & 0.615\pmsd{0.023} \\
+E6  & E4 $+$ shirt edit, $K{=}4$ &  0.610\pmsd{0.017} & 0.836\pmsd{0.014} & 0.902\pmsd{0.020} & 0.713\pmsd{0.012} \\
+E7  & E6 $+$ glasses edit (all 4 edits), $K{=}5$ &  0.581\pmsd{0.019} & 0.807\pmsd{0.030} & 0.881\pmsd{0.003} & 0.683\pmsd{0.014} \\
+E8  & E5 $+$ E6's 3 edits, $K{=}10$ &  0.579\pmsd{0.004} & 0.831\pmsd{0.010} & 0.901\pmsd{0.005} & 0.690\pmsd{0.005} \\
+E9  & 1 re-render $\times$ 3 views, no real video, $K{=}3$ &  0.252\pmsd{0.017} & 0.484\pmsd{0.059} & 0.596\pmsd{0.063} & 0.367\pmsd{0.032} \\
+E10 & E6's 3 edits only, no real video, $K{=}3$ &  0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
 \bottomrule
 \end{tabular}
 \caption{Synthetic-view arms on NGT744: cross-signer retrieval (0--1 scale),
-mean$\pm$sd over 3 seeds. Arm composition ($K$ =
-views per training item; every arm except E9/E10 includes the real
-front-view clip): E1 $=$ real front view only (video-only InfoNCE; all
-other arms SupCon over the $K$ views); E2 $=$ E1 $+$ 2 further real
-camera views; E3 $=$ E1 $+$ 2 Unreal avatars at the front camera; E4 $=$
-E1 $+$ 2 Flux identity edits (signer swap, skin tone); E5 $=$ E3 $+$ the
-same two avatars at the two remaining cameras; E6 $=$ E4 $+$ the shirt
-edit; E7 $=$ E6 $+$ the glasses edit (all four Flux edits); E8 $=$ E5
-$+$ E6's three Flux edits; E9 $=$ one Unreal avatar $\times$ 3 cameras,
-no real video; E10 $=$ E6's three Flux edits only, no real
-video. All arms share one
+mean$\pm$sd over 3 seeds. Re-renders are motion-locked Unreal
+avatars, edits are generative appearance edits, both at the front camera
+unless a view is named. E1 trains with the video-only InfoNCE (no
+positive pairs at $K{=}1$); every other arm uses SupCon over its $K$
+views. All arms share one
 sentence set (744 sentences, four signers; the 364 with a test counterpart
 are evaluated), one repeat take sampled per step, and a constant contrastive
 batch (64 signs, i.e.\ equal negatives across arms; the encoder-pass cost
