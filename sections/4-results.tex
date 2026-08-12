@@ -234,8 +234,7 @@ are evaluated), one repeat take sampled per step, and a constant contrastive
 batch (64 signs, i.e.\ equal negatives across arms; the encoder-pass cost
 scales with $K$). The learning-rate schedule is matched to the per-tier
 update count. Evaluation is fixed across arms (front-view take-0 galleries,
-held-out test queries). The length-only shortcut floor is the gallery ranked
-by $|\Delta$ clip count$|$.}
+held-out test queries).}
 % Scale harmonised to 0--1 (2026-07-28) per the todo: all values in this
 % table and tab:ngt_signer_count are the summarize_ngt_experiments.py
 % percentages divided by 100 (same values, same precision, new
@@ -302,9 +301,7 @@ leaves test$\to$train R@1 near baseline ($0.266$ vs E1 $0.234$) and, while it do
 train$\to$test ($0.420$ vs $0.247$), stays far below the matched-$K$ synthetic arms in
 both directions (E3 $0.649$/$0.695$, E4 $0.505$/$0.606$). Extra viewpoints of the
 same identities are therefore not what drives the effect; appearance and
-identity diversity is. The length-only shortcut floor (R@1 $0.005$) sits two
-orders of magnitude below every model arm, so none of these effects is a
-duration artefact.
+identity diversity is.
 
 Adding synthetic views \emph{beyond} the matched $K{=}3$ does not help, and for
 the Unreal route it hurts: the full six-view Unreal arm (E5, $K{=}7$) falls to
