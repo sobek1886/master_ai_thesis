@@ -4,34 +4,15 @@
 \centering
 \includegraphics[width=\textwidth]{method_overview.pdf}
 \caption[Method overview: appearance counterfactuals in contrastive
-training]{\textbf{Method overview.} Synthetic appearance counterfactuals
-enter contrastive training as additional positives, in two settings that
-share the recipe but are never mixed.
-\emph{Setting A (ASL Citizen, top):} an isolated-sign clip and four
-generative appearance edits of it ($\Delta$ shirt, glasses, signer, skin
-tone) form one positive set that the objective pulls together; other real
-recordings of the same sign are optional gloss-level positives (dashed
-box, weight $\lambda_{\mathrm{sup}}$), and a clip of a different sign is
-a negative. Two regimes consume this set. The \emph{head runs} train a
-SignCLIP head on the frozen Logos MViTv2-S backbone with the video--text
-InfoNCE (Eq.~\eqref{eq:nce}), the edits entering as extra video--text
-pairs. The \emph{FT runs} fine-tune the backbone itself and apply the
-contrast to its CLS embedding $z$, optimising Eq.~\eqref{eq:master}:
-gloss cross-entropy with the edits as extra labelled data, an optional
-invariance term (the cosine pull or CLS-SupCon at weight $0.5$, or SDDA,
-which pairs a KL prediction consistency at weight $1$ with an adversarial
-original-versus-edit discriminator at $10^{-4}$), and an optional
-gloss-level SupCon term over same-sign positives
-($\lambda_{\mathrm{sup}}{\in}\{0,1\}$).
-\emph{Setting B (NGT744, bottom):} for one continuous, full-sentence
-recording the positive set is $K$ views of that same take, combining
-motion-locked Unreal re-renders with generative appearance edits ($K{=}4$
-shown as an illustration, not an exhaustive gallery; $K$ varies per arm).
-A view-contrastive encoder with no text tower is trained on frozen
-backbone features using SupCon over the $K$ views and no other loss
-(Eq.~\eqref{eq:supcon}; video-only InfoNCE at $K{=}1$), with other
-sentences as negatives.
-The two embedding-space panels are schematic and per trained model.}
+training]{\textbf{Method overview.} How synthetic appearance
+counterfactuals enter contrastive training in the two settings, which
+share the recipe but are never mixed: as extra positives beside one real
+clip on the isolated-sign corpus (Setting A, ASL Citizen), or as $K$
+views of a single recording on the continuous corpus (Setting B,
+NGT744). The objectives are Eq.~\eqref{eq:nce} for the head runs,
+Eq.~\eqref{eq:master} for the FT runs, and Eq.~\eqref{eq:supcon} for
+Setting B; the loss weights shown are the ones used throughout. The two
+embedding-space panels are schematic, not plotted data.}
 \label{fig:method_overview}
 \end{figure*}
 This chapter presents the methodological contribution of the thesis: a
