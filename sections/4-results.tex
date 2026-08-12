@@ -160,32 +160,22 @@ information moves.
 
 \subsection{Which synthetic views help? Sources and dose}
 \label{sec:ngt-synthetic-views}
-Synthetic multi-view training bundles two axes at once: added
-\emph{identities} (avatars or edits) and added \emph{viewpoints} (cameras).
-The synthetic-view arms vary which views form the positive set: their
-source (real camera, Unreal avatar, generative edit) and their number
-$K$. The matched-viewpoint comparison that isolates appearance alone is
-E1 vs.\ E3 vs.\ E4, where every view sits at the front camera. The
-baseline trains on the front camera alone ($K{=}1$; with no
-positive pairs, SupCon degenerates, so this arm uses the video-only
-InfoNCE of \S\ref{sec:method-objectives});
-the treatment arms add, at the \emph{same} front camera, either both Unreal
-avatars ($K{=}3$) or two Flux identity edits (signer swap, skin tone;
-$K{=}3$), a head-to-head of the motion-locked and generative routes at
-matched $K$, matched content, and matched viewpoint; a further
-full-strength arm adds all six avatar views ($K{=}7$). All arms share an
-identical sentence set (the 744 sentences of the full four-signer pool
-with complete synthetic coverage,
-Table~\ref{tab:ngt_setups}), sample one repeat take per step, and keep the
-contrastive batch constant (64 signs, so the number of in-batch negatives is
-equal across arms; the encoder-pass cost instead scales with $K$), with the
-learning-rate schedule matched to the per-arm update count.
-Evaluation is fixed across arms: front-view, take-0 galleries and the
-held-out real test set (the frozen 364 sentences of the current test pool
-that have a trained counterpart; train and test counts are no longer
-matched (the frozen 364-sentence protocol of Table~\ref{tab:ngt_setups}), scored in both directions with
-per-sentence ranks, enabling paired comparisons (exact McNemar on top-1 correctness plus
-a bootstrap CI on the R@1 difference) rather than seed-mean gaps alone.
+Synthetic views add two things at once: \emph{identities} (avatars or
+edits) and \emph{viewpoints} (cameras). These arms separate them by
+varying which views form the positive set, their source and their number
+$K$. The comparison that isolates appearance is E1 vs.\ E3 vs.\ E4, where
+every view sits at the front camera: a head-to-head of the motion-locked
+and generative routes at matched $K$, content and viewpoint.
+
+All arms train on the same 744 sentences
+(Table~\ref{tab:ngt_setups}), sample one repeat take per step, and hold
+the contrastive batch at 64 signs, so in-batch negatives are equal across
+arms and only the encoder-pass cost scales with $K$; the learning-rate
+schedule follows each arm's update count. Evaluation is fixed: front-view
+take-0 galleries and the held-out 364-sentence test set, scored in both
+directions with per-sentence ranks so that arms can be compared pairwise
+(exact McNemar on top-1 correctness, bootstrap CI on the R@1 difference)
+rather than by seed-mean gaps alone.
 \begin{table*}[t]
 \centering
 \footnotesize
@@ -223,18 +213,12 @@ E9  & 1 re-render $\times$ 3 views, no real video, $K{=}3$ &  0.252\pmsd{0.017} 
 E10 & E6's 3 edits only, no real video, $K{=}3$ &  0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
 \bottomrule
 \end{tabular}
-\caption{Synthetic-view arms on NGT744: cross-signer retrieval (0--1 scale),
-mean$\pm$sd over 3 seeds. Re-renders are motion-locked Unreal
-avatars, edits are generative appearance edits, both at the front camera
-unless a view is named. E1 trains with the video-only InfoNCE (no
-positive pairs at $K{=}1$); every other arm uses SupCon over its $K$
-views. All arms share one
-sentence set (744 sentences, four signers; the 364 with a test counterpart
-are evaluated), one repeat take sampled per step, and a constant contrastive
-batch (64 signs, i.e.\ equal negatives across arms; the encoder-pass cost
-scales with $K$). The learning-rate schedule is matched to the per-tier
-update count. Evaluation is fixed across arms (front-view take-0 galleries,
-held-out test queries).}
+\caption{Synthetic-view arms on NGT744: cross-signer retrieval (0--1
+scale), mean$\pm$sd over 3 seeds. Re-renders are motion-locked Unreal
+avatars and edits are generative appearance edits, both at the front
+camera unless a view is named. E1 has no positive pairs at $K{=}1$ and so
+trains with the video-only InfoNCE; every other arm uses SupCon over its
+$K$ views.}
 % Scale harmonised to 0--1 (2026-07-28) per the todo: all values in this
 % table and tab:ngt_signer_count are the summarize_ngt_experiments.py
 % percentages divided by 100 (same values, same precision, new
