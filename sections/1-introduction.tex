@@ -1,7 +1,31 @@
 \chapter{Introduction}
 
 \todo{the content is here, but the introduction needs to be reorganized and rewritten}
-Sign language recognition (SLR) faces two distinct problems that this
+\todome{ADDITION START (12.08): task definition. Neither the introduction
+nor related work said what SLR is, what a gloss is, or that non-manual
+articulators are linguistically contrastive --- the last point is relied
+on later to justify preserving facial expression in the edits.}
+Sign languages are natural languages with their own phonology,
+morphology and syntax, not manual renderings of the surrounding spoken
+language. A sign is articulated by the hands, through handshape,
+location, movement and orientation, together with non-manual elements:
+facial expression, mouthing, and head and body posture. The non-manual
+channel is linguistically contrastive, so a change of facial expression
+can alter meaning as surely as a change of handshape.
+
+\emph{Sign language recognition} (SLR) is the task of mapping video of
+signing to linguistic units. It is conventionally split into
+\emph{isolated} SLR, where a clip contains a single sign and the model
+predicts a \emph{gloss} (a written label for a sign, by convention in
+capitals) from a fixed vocabulary, and \emph{continuous} SLR, where a
+sentence-length recording is transcribed as a gloss sequence. Both are
+distinct from sign language translation, which targets spoken-language
+text. This thesis works at the isolated level on one corpus and at the
+sentence level on the other, and evaluates both by retrieval rather than
+classification (\S\ref{sec:eval-protocols}).
+\todome{ADDITION END}
+
+SLR faces two distinct problems that this
 thesis addresses together. The first is \emph{data scarcity}: compared to
 speech or text, annotated sign language corpora are small, expensive to
 collect, and dominated by a handful of recording setups and
