@@ -127,7 +127,7 @@ result in Unreal Engine. Every render then shows exactly the same signing
 motion under a freely chosen appearance: motion preservation is a
 property of the pipeline, not an assumption; we call these
 \emph{motion-locked re-renders}. But this route cannot be
-applied to an existing benchmark: benchmark videos are plain RGB with no
+applied to an existing benchmark where videos are plain RGB with no
 motion capture attached, so the only way to use it at benchmark scale would
 be to record a new mocap corpus of comparable size.
 
@@ -141,17 +141,15 @@ approximation, not a substitute: the edits are per-frame appearance
 rewrites, so the signing motion is preserved only insofar as the editor
 leaves it untouched, not by construction as in the avatar renders.
 
-In this thesis we therefore study two dataset regimes. The first is a
+In this thesis we therefore study two dataset regimes, both with signer-disjoint evaluation. The first is a
 low-resource setting in which motion capture is available: NGT744, a
-small, self-recorded Dutch Sign Language (NGT) corpus with four training
-signers, evaluated across a real signer gap. There the motion-locked
+small, self-recorded Dutch Sign Language (NGT) corpus with mocap data available. There the motion-locked
 pipeline runs in full, and we compare the two counterfactual routes head
 to head, avatar re-renders against generative edits of the same videos,
 under matched conditions. The second is a higher-resource setting in
 which only RGB video is available: ASL Citizen, a larger, signer-diverse
-benchmark with signer-disjoint evaluation. There only the generative
-route applies, and we ask whether synthetic appearance data still helps
-at benchmark scale. SDDA follows the same instinct as our generative-edit arm in a single setting
+benchmark. There only the generative
+route applies, and we ask whether synthetic appearance data still helps. SDDA follows the same instinct as our generative-edit arm in a single setting
 (generative signer variety with a consistency objective on one
 studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}), and we
 return to that comparison throughout. The two settings turn out to give
@@ -163,21 +161,6 @@ the thesis.
 This thesis asks whether appearance bias is measurable in modern sign
 language representations, and whether synthetic appearance counterfactuals can reduce it. Concretely:
 
-\todome{ANSWERED 04.08 (checked both theses): keep the RQs
-model-agnostic. Ioannis's thesis (the close structural precedent: MRQ +
-5 SRQs) names no specific model or dataset inside any RQ --- only
-categories (``current embedding models'', ``decoder-based VL
-embedders''); model names appear solely in the contributions and body.
-Angelos's thesis has no formal RQs at all (prose aim + bulleted
-contributions, which do name hCITRIS). Recommended edit here: replace
-MediaPipe/Logos/MViTv2/I3D/SignCLIP/Flux9B in RQ1--RQ3 with categories
-(``pose-based, RGB-transformer, RGB-CNN, and contrastively text-aligned
-representations''; ``generative appearance edits''; ``avatar
-renders driven by motion capture'') and keep the concrete names in the
-Contributions section, which both reference theses do.}
-
-\todome{ADDITION START (12.08): first-use framing of the diversity axis
-that replaces the old in-domain/cross-signer contrast.}
 The two corpora studied here differ in appearance diversity. NGT744 is
 recorded from four signers in a single studio and evaluated in another,
 so both signer identity and capture conditions are near-constant during
@@ -185,9 +168,7 @@ training. ASL Citizen contributes 35 training signers recording
 themselves on their own webcams, so identity, lighting, framing and
 background all vary. NGT744 is additionally low-resource in absolute
 size; ASL Citizen is not large by general-vision standards, but it is
-diverse. This diversity axis, not a difference in evaluation protocol,
-separates the two settings: both are evaluated signer-independently.
-\todome{ADDITION END}
+diverse.
 
 \begin{description}
 \item[RQ1 (Diagnosis).] Do sign language video representations, namely pose-based
@@ -213,14 +194,8 @@ separates the two settings: both are evaluated signer-independently.
   Citizen), do generative appearance edits
   (clothing, glasses, skin tone, signer swap), our
   scalable approximation of motion-locked synthesis, improve
-  retrieval, either as training data for a contrastive embedding head or as
-  counterfactual supervision when fine-tuning the backbone itself?
-\todome{review note (03.08), still open: RQ3 lists the contrastive head
-before backbone fine-tuning, but the Results chapter presents backbone
-fine-tuning first --- swap the clause order when finalising. (The second
-note, that no RQ covered the matched-$K$ re-render-vs-edit head-to-head,
-is resolved: it is now RQ2b.)}
-\todome{DRAFT START (Claude 04.08): RQ4 widened from the old cosine-similarity question to the probe + geometry analyses actually run}
+  retrieval, either as counterfactual supervision when fine-tuning the backbone itself or as training data for a contrastive embedding head?
+
 \item[RQ4 (Interpretation).] What do the RQ3 interventions do
   to the embedding space itself: where do the synthetic counterfactuals
   land relative to their source videos and to a genuine signer change
@@ -236,9 +211,6 @@ is resolved: it is now RQ2b.)}
 % (lines 2141-2151); "separable synthetic region" echoes measurement 2
 % (lines 2158-2174); "distance geometry ... linear decodability" echoes the
 % two probes (lines 2008-2021).
-\todome{DRAFT END: (i) deliberately model-agnostic, matching your todo at
-line 287 about keeping RQs model-free; (ii) one long sentence --- split
-after ``region'' if you find it heavy.}
 \end{description}
 
 \section{Contributions}
