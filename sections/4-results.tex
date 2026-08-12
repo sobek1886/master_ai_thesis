@@ -328,12 +328,12 @@ top of synthetic identities: rendering the same avatars from three cameras
 the constant 64-sign negative pool shared by all arms, so negative
 starvation cannot account for the drop. The two diversity axes are, however,
 not independent: in the signer-count ablation that follows, the
-viewpoint-matched multiview panel (Table~\ref{tab:ngt_signer_count},
+appearance-over-real-viewpoints panel (Table~\ref{tab:ngt_signer_count},
 Fig.~\ref{fig:ngt_dropoff}) starts from a stronger real baseline than the
 single front view (test$\to$train roughly $0.26$--$0.28$ vs $0.21$--$0.24$, train$\to$test
 $0.32$--$0.34$ vs $0.24$--$0.26$ across $S$), and the Unreal gain measured from that
 stronger baseline is smaller ($+0.042$ to $+0.109$ R@1 across cells, vs $+0.081$
-to $+0.160$ in the single-view E1$\to$E5 panel): real viewpoints already supply part of what the
+to $+0.160$ in the appearance $+$ viewpoint panel, E1$\to$E5): real viewpoints already supply part of what the
 avatars supply. The viewpoint story is therefore graded, not null: real
 viewpoints help (mostly train$\to$test), synthetic identities at matched $K$ help
 far more, synthetic viewpoints beyond matched $K$ hurt, and viewpoint
@@ -343,7 +343,7 @@ diversity partially substitutes for identity diversity.
 \subsection{Does the synthetic gain survive real diversity? A fixed-data
 real-signer-count ablation}
 \label{sec:ngt-signer-count}
-% Matched-K panel provenance: the E3-equivalent arms (ngt_sv_unreal_R1..R4)
+% Appearance-only panel provenance: the E3-equivalent arms (ngt_sv_unreal_R1..R4)
 % never trained in the first attempt (the jobs died at start on the scratch
 % inode quota); retrained 2026-07-29 as Snellius jobs 25042412--25042415
 % (3 seeds each) and harvested from ngt_sv_unreal_R*_aggregated.json.
@@ -356,8 +356,8 @@ fixed-budget ablation design: we train at
 $S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
 subset of the next), and measure at each $S$ the paired gain
 $\Delta(S)$ of two Unreal arms over the real-only arm (E1, $K{=}1$): the
-matched-$K$ arm (the synthetic-view E3 setup, $K{=}3$: front camera plus both
-avatars' front views) and the full Unreal arm (E5, $K{=}7$).
+appearance-only arm (the synthetic-view E3 setup, $K{=}3$: front camera plus
+both avatars' front views) and the full Unreal arm (E5, $K{=}7$).
 
 The load-bearing control is that data volume is fixed while diversity
 varies: every condition trains on exactly 180 sentences (the largest even
@@ -383,9 +383,9 @@ fixed 180-sentence budget does not by itself improve cross-signer retrieval
 (R@1 $0.21$--$0.24$ test$\to$train throughout). The full-Unreal gain
 behaves as the two-regime account predicts: $\Delta(S)$ shrinks from
 $+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train; $+0.160$ to
-$+0.134$ train$\to$test), and the viewpoint-matched multiview panel repeats
+$+0.134$ train$\to$test), and the appearance-over-real-viewpoints panel repeats
 the pattern from a stronger real baseline, with smaller gains throughout.
-The matched-$K$ arm does not: it is the strongest configuration at every
+The appearance-only arm does not: it is the strongest configuration at every
 $S$ (R@1 $0.450$--$0.527$ test$\to$train, $0.523$--$0.557$
 train$\to$test), its gain is two to three times the full-Unreal gain
 ($+0.238$ to $+0.299$), it is significant in $3/3$ seeds for every cell,
@@ -400,7 +400,7 @@ $+0.29$).
 \toprule
 $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 \midrule
-\multicolumn{4}{l}{\textbf{Single-view panel}: E1 ($K{=}1$) $\to$ E5 ($K{=}7$)} \\
+\multicolumn{4}{l}{\textbf{Appearance $+$ viewpoint}: 1 real view $\to$ $+$ 6 avatar views \;(E1 $\to$ E5)} \\
 \midrule
 \multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
 1 & 0.237\pmsd{0.007} & 0.382\pmsd{0.022} & $+0.145$ \\
@@ -413,7 +413,7 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 3 & 0.244\pmsd{0.037} & 0.376\pmsd{0.019} & $+0.133$ \\
 4 & 0.239\pmsd{0.029} & 0.373\pmsd{0.041} & $+0.134$ \\
 \midrule
-\multicolumn{4}{l}{\textbf{Matched-$K$ panel}: E1 ($K{=}1$) $\to$ E3 ($K{=}3$)} \\
+\multicolumn{4}{l}{\textbf{Appearance only}: 1 real view $\to$ $+$ 2 front avatars \;(E1 $\to$ E3)} \\
 \midrule
 \multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
 1 & 0.237\pmsd{0.007} & 0.527\pmsd{0.044} & $+0.289$ \\
@@ -426,7 +426,7 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 3 & 0.244\pmsd{0.037} & 0.523\pmsd{0.030} & $+0.279$ \\
 4 & 0.239\pmsd{0.029} & 0.538\pmsd{0.035} & $+0.299$ \\
 \midrule
-\multicolumn{4}{l}{\textbf{Multiview panel}: E2 ($K{=}3$) $\to$ E2$+$avatars ($K{=}9$)} \\
+\multicolumn{4}{l}{\textbf{Appearance over real viewpoints}: 3 real $\to$ $+$6 avatars \;(E2)} \\
 \midrule
 \multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
 1 & 0.269\pmsd{0.028} & 0.378\pmsd{0.005} & $+0.109$ \\
@@ -444,16 +444,20 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 signer count $S{=}1\ldots4$, cross-signer retrieval R@1 (0--1 scale, as
 in Table~\ref{tab:ngt_synthetic_views}), mean$\pm$sd over 3 seeds; $\Delta(S)$ =
 paired gain of the Unreal arm over the matched real-only arm (unrounded
-means). Arms as in Table~\ref{tab:ngt_synthetic_views}: \textbf{single-view} = E1
-front camera vs E5 front $+$ 6 avatar views; \textbf{matched-$K$} = the
-same E1 vs E3 (front $+$ both avatar front views, the synthetic-view arms' strongest
-arm); \textbf{multiview} = E2 (3 real views) vs E2 $+$ 6 avatar views,
-a viewpoint-matched real baseline. Per-seed exact McNemar (364
-paired queries), $p<0.05$: matched-$K$ in $3/3$ seeds for every $S$ and
-direction; single-view $3/3$ except $S{=}4$ test$\to$train ($2/3$);
-multiview $3/3/2/3$ (test$\to$train) and $3/2/1/2$ (train$\to$test) for
-$S{=}1\ldots4$: robust test$\to$train, thinning in train$\to$test
-exactly where the gain is smallest. Evaluation: the frozen 364-sentence
+means). Each panel pairs a real-only
+baseline with the same arm plus motion-locked avatars, so the panels differ
+in what the avatars are free to add: identity alone at a fixed camera
+(\emph{appearance only}), identity and viewpoint together
+(\emph{appearance $+$ viewpoint}), or identity on top of a baseline that
+already has real viewpoint diversity (\emph{appearance over real
+viewpoints}); arm codes refer to
+Table~\ref{tab:ngt_synthetic_views}. Per-seed exact McNemar (364 paired
+queries), $p<0.05$: appearance-only in $3/3$ seeds for every $S$ and
+direction; appearance $+$ viewpoint $3/3$ except $S{=}4$
+test$\to$train ($2/3$); appearance over real viewpoints $3/3/2/3$
+(test$\to$train) and $3/2/1/2$ (train$\to$test) for $S{=}1\ldots4$:
+robust test$\to$train, thinning in train$\to$test exactly where the gain
+is smallest. Evaluation: the frozen 364-sentence
 protocol of Table~\ref{tab:ngt_setups}.
 \todome{04.08, from your overflow todo: in-table panel headers shortened
 (the multiview one also had a duplicated parenthetical), arm
@@ -466,15 +470,16 @@ numbers changed.}}
 \centering
 \includegraphics[width=.9\textwidth]{ngt_dropoff.png}
 \caption[Unreal appearance gain against real-signer count]{Unreal appearance gain $\Delta(S)$ against real-signer count, for the
-three panels of Table~\ref{tab:ngt_signer_count}: single-view (E1 $\to$ E5,
-$K{=}1\to K{=}7$), matched-$K$ (E1 $\to$ E3, $K{=}1\to K{=}3$) and the
-viewpoint-matched multiview panel ($K{=}3\to K{=}9$), in each retrieval
-direction. Dashed lines are least-squares fits, annotated with slope per
-added signer and $R^2$. The full-Unreal and multiview gains shrink as real
-signer diversity grows, and the multiview gain is smaller throughout,
-both consistent with the two-regime reading that synthetic appearance
-variety substitutes for absent real diversity. The matched-$K$ gain is the
-largest at every $S$ and nearly flat in train$\to$test.}
+three panels of Table~\ref{tab:ngt_signer_count}: appearance $+$ viewpoint
+(E1 $\to$ E5), appearance only (E1 $\to$ E3), and appearance over real
+viewpoints (E2 $\to$ E2$+$avatars), in each retrieval direction. Dashed
+lines are least-squares fits, annotated with slope per added signer and
+$R^2$. The two panels whose avatars also add viewpoints shrink as real
+signer diversity grows, and the gain measured over the three-real-view
+baseline is smaller throughout, both consistent with the two-regime
+reading that synthetic appearance variety substitutes for absent real
+diversity. The appearance-only gain is the largest at every $S$ and
+nearly flat in train$\to$test.}
 \label{fig:ngt_dropoff}
 \end{figure*}
 
