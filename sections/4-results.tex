@@ -448,17 +448,14 @@ with dictionary retrieval and a linear probe on the identical gallery.
 Training a
 contrastive head on top of the frozen features follows in the next
 subsection.
-\todome{ADDITION START (Claude 12.08): the subsection never named its own
-table, and the row-naming key sat in the caption; both fixed here.}
 Table~\ref{tab:backbone_ft_retrieval} reports the result. Its rows name what
 is added to plain gloss cross-entropy: \emph{CE only} is the unchanged
 backbone trained with cross-entropy on the real videos under our recipe,
-\emph{$+$ synth.\ data} adds the Flux edits as extra training items,
+\emph{$+$ synth.\ data} adds the generative appearance edits as extra training items,
 \emph{$+$ cosine consistency}, \emph{$+$ CLS-SupCon} and \emph{$+$ SDDA}
 each add the named invariance term on top of real and synthetic data,
 and \emph{$+$ gloss-SupCon} adds a supervised-contrastive term over
 same-gloss clips (\S\ref{sec:method-losses}).
-\todome{ADDITION END}
 
 \begin{table*}[t]
 \centering
@@ -554,8 +551,7 @@ of 85.82 avoids the linear-probe damage of single-stage consistency
 training. 
 Whether the consistency loss in fact pulls augmented copies together is
 taken up in \S\ref{sec:results-ft-probes} and
-\S\ref{sec:results-aug-geometry}: it does on the training pairs, but not
-on held-out ones.
+\S\ref{sec:results-aug-geometry}.
 
 \subsection{SignCLIP head on frozen Logos/I3D features}
 We next evaluate the appearance edits as training data for a contrastive
