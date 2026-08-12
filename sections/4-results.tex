@@ -540,15 +540,14 @@ matched full-unfreeze pair makes this precise
 and the per-variant consistency ablations replicate it: all four
 single-variant runs (glasses/shirt/signer-swap/skin) land in a 0.14-point
 band around the aggregate (retrieval R@1 85.48--85.62), so no individual edit
-type carries hidden signal. Notably, this null now stands \emph{twice}:
-the top-2 rows were fully retrained on the regenerated 512px
-augmentations, and the retrained runs moved by only $0.01$--$0.3$
-retrieval points (probe values by up to $1.8$) relative to their
-first-generation counterparts, reproducing the pattern and calibrating
-how little weight the within-block orderings can bear. (iv) Cosine consistency actively damages the
-linear probe (probe R@1 drops to 82.27 at top-2 and 82.45 at top-6;
-this value also moved by 1.8 points between the two training
-generations, the least stable in the table) while its retrieval score
+type carries hidden signal. Four of the top-2 configurations were
+trained a second time on independently regenerated edits and reproduced
+the pattern; retrieval moved by $0.01$--$0.3$ points and probe values by
+up to $1.8$, which is the spread the within-block orderings have to be
+read against. (iv) Cosine consistency actively damages the
+linear probe (probe R@1 drops to 82.27 at top-2 and 82.45 at top-6,
+and it is also the least stable value in the table, moving $1.8$ points
+between repeats) while its retrieval score
 looks ordinary: the positive-only pull distorts the geometry in a way
 nearest-neighbour retrieval tolerates but a linear head does not. The
 two-stage schedule (\S\ref{sec:setup-training}: the consistency term
