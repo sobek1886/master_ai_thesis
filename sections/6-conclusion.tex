@@ -52,9 +52,10 @@ diversity that is absent.
 On the large, signer-diverse ASL Citizen benchmark the same idea leaves
 recognition essentially unchanged across every objective family we try
 (augmentation-as-data, cosine consistency, supervised contrast, and
-adversarial invariance), with one modest exception: adding the
-counterfactuals to a frozen-feature contrastive head is worth $+1.1$
-R@1, while backbone fine-tuning gains nothing over plain cross-entropy.
+adversarial invariance): backbone fine-tuning gains nothing over plain
+cross-entropy, and the frozen backbone's linear probe remains the best in
+the table, so no intervention we tried made the representation carry more
+of the task than it already did.
 % "essentially unchanged" + family list from the abstract, lines 93-95;
 % "+1.1 R@1 on a frozen-feature head, nothing at the backbone" from line
 % 2423; "No appearance or signer-invariance objective beats plain

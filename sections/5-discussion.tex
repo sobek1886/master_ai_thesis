@@ -6,9 +6,12 @@
 Our central empirical pattern is a contrast between regimes. In the high-diversity regime, on
 ASL Citizen~\cite{aslcitizen}, a large, signer-independent benchmark
 (crowdsourced, 52 signers) whose training split already exposes the model
-to many signers, appearance
-interventions bought
-little: +1.1 R@1 on a frozen-feature head, nothing at the backbone. In the
+to many signers, the appearance interventions returned a null: no
+objective family beats plain cross-entropy at matched depth, and the
+frozen backbone's linear probe stays the best in
+Table~\ref{tab:backbone_ft_retrieval} on every probe metric, so nothing we
+trained made the task more accessible than the untouched representation
+already made it. In the
 low-data NGT744 setting, where the model must bridge a real signer gap from a
 handful of recordings, motion-locked synthetic counterfactuals produced
 a clear gain. The simplest reading is that appearance invariance is not a
@@ -49,8 +52,11 @@ pretrained backbone that carries over to ASL Citizen with no
 target-corpus training needs
 the full synthetic-appearance intervention to bridge the NGT744 signer gap.
 
-This reading also explains why our ASL Citizen null differs from SDDA's positive
-result~\cite{fuSignerDiversitydrivenData2024b} on Phoenix2014T: their
+This reading also bears on SDDA's positive
+result~\cite{fuSignerDiversitydrivenData2024b} on PHOENIX-2014T, with a
+caveat that has to come first: SDDA reports sign language translation on
+continuous video where we report isolated-sign retrieval, so what follows
+compares regimes, not two measurements of the same quantity. Their
 generatively augmented contrastive setup operates on a studio-recorded corpus
 with far less signer variety than ASL Citizen (PHOENIX-2014T contains nine signers in
 total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT744
@@ -60,11 +66,11 @@ total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT744
 % paper's comparison table. Cited to SDDA since it is already in the bib and
 % is the paper whose corpus is being discussed.
 regime than to our ASL Citizen regime.
-Notably, the SDDA authors themselves
-flag the low visual realism of their synthesized signers as a limitation;
-our generative editing pipeline produces markedly more realistic edits,
-yet realism alone did not rescue the high-diversity intervention: evidence
-that the binding constraint is the regime, not image quality.
+The SDDA authors flag the low visual realism of their synthesised signers
+as a limitation. We draw no realism comparison against them: this thesis
+measures no image-quality metric, and the one geometric readout we do have
+runs the other way, since our edited clips stay near-perfectly separable
+from real video (\S\ref{sec:results-aug-geometry}).
 % Piotr's question (2026-07-12): "could we directly compare to SDDA by
 % training the model on Phoenix?" Answer, per the resolution report: not as
 % a small job — SDDA is a sign language TRANSLATION result (BLEU/ROUGE on
@@ -83,39 +89,6 @@ independently: under a full signer-disjoint re-evaluation of
 PHOENIX-2014T, translation scores roughly halve and vary by a factor of
 ${\sim}4$ across the choice of held-out
 signer~\cite{artiagaRethinkingSignLanguage2025}.
-\paragraph{A conjecture about the pretraining literature.}
-The form-organisation result (\S\ref{sec:results-iconicity-main}) suggests
-a reading of one finding in the Logos paper that its authors do not
-themselves offer. They report that multi-dataset co-training transfers
-better to a low-resource target than conventional fine-tuning from their
-pretrained checkpoint, and they motivate this only by the resulting
-accuracy and by the convenience of a single
-model~\cite{ovodovLogosWellTemperedPretrain2025}. Their evaluation is
-target-set accuracy throughout, so a fine-tune that raises accuracy while
-eroding the structure of the representation would be invisible to it,
-which is precisely what we measure here: cross-entropy fine-tuning buys
-$2.4$ retrieval points over the frozen backbone
-(Table~\ref{tab:backbone_ft_retrieval}) and flattens the space's form
-organisation on the way. Co-training keeps the source objective
-alive and would not pay that price.
-Two things make the conjecture worth stating and neither makes it safe to
-assert. It is consistent with an observation they report but leave
-unexplained, that training on ungrouped visually-similar labels degrades
-accuracy even for classes that are not themselves visually similar, which
-is what a globally reorganised space would produce. But their own numbers
-show fine-tuning \emph{beating} their frozen encoder on the target, so
-nothing here says fine-tuning is harmful in their setting; and their
-setting differs from ours in a way that matters. They fine-tune a
-Russian-language pretrain onto a language it has never seen, where the
-target vocabulary is genuinely new. Our checkpoint is the co-trained
-Logos$+$AUTSL$+$WLASL model, so it has already been trained on ASL, and
-ASL Citizen shares $1{,}075$ glosses with
-WLASL by the ASL Citizen authors' own count~\cite{aslcitizen}. A
-substantial part of our target vocabulary was therefore already covered
-before fine-tuning began, which is one reading of why the gain is small
-while the structural cost is not. Testing this properly needs the
-intermediate checkpoints of a co-training run, which are not public.
-
 \section{RGB versus pose, revisited}
 \label{sec:discussion-rgb-pose}
 Pose input is widely adopted in SLR partly \emph{because} it is assumed
