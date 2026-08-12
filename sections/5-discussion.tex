@@ -351,18 +351,25 @@ complexity.
 
 \section{Future work}
 \label{sec:future-work}
-\textbf{Parametric avatars in place of per-avatar mocap retargeting.} The
-natural next step for the NGT744 pipeline is to replace hand-built
-CharacterCreator avatars with parametric SMPL-X
-bodies~\cite{pavlakosExpressiveBodyCapture2019a}: the same Unreal rendering
-strengths, but with appearance and body shape as sampled parameters rather
-than authored assets, enabling appearance sweeps at scale. Diffusion-based
-sign production directly in SMPL-X pose
-space~\cite{baltatzisNeuralSignActors2024a} and large 3D sign
-corpora~\cite{yuSignAvatarsLargeScale3D2025} make this increasingly
-practical, though driving avatars from estimated~\cite{kanazawaEndtoEndRecoveryHuman2018} or generated SMPL-X
-parameters remains harder than working directly with recorded motion
-capture, as our pipeline does.
+\todome{REWRITTEN (12.08) to your clarification: the point is replacing
+the \emph{motion source}, not the avatar assets. The previous version
+proposed dropping CharacterCreator for SMPL-X bodies, which was not the
+intended claim.}
+\textbf{Recovering motion from video rather than from motion capture.}
+The binding constraint on the motion-locked route is not the avatar but
+the capture: it needs recorded motion capture, which is why it could not
+be run on ASL Citizen (\S\ref{sec:method-diffusion}) and why the
+generative edits exist as an approximation at all. Estimating parametric
+SMPL-X~\cite{pavlakosExpressiveBodyCapture2019a} pose and shape directly
+from RGB video would remove that constraint: the recovered parameters
+could drive the same rendering pipeline on any corpus, with the avatars
+themselves unchanged. SignAvatars~\cite{yuSignAvatarsLargeScale3D2025}
+and Neural Sign Actors~\cite{baltatzisNeuralSignActors2024a} indicate the
+direction, supplying sign-specific SMPL-X data and generation in that
+space, but video-to-parameter
+estimation~\cite{kanazawaEndtoEndRecoveryHuman2018} would have to improve
+first: sign meaning depends on fine handshape and facial expression,
+precisely what body-level estimators reconstruct least reliably.
 
 \textbf{Signer identity persists through the synthetic-avatar swap.}
 Even

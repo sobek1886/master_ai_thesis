@@ -1027,20 +1027,14 @@ about half as far as a genuine signer change (normalised displacement
 $0.44$--$0.53$), while signer swap moves it exactly as far as one
 ($1.04$--$1.05$) and flips the nearest signer prototype for $91\%$ of
 training pairs: the intended identity change registers. Sign content
-survives every edit (gloss retention $0.70$--$0.75$ on the unbiased
-held-out pairs; lower, $0.49$--$0.63$, on the training pairs, which by
-construction target the hardest classes).
-\todome{NUMBERS BUG (03.08, verified against the table above): held-out
-gloss@1 is $0.70$/$0.75$/$0.74$ for glasses/shirt/skin tone but
-$\mathbf{0.59}$ for signer swap --- the quoted $0.70$--$0.75$ silently
-drops the signer-swap value while the sentence claims content ``survives
-every edit''. Proposed rewrite: ``Sign content largely survives the
-appearance edits (gloss retention $0.70$--$0.75$ on held-out pairs for
-glasses/shirt/skin tone) but takes a real hit from the identity change
-($0.59$ for signer swap); on the training pairs, which by construction
-target the hardest classes, retention is $0.49$--$0.63$.'' The drop is
-worth owning: the strongest edit type also costs the most sign content,
-which connects to the hallucination limitation.} Yet the same augments are
+largely survives the appearance edits (gloss retention $0.70$--$0.75$ on
+the unbiased held-out pairs for glasses, shirt and skin tone) but takes a
+real hit from the identity change ($0.59$ for signer swap); on the
+training pairs, which by construction target the hardest classes,
+retention is lower throughout ($0.49$--$0.63$). That the strongest edit
+type is also the one that costs the most sign content matches the
+hallucination risk flagged for it in advance
+(\S\ref{subsection:GAE}). Yet the same augments are
 near-perfectly linearly separable from real video (AUC $0.96$--$1.00$,
 unchanged by $\ell_2$-normalisation, so the gap is directional rather
 than a magnitude artifact): each counterfactual sits close to its source
