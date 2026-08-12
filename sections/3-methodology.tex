@@ -525,10 +525,7 @@ once more than the top two blocks train ($\eta = 0.75$ at $k{=}6$,
 $\eta = 0.9$ at $k{=}16$; uniform learning rate at $k{=}2$). A two-stage
 variant resumes a
 converged CE-only checkpoint (backbone and head) and continues at
-$100\times$ lower learning rate with the consistency term switched on. Note
-that with $k \leq 6$ the invariance losses only ever reach the top,
-semantic blocks, never the early high-resolution stages where
-appearance is encoded.
+$100\times$ lower learning rate with the consistency term switched on.
 
 Independent of our fine-tuning choices, one design choice of the Logos
 pretraining recipe matters throughout this thesis, because it is baked
@@ -550,13 +547,13 @@ heads of the next subsection, the signer probes, and the NGT744 encoder.
 \subsection{SignCLIP-head training (ASL Citizen)}
 A video--text head is trained from scratch or fine-tuned on top of
 frozen features. The head is the SignCLIP dual-encoder
-architecture~\cite{jiangSignCLIPConnectingText2024}, built on
+architecture~\cite{jiangSignCLIPConnectingText2024}(built on
 VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021}, itself the
-video descendant of CLIP~\cite{radfordLearningTransferableVisual2021}\todome{ADDITION 11.08: CLIP was discussed via SignCLIP but never cited (candidates Tier 3 \#2); CLIP-to-sign adaptation is an active line~\cite{alyamiCLIPSLAParameterEfficientCLIP2025}} (12-layer BERT
-video encoder, 12-layer BERT text encoder, video--text InfoNCE),
+video descendant of CLIP~\cite{radfordLearningTransferableVisual2021}), 12-layer BERT
+video encoder, 12-layer BERT text encoder, video--text InfoNCE,
 adapted to take video features other than its original MediaPipe pose
 input by swapping the first linear layer of its video-token projection
-MLP. SignCLIP is pose-based by design; its authors evaluated an RGB
+MLP. Original SignCLIP is pose-based; its authors evaluated an RGB
 alternative (I3D) only on the simpler fingerspelling task before
 committing to pose input, so this adaptation lets us run the
 RGB-versus-pose comparison they left open, within one architecture, on
@@ -581,8 +578,7 @@ published results of the original SignCLIP model, and our own use of
 pose is analytic; the raw keypoint features (a 609-dimensional
 mean-pooled or 1218-dimensional mean+std-pooled per-video vector; for
 ASL Citizen root-centred at the shoulder midpoint and scale-normalised
-to shoulder width per frame, so they carry body proportions, posture,
-and movement rather than camera framing) are evaluated directly in the
+to shoulder width per frame are evaluated directly in the
 signer probes of \S\ref{sec:results-diagnosis}, where the original
 SignCLIP model's embedding space is probed alongside them.
 
@@ -592,8 +588,7 @@ video encoder (12 BERT layers over frozen 768-d Logos features) is
 trained \emph{without a text tower}: NGT744 has no gloss vocabulary, so the
 unit of supervision is the sign-recording identity itself. Each training
 item bundles the $K$ views of one sign (the real front camera plus,
-depending on the arm, real side cameras, Unreal avatar renders, or Flux
-appearance edits), and a supervised contrastive loss pulls all $K$
+depending on the arm, real side cameras, motion locked re-renders, or generative appearance edits, and a supervised contrastive loss pulls all $K$
 views of a sign together while pushing other signs apart (video-only
 InfoNCE at $K{=}1$, where no positive pairs exist). The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
