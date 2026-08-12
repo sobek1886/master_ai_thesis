@@ -300,9 +300,11 @@ arange(B).repeat\_interleave(K), and the run configs.}
 There the $K$ views of one item are a source video together with its
 $K-1$ appearance edits ($K{=}3$ uses two edits, $K{=}5$ all four), and
 they share one \emph{instance} label, so every other clip in the batch
-counts as a negative, including other recordings of the same sign. This
-stage therefore carries no gloss supervision whatsoever; and because it
-removes the video--text objective, its retrieval scores are not directly
+counts as a negative, including other recordings of the same sign.
+Eq.~\eqref{eq:supcon} is the whole objective of this stage: no
+cross-entropy term, no text tower, and no weighting against another loss.
+It therefore carries no gloss supervision whatsoever, and because it
+removes the video--text objective its retrieval scores are not directly
 comparable with the aug-as-data rows.
 \todome{ADDITION END}
 
@@ -325,8 +327,12 @@ that replaces it, or the pair of SDDA terms with their own weights),
 $\mathcal{L}_{\mathrm{sup}}^{\mathrm{gloss}}$ for the optional gloss-level
 contrastive auxiliary, and the runs differ only in which weights are
 non-zero and in what the invariance term treats as positives. The
-paragraphs that follow define these ingredients; they belong to the
-backbone fine-tuning runs only, not to the video--text head.
+paragraphs that follow define these ingredients for the backbone
+fine-tuning runs. One of them, the supervised-contrastive form of
+Eq.~\eqref{eq:supcon}, is reused by the two head components as well; what
+changes is which clips count as positives and whether the term is one
+weighted ingredient among several or the entire objective
+(Table~\ref{tab:objective_map}).
 
 \paragraph{Cross-entropy (all backbone fine-tuning runs).}
 Standard softmax cross-entropy $\mathcal{L}_{\mathrm{CE}} =
@@ -364,8 +370,10 @@ batch is a negative,
 \end{equation}
 with temperature $\tau = 0.07$, where $u$ and $v$ range over the $N$ clips
 in the batch (anchors with an empty positive set are excluded from the
-average). Here this term takes the pull's place in the total loss, with the
-same weight $\lambda_{\mathrm{cons}} = 0.5$. Unlike the consistency pull, this also
+average). In the backbone fine-tuning runs this term takes the pull's
+place inside Eq.~\eqref{eq:master}, with the
+same weight $\lambda_{\mathrm{cons}} = 0.5$; the head runs that use the
+same form (above) apply it alone and unweighted. Unlike the consistency pull, this also
 repels different videos, preventing representation collapse; because the
 positive set is the source instance, that repulsion applies to other
 recordings of the same gloss as much as to different glosses.
