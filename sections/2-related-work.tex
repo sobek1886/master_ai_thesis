@@ -49,63 +49,61 @@ the signing held fixed, removes the shortcut. That question is where the
 appearance-bias literature of the next section comes in.
 \section{Addressing appearance bias}
 \label{sec:related-appearance-bias}
-The problem that recognition benchmarks reward static appearance cues was
-formalised early: RESOUND quantifies the representation bias of action
-datasets and shows current ones are biased towards static objects, scenes
-and people~\cite{liRESOUNDActionRecognition2018}. Several recent
-action-recognition methods attempt to address such bias by enforcing
-invariance through paired or aligned training signals under controlled
-appearance change, rather than relying solely on standard data
-augmentation. Examples include Motion Coherent
-Augmentation~\cite{zhangDontJudgeLook2024} and Tubelet-Contrastive
-Self-Supervision~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b},
-which structure positive pairs around shared motion content; adversarial
-debiasing of both foreground and background
-cues~\cite{fioresiALBARAdversarialLearning2025,
-duanMitigatingRepresentationBias2023}; and causal interventions that
-separate action from background at training and test
-time~\cite{rastegarBackgroundNoMore2024}.
+\todome{REWRITE (12.08): restructured into problem, action-recognition
+remedies, why they do not transfer, sign language work, our position. The
+opener said the problem ``was formalised early'', which RESOUND does not
+do: it measures dataset bias empirically.}
+That action-recognition benchmarks reward static appearance cues is an
+empirical finding rather than an assumption: RESOUND quantifies the
+representation bias of action datasets and shows the standard ones are
+skewed towards static objects, scenes and
+people~\cite{liRESOUNDActionRecognition2018}.
 
-Within sign language specifically, Atwell et al.\ study and mitigate
-demographic bias directly on ASL Citizen, applying bias-mitigation
-techniques during training and showing they can reduce performance
-disparities without a loss of
-accuracy~\cite{atwellStudyingMitigatingBiases2024}; a Deaf-led review
-documents systemic, field-level biases in how sign language AI research
-selects datasets, labels, and modelling
-assumptions~\cite{desaiSystemicBiasesSign2024}. These works address
-demographic disparities and research practice rather than intervening on the
-appearance content of the training distribution itself, so appearance bias
-in learned sign representations is not untouched in the sign language
-domain, but it remains far less directly tackled than in action
-recognition. SignRep~\cite{wongSignRepEnhancingSelfSupervised2025}
-suppresses appearance on the representation side, with an adversarial
-style loss during self-supervised pretraining
-(\S\ref{sec:related-work-modality} discusses its design). The closest
-data-side intervention is SDDA, which pairs
-diffusion-generated signer variety with a consistency objective on a
-single studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}
-(discussed under Synthetic data below); our work differs in using
-\emph{motion-locked} re-renders (mocap-driven avatar renders)
-alongside generative edits, and in asking what the intervention does to
-the learned embedding space, across two data regimes, rather than only to
-task accuracy.
-\todome{ADDITION START (Claude 11.08): nearest-neighbour precedents, candidates \#2--\#3; pre-empts the ``is this not just anonymization?'' question}
-Appearance editing of sign video itself has precedent, with a different
-goal: diffusion-based editing has been used to \emph{anonymize} sign
-video, changing signer appearance while preserving the linguistic
-content~\cite{xiaDiffusionModelsSign2024}, and pose-based appearance
-transfer re-renders one signer's motion under another signer's
-appearance in skeleton space~\cite{moryossefPoseBasedSignLanguage2025}.
-This thesis repurposes the same edit family as training-time
-counterfactuals, realised in pixel space so that the RGB modality the
-rest of the pipeline consumes is retained, and asks what the edits buy
-the recognizer rather than the privacy of the signer.
-\todome{ADDITION END} Nor do the action-recognition interventions above transfer
-one-to-one: they separate the actor from a biased background or scene,
-whereas in signing the confound sits on the signer's own body, so
+Remedies in action recognition fall into two families. The first
+restructures the training signal so that positives share motion content
+while appearance varies, as in Motion Coherent
+Augmentation~\cite{zhangDontJudgeLook2024} and tubelet-contrastive
+self-supervision~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b}.
+The second removes the appearance signal directly, either adversarially
+across foreground and background
+cues~\cite{fioresiALBARAdversarialLearning2025,
+duanMitigatingRepresentationBias2023} or through causal interventions
+that separate action from background at training and test
+time~\cite{rastegarBackgroundNoMore2024}. Neither family transfers to
+signing one-to-one: both separate the actor from a biased background or
+scene, whereas in signing the confound sits on the signer's own body, so
 appearance must change while fine-grained hand and face motion is
 preserved, a much stronger constraint than background replacement.
+
+Within sign language, the nearest work targets demographic disparity and
+research practice rather than the appearance content of the training
+distribution. Atwell et al.\ study and mitigate demographic bias on ASL
+Citizen, reducing performance disparities without a loss of
+accuracy~\cite{atwellStudyingMitigatingBiases2024}, and a Deaf-led review
+documents systemic biases in how sign language AI research selects
+datasets, labels and modelling
+assumptions~\cite{desaiSystemicBiasesSign2024}.
+SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} intervenes on the
+representation instead, suppressing appearance with an adversarial style
+loss during self-supervised pretraining
+(\S\ref{sec:related-work-modality}). The closest data-side intervention
+is SDDA, which pairs diffusion-generated signer variety with a
+consistency objective on a single studio-recorded
+corpus~\cite{fuSignerDiversitydrivenData2024b}.
+
+Editing the appearance of sign video has precedent, with a different
+goal: diffusion-based editing has been used to \emph{anonymise} sign
+video, changing signer appearance while preserving linguistic
+content~\cite{xiaDiffusionModelsSign2024}, and pose-based appearance
+transfer re-renders one signer's motion under another's appearance in
+skeleton space~\cite{moryossefPoseBasedSignLanguage2025}. This thesis
+repurposes that edit family as training-time counterfactuals, in pixel
+space so that the RGB modality the rest of the pipeline consumes is
+retained, and asks what the edits buy the recogniser rather than the
+privacy of the signer. It differs from SDDA in pairing generative edits
+with motion-locked re-renders, in asking what the intervention does to
+the embedding space rather than only to task accuracy, and in testing
+both across two diversity regimes.
 % Framing note (2026-07-11, applied 2026-07-28): the qualification of story
 % point 1 ("not well-tackled in the SL domain" rather than "unexplored")
 % acknowledges Atwell/Desai/SDDA while keeping the novelty claim narrow and
