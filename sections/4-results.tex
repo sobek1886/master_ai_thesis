@@ -374,10 +374,11 @@ $S{<}4$, gallery videos of signers absent from that condition's training.
 
 
 Table~\ref{tab:ngt_signer_count} shows both outcomes at once. The
-real-only arm barely moves with $S$: spreading the same 180 sentences
-over one, two, three or four real signers leaves cross-signer retrieval at
-R@1 $0.21$--$0.24$ (test$\to$train), so real signer variety at constant
-data volume does not by itself help. The avatar gain does move, and in the
+real-only arm of each panel barely moves with $S$: spreading the same 180
+sentences over one, two, three or four real signers leaves cross-signer
+retrieval at R@1 $0.21$--$0.24$ from one real view and $0.26$--$0.28$ from
+three (test$\to$train), so real signer variety at constant data volume
+does not by itself help. The avatar gain does move, and in the
 direction the two-regime account predicts: appearance $+$ viewpoint
 shrinks from $+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train),
 and appearance over real viewpoints repeats the pattern from a stronger
@@ -437,8 +438,10 @@ $S$ (signers) & real-only arm & $+$avatar arm & $\Delta(S)$ \\
 scale), mean$\pm$sd over 3 seeds. $\Delta(S)$ is the paired gain of the
 $+$avatar arm over the real-only arm in the same panel, from unrounded
 means.
-Arm codes are Table~\ref{tab:ngt_synthetic_views}'s, except E2$+$av., the
-E2 arm carrying the same six avatar views ($K{=}9$). Per-seed exact
+Codes name the configurations of
+Table~\ref{tab:ngt_synthetic_views} (plus E2$+$av., the E2 arm carrying
+the same six avatar views, $K{=}9$), but every arm here is retrained at
+the 180-sentence budget, so absolute values differ from that table. Per-seed exact
 McNemar ($p<0.05$) holds in $3/3$ seeds for appearance-only everywhere,
 $3/3$ for appearance $+$ viewpoint except $S{=}4$ test$\to$train, and
 $3/3/2/3$ and $3/2/1/2$ (the two directions) for appearance over real
