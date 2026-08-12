@@ -448,6 +448,17 @@ with dictionary retrieval and a linear probe on the identical gallery.
 Training a
 contrastive head on top of the frozen features follows in the next
 subsection.
+\todome{ADDITION START (Claude 12.08): the subsection never named its own
+table, and the row-naming key sat in the caption; both fixed here.}
+Table~\ref{tab:backbone_ft_retrieval} reports the result. Its rows name what
+is added to plain gloss cross-entropy: \emph{CE only} is the unchanged
+backbone trained with cross-entropy on the real videos under our recipe,
+\emph{$+$ synth.\ data} adds the Flux edits as extra training items,
+\emph{$+$ cosine consistency}, \emph{$+$ CLS-SupCon} and \emph{$+$ SDDA}
+each add the named invariance term on top of real and synthetic data,
+and \emph{$+$ gloss-SupCon} adds a supervised-contrastive term over
+same-gloss clips (\S\ref{sec:method-losses}).
+\todome{ADDITION END}
 
 \begin{table*}[t]
 \centering
@@ -488,29 +499,14 @@ subsection.
 \;\;$+$ SDDA & \textbf{93.39} & \textbf{85.00} & 98.54 & 99.11 & \textbf{85.55} & 97.60 & 98.46 \\
 \bottomrule
 \end{tabular}
-\caption{Frozen-feature retrieval on ASL Citizen after backbone
-fine-tuning, all on the identical full gallery. In the reference block,
-$^{\dagger}$ marks numbers taken from the cited papers (ST-GCN and I3D
-trained end-to-end~\cite{aslcitizen}; SignRep on frozen
-features~\cite{wongSignRepEnhancingSelfSupervised2025}), all under the
-same dictionary-retrieval protocol; those works report retrieval only,
-and SignRep does not report R@10. The Logos number is produced by us:
-its authors~\cite{ovodovLogosWellTemperedPretrain2025} did not evaluate
-on ASL Citizen, so we score their unmodified frozen backbone ourselves.
-It is the first of two baseline tiers; the CE-only rows are the second,
-standard fine-tuning of the same backbone. Bold marks the numeric best
-per column within each block; a blue cell marks the numeric best in the
-table for that column (probe values exist only for our rows). These
-marks are descriptive, not inferential: each cell is a single training
-run, and within-block differences of a few tenths of a point are within
-training and evaluation noise; near-ties should be read as equivalent. Row naming: \emph{CE only}
-$=$ the unchanged Logos backbone fine-tuned with plain gloss
-cross-entropy on the real videos under our recipe; $+$ synth.\ data $=$
-CE with the Flux synthetic edits added as training items; $+$ cosine
-consistency, $+$ CLS-SupCon, and $+$ SDDA $=$ CE on real $+$ synthetic
-data plus the named invariance term; $+$ gloss-SupCon adds a
-supervised-contrastive term over same-gloss clips
-(\S\ref{sec:method-losses}).
+\caption[Frozen-feature retrieval after backbone fine-tuning]{Dictionary
+retrieval and linear-probe accuracy on ASL Citizen after backbone
+fine-tuning, all on the identical full gallery; row names are explained
+in the text. $^{\dagger}$ marks values taken from the cited papers under
+the same retrieval protocol, which report retrieval only, and SignRep
+does not report R@10. Bold marks the best value per column within a
+block, a blue cell the best in that column table-wide. Every cell is a
+single training run, so near-ties should be read as equivalent.
 }
 \label{tab:backbone_ft_retrieval}
 \end{table*}
@@ -556,12 +552,10 @@ rate) fits the same pattern: its retrieval R@1 of 85.02 sits within the
 plain-CE range (84.96--85.95) rather than above it, while its probe R@1
 of 85.82 avoids the linear-probe damage of single-stage consistency
 training. 
-The mechanistic question of whether the consistency loss actually pulls
-augmented copies together is now answered directly, not left to this
-paragraph: \S\ref{sec:results-ft-probes} (linear decodability) and
-\S\ref{sec:results-aug-geometry} (feature-space geometry, training vs.\
-held-out pairs) give a converging, load-bearing answer: yes on training
-pairs, not on held-out ones.
+Whether the consistency loss in fact pulls augmented copies together is
+taken up in \S\ref{sec:results-ft-probes} and
+\S\ref{sec:results-aug-geometry}: it does on the training pairs, but not
+on held-out ones.
 
 \subsection{SignCLIP head on frozen Logos/I3D features}
 We next evaluate the appearance edits as training data for a contrastive
