@@ -207,74 +207,10 @@ the same videos retain roughly $65$--$80\%$ of this gain: a
 substantial but incomplete substitute for the motion-locked renders.
 % "65--80%" and "substantial but incomplete substitute" from lines
 % 1518-1524 (the E3-vs-E4 head-to-head).
-\todome{DRAFT END: the third sentence is the matched-$K$ Unreal-vs-Flux
-comparison your 03.08 note (lines 309-317) wants surfaced somewhere in the
-front matter --- if you fold it into RQ2/RQ4 instead, cut it here to avoid
-saying it twice. Abstract rounds to 0.23/0.65; the tables print
-0.234/0.649 --- keep whichever precision you want consistent between
-Contributions and Abstract.}
 
 \textbf{Second, a benchmark-scale evaluation of the generative
-approximation in a high-diversity data setting.} On ASL Citizen we generate
-appearance counterfactuals with a modern open generative image editor
-\todome{DRAFT START (Claude 04.08): contribution 2 body --- continues the existing half-sentence; states the null honestly with the small head-gain exception}
-(Flux) and evaluate them across every objective family we try:
-augmentation-as-data, cosine consistency, supervised contrast, and
-adversarial invariance.
-% Objective-family list quoted from the abstract, lines 94-95.
-Recognition is left essentially unchanged: the largest effect is
-$+1.1$ R@1 from adding the counterfactuals to a frozen-feature
-contrastive head, and backbone fine-tuning gains nothing over plain
-cross-entropy.
-% "+1.1 R@1 on a frozen-feature head, nothing at the backbone" from the
-% Discussion, line 2423; head numbers 0.789 -> 0.800 in
-% tab:asl_citizen_retrieval, lines 1831 and 1833; "No appearance or
-% signer-invariance objective beats plain cross-entropy at matched depth"
-% from lines 1778-1780.
-We report this as an informative null rather than a failure: with 460
-pretraining signers, 35 training signers, and diverse recording
-conditions, appearance invariance is already bought by real diversity,
-and the counterfactuals have little left to add.
-% "informative null", "460 pretraining signers, 35 training signers, and
-% diverse recording conditions, appearance invariance is already bought by
-% real diversity" from the abstract, lines 95-97.
-\todome{DRAFT END: sentence 3 tracks the abstract's phrasing closely
-(lines 95-99) --- fine for now, but when you refine the abstract at the
-end (todo line 75) vary one of the two so they do not read verbatim-twice.
-I wrote "(Flux)" to close the existing half-sentence; adjust if you finish
-that sentence differently.}
+approximation in a high-diversity data setting.} 
 
-\todome{DRAFT START (Claude 04.08): optional third contribution --- the diagnostic probes; drop the whole block if two contributions suffice}
 \textbf{Third, a diagnostic account of where signer identity lives.}
-Signer identity is recoverable well above chance across every feature
-space we test: pose-based (MediaPipe), RGB
-transformer (Logos/MViTv2-S), RGB CNN (I3D), and contrastively
-text-aligned (SignCLIP).
-% Feature-space list matches RQ1, lines 290-294; "recoverable from every
-% feature space we test" from the abstract, lines 82-84.
-On ASL Citizen the raw spaces separate signers at fixed sign content by a
-distance ratio of $22$--$30\times$, and the pose features are the most
-signer-separable of the three, with linear signer decoding reaching
-$98.7\%$: pose discards pixels, not the appearance cues that identify
-signers.
-% "$22$--$30\times$" from line 1356; "98.7%" from tab:raw_feature_l2_probe
-% (line 1348) and line 1361; final clause condenses "Pose discards pixels,
-% but it retains --- and arguably distills --- precisely the appearance
-% cues that identify signers without them" (lines 1368-1370).
-The two probes we use (distance geometry and linear decodability)
-moreover dissociate: fine-tuning and contrastive heads can substantially
-reduce how decodable identity is while leaving the distance geometry
-essentially unchanged, so neither readout can stand in for the other when
-auditing signer information in a representation.
-% Dissociation established at lines 1372-1380 (raw spaces), 2077-2081
-% (head panel caption), and 2086-2108 ("The two probes dissociate exactly
-% as anticipated ... in a direction this coarse distance statistic is too
-% blunt to register").
-\todome{DRAFT END: I recommend keeping this third bullet --- the abstract
-already leads with the diagnosis, RQ1 is a full RQ, and the dissociation
-is used as a recurring pattern (line 1377-1380 calls it "a pattern that
-recurs throughout the thesis") --- but it is separable: cutting it loses
-nothing from bullets 1-2. Note the last clause ("neither readout can stand
-in for the other") is my compression of lines 1327-1329 ("we do not read
-either as a proxy for the other"); check you are happy calling that a
-contribution rather than a methods choice.}
+
+
