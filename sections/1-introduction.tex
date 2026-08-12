@@ -21,12 +21,15 @@ recent surveys document an active literature spanning recognition,
 translation and
 generation~\cite{bragg2019sign, koller2020quantitative,
 nunezmarcos2023survey, decoster2024machine}. Widely usable tools,
-however, do not yet exist. Bragg et al.\ note that ``few systems are
-robust enough for real-world deployment or use''~\cite{bragg2019sign},
-and the most recent review of signed-to-spoken translation concludes that
-the field is still ``dealing with a low-resource machine translation
-problem'', with the largest public translation dataset holding roughly
-seven thousand training examples~\cite{decoster2024machine}.
+however, do not yet exist. The most recent systematic review of
+signed-to-spoken translation describes the field as still ``dealing with
+a low-resource machine translation problem'', with the largest public
+translation dataset holding roughly seven thousand training
+examples~\cite{decoster2024machine}. Evaluation work is blunter still:
+re-evaluating recent translation systems on signers unseen in training
+drops their BLEU-4 scores by factors of roughly two to
+six~\cite{artiagaRethinkingSignLanguage2025}, so reported progress rests
+substantially on having seen the signer before.
 
 Closing that gap depends on representations that generalise beyond the
 handful of signers and recording conditions any one corpus contains. This
