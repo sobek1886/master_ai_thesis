@@ -1036,23 +1036,28 @@ is the mechanistic reading behind the null: the entire
 linearly detectable synthetic signature is a single shared offset per
 edit type, a direction a classifier can trivially factor out.
 
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\small
-\setlength{\tabcolsep}{4.5pt}
-\begin{tabular}{lccc ccc c}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
 \toprule
-& \multicolumn{3}{c}{\textbf{Training pairs}} &
-\multicolumn{3}{c}{\textbf{Held-out pairs}} & \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-\textbf{Space} & n.disp & gloss@1 & AUC & n.disp & gloss@1 & AUC &
+\textbf{Space} & \textbf{n.disp} & \textbf{gloss@1} & \textbf{AUC} &
 \textbf{AUC$_{\text{de-sh}}$} \\
 \midrule
-frozen      & 1.04 & 0.49 & 0.997 & 1.05 & 0.59 & 0.976 & 0.50 \\
-CE          & 1.13 & 0.56 & 0.992 & 1.00 & 0.60 & 0.972 & 0.50 \\
-aug-as-data & 1.04 & 0.91 & 0.991 & 1.17 & 0.62 & 0.949 & 0.48 \\
-consistency & 0.79 & 0.89 & 0.986 & 1.11 & 0.57 & 0.942 & 0.49 \\
-SDDA        & 0.76 & 0.67 & 0.996 & 0.80 & 0.66 & 0.961 & 0.50 \\
+\multicolumn{5}{l}{\emph{Training pairs}} \\
+\;\;frozen      & 1.04 & 0.49 & 0.997 & --   \\
+\;\;CE          & 1.13 & 0.56 & 0.992 & --   \\
+\;\;aug-as-data & 1.04 & 0.91 & 0.991 & --   \\
+\;\;consistency & 0.79 & 0.89 & 0.986 & --   \\
+\;\;SDDA        & 0.76 & 0.67 & 0.996 & --   \\
+\midrule
+\multicolumn{5}{l}{\emph{Held-out pairs}} \\
+\;\;frozen      & 1.05 & 0.59 & 0.976 & 0.50 \\
+\;\;CE          & 1.00 & 0.60 & 0.972 & 0.50 \\
+\;\;aug-as-data & 1.17 & 0.62 & 0.949 & 0.48 \\
+\;\;consistency & 1.11 & 0.57 & 0.942 & 0.49 \\
+\;\;SDDA        & 0.80 & 0.66 & 0.961 & 0.50 \\
 \bottomrule
 \end{tabular}
 \caption{The same geometry across feature spaces, shown for the
@@ -1064,12 +1069,12 @@ types; AUC$_{\text{de-sh}}$ is on held-out
 pairs only because, unlike n.disp and gloss@1, it shows no
 training/held-out asymmetry to report (training values within $0.03$
 in every space). Reading: a model that \emph{learned} appearance invariance would
-contract n.disp and preserve gloss@1 in \emph{both} column groups;
-gains confined to the training columns (aug-as-data, consistency) are
+contract n.disp and preserve gloss@1 in \emph{both} panels;
+gains confined to the training panel (aug-as-data, consistency) are
 memorisation of the specific counterfactual pairs seen in training. The
 CE control never trained on augments and is correspondingly symmetric.}
 \label{tab:aug_geometry_spaces}
-\end{table*}
+\end{table}
 
 
 Qualitative companions to these numbers (a t-SNE of the augments around their source videos and the per-edit-type cosine distributions) are shown in Appendix~\ref{app:aug_geometry_grid} (Figs.~\ref{fig:aug_vs_orig_tsne} and~\ref{fig:aug_vs_orig_cosine}).

@@ -37,6 +37,13 @@
 % Template uses natbib + ACM-Reference-Format (a numeric style); the numbers
 % option makes natbib accept it.
 \usepackage[numbers]{natbib}
+% natbib's \bibsection sets the running head via \@mkboth, which does not take
+% here, so the bibliography pages inherit the Conclusion chapter's mark. Force
+% the mark directly.
+\renewcommand{\bibsection}{%
+  \chapter*{\bibname}%
+  \markboth{\MakeUppercase{\bibname}}{\MakeUppercase{\bibname}}%
+}
 
 \definecolor{rowhl}{RGB}{209, 231, 255}
 \newcommand{\tbest}[1]{\cellcolor{rowhl}#1}  % table-wide best cell (per column)
