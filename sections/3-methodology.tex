@@ -297,19 +297,13 @@ the pair-SupCon configurations, through a second training stage that
 starts from the already-trained head and replaces the video--text loss
 with the supervised-contrastive form of Eq.~\eqref{eq:supcon} below,
 computed over video embeddings alone (counterfactual-contrastive).
-\todome{ADDITION START (Claude 12.08): setup facts checked against
-mmpt/tasks/ngt\_pair\_task.py, where supcon\_labels =
-arange(B).repeat\_interleave(K), and the run configs.}
 There the $K$ views of one item are a source video together with its
 $K-1$ appearance edits ($K{=}3$ uses two edits, $K{=}5$ all four), and
 they share one \emph{instance} label, so every other clip in the batch
 counts as a negative, including other recordings of the same sign.
 Eq.~\eqref{eq:supcon} is the whole objective of this stage: no
 cross-entropy term, no text tower, and no weighting against another loss.
-It therefore carries no gloss supervision whatsoever, and because it
-removes the video--text objective its retrieval scores are not directly
-comparable with the aug-as-data rows.
-\todome{ADDITION END}
+It therefore carries no gloss supervision whatsoever.
 
 \subsubsection{Backbone fine-tuning}
 All fine-tuning objectives operate on the same representation: the
@@ -606,13 +600,6 @@ short or left mostly in warmup.
 \label{sec:setup-generation}
 This section instantiates the two counterfactual routes of
 \S\ref{sec:method-diffusion}, in the same order.
-
-\todome{RESTRUCTURE START (Claude 12.08): 3.6 split into two subsections
-mirroring 3.2, motion-locked first, resolving both standing todos. The
-pipeline details are read off the Unreal project
-(Custom\_from\_FBX.uproject, render\_palmer\_260316.py,
-render\_digits\_260316.py); ``Character Creator 5'' is on your word, the
-project files record only ``CC''.}
 \subsection{Motion-locked re-renders}
 Real signers are recorded in motion-capture suits, and the captured motion
 is retargeted onto two Character Creator 5 characters, ``Palmer'' and
@@ -650,14 +637,6 @@ this route adds and that a 2D image edit cannot reach from a single input
 view; clothing colour additionally varies across the rendered views.}
 \label{fig:unreal_examples}
 \end{figure*}
-
-\todo{Fig.~\ref{fig:unreal_examples} now covers the signer axis (real vs
-Palmer/Digits) and the synthetic camera axis; still missing from it are the
-three \emph{real} camera views and a held-out Bushuis-studio frame, which
-together would make the full K=3 vs K=9 setup and the cross-studio eval gap
-visible in one strip --- extend the figure or add a companion strip if wanted
-(sources: Data/obs\_right\_export\_cropped/ real views, Data/ Bushuis crops}
-\todome{RESTRUCTURE END}
 
 \subsection{Generative appearance editing}
 We generate appearance counterfactuals with
