@@ -176,6 +176,19 @@ representations''; ``generative appearance edits''; ``avatar
 renders driven by motion capture'') and keep the concrete names in the
 Contributions section, which both reference theses do.}
 
+\todome{ADDITION START (12.08): first-use framing of the diversity axis
+that replaces the old in-domain/cross-signer contrast.}
+The two corpora studied here differ in appearance diversity. NGT744 is
+recorded from four signers in a single studio and evaluated in another,
+so both signer identity and capture conditions are near-constant during
+training. ASL Citizen contributes 35 training signers recording
+themselves on their own webcams, so identity, lighting, framing and
+background all vary. NGT744 is additionally low-resource in absolute
+size; ASL Citizen is not large by general-vision standards, but it is
+diverse. This diversity axis, not a difference in evaluation protocol,
+separates the two settings: both are evaluated signer-independently.
+\todome{ADDITION END}
+
 \begin{description}
 \item[RQ1 (Diagnosis).] Do sign language video representations, namely pose-based
   (MediaPipe), RGB transformer
@@ -183,15 +196,17 @@ Contributions section, which both reference theses do.}
   and contrastively text-aligned (SignCLIP \cite{jiangSignCLIPConnectingText2024}),
   encode signer identity beyond sign content, and to what degree?
 
-\item[RQ2 (Cross-signer intervention).] In a low-data, cross-signer setting
-  (the NGT744 corpus), do motion-locked re-renders (avatar renders
-  driven by real motion capture, the approach we originally
-  set out to scale) improve retrieval across
-  a real-to-real signer gap when used as extra views under a supervised
-  contrastive objective~\cite{khosla2020supervised}?
-  
-\item[RQ3 (In-domain intervention).] In a high-data, signer-independent
-  setting (ASL Citizen), do generative appearance edits
+\item[RQ2 (Low-diversity regime).] In a low-diversity setting (the
+  NGT744 corpus), do motion-locked re-renders (avatar renders driven by
+  real motion capture) improve retrieval when used as extra views under a
+  supervised contrastive objective~\cite{khosla2020supervised}?
+
+\item[RQ3 (Synthesis routes compared).] At matched strength, content and
+  viewpoint, how much of the motion-locked gain does the scalable
+  generative-edit route retain?
+
+\item[RQ4 (High-diversity regime).] In a high-diversity setting (ASL
+  Citizen), do generative appearance edits
   (clothing, glasses, skin tone, signer swap), our
   scalable approximation of motion-locked synthesis, improve
   retrieval, either as training data for a contrastive embedding head or as
@@ -206,7 +221,7 @@ thesis --- consider folding it into RQ2 (``...and how much of that gain
 does the scalable generative approximation retain at matched strength?'')
 or making it the first clause of RQ4.}
 \todome{DRAFT START (Claude 04.08): RQ4 widened from the old cosine-similarity question to the probe + geometry analyses actually run}
-\item[RQ4 (Interpretation).] What do the interventions of RQ2 and RQ3 do
+\item[RQ5 (Interpretation).] What do the RQ4 interventions do
   to the embedding space itself: where do the synthetic counterfactuals
   land relative to their source videos and to a genuine signer change
   (do they stay local, and do they occupy a separable ``synthetic'' region),

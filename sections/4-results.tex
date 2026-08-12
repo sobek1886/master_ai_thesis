@@ -6,8 +6,8 @@ motivated in Chapter~\ref{chap:method}: first, diagnostic evidence that
 appearance/signer identity is measurable in every feature space we test
 (\S\ref{sec:results-diagnosis}); second, a low-diversity setting
 intervention on NGT744 where synthetic appearance augmentation produces a
-clear, sizeable gain (\S\ref{sec:results-crossdomain}); third, a high-diversity setting
-intervention on ASL Citizen where the same idea does not lead to improvements(\S\ref{sec:results-indomain}).
+clear, sizeable gain (\S\ref{sec:results-lowdiv}); third, a high-diversity setting
+intervention on ASL Citizen where the same idea does not lead to improvements(\S\ref{sec:results-highdiv}).
 \todome{stale pointer (03.08): ``the two-regime story motivated in
 Chapter~\ref{chap:method}'' --- after the agnostic rewrite the Method
 chapter no longer carries the regime framing; the motivation now lives in
@@ -155,8 +155,8 @@ early instance of a pattern that recurs throughout the thesis: coarse
 distance statistics can stay static while the accessible signer
 information moves.
 
-\section{Cross-domain intervention: NGT744}
-\label{sec:results-crossdomain}
+\section{Low-diversity regime: NGT744}
+\label{sec:results-lowdiv}
 
 \subsection{Which synthetic views help? Sources and dose}
 \label{sec:ngt-synthetic-views}
@@ -437,8 +437,8 @@ diversity.}
 \label{fig:ngt_dropoff}
 \end{figure*}
 
-\section{In-domain intervention: ASL Citizen}
-\label{sec:results-indomain}
+\section{High-diversity regime: ASL Citizen}
+\label{sec:results-highdiv}
 
 \subsection{Direct backbone fine-tuning: an informative null}
 We begin by fine-tuning the Logos MViTv2-S
@@ -533,7 +533,7 @@ the linear probe is already best \emph{without} any fine-tuning (86.33):
 fine-tuning improves retrieval clustering at a small cost to linear
 separability. (ii) Depth helps only up to a point: full unfreeze (84.96)
 is worse than top-6 (85.95), suggesting the earliest, highest-resolution
-blocks overfit in-domain signers when adapted. (iii) No appearance or
+blocks overfit the training signers when adapted. (iii) No appearance or
 signer-invariance objective beats plain cross-entropy at matched depth,
 and several are worse: aug-as-data is statistically indistinguishable
 from the matched CE run (85.59 vs 85.57, a gap far below the retest
@@ -881,7 +881,7 @@ fine-tuning, and consistency training most of all, measurably erodes the
 this coarse distance statistic is too blunt to register. This reduction
 does not translate into better retrieval (Table~\ref{tab:backbone_ft_retrieval}:
 consistency training is at or below plain CE on both evals), so removing
-decodable signer information and improving in-domain accuracy are
+decodable signer information and improving retrieval accuracy are
 dissociable outcomes here, consistent with the geometry of
 \S\ref{sec:results-aug-geometry}, where the same objectives are shown to
 pull their own training pairs together without closing the gap on
@@ -891,7 +891,7 @@ held-out counterfactuals.
 geometry of the augmentations}
 \label{sec:results-aug-geometry}
 \todo{this is too long and too dense. Decide what is the most relevant, degrade the rest to appendix}
-The interventions above add little in-domain (\S\ref{sec:results-indomain}),
+The interventions above add little in the high-diversity regime (\S\ref{sec:results-highdiv}),
 and two very different geometries could produce a null of this shape. The
 synthetic edits might be \emph{redundant} (each augment landing so close
 to its source video that it supplies no variation the backbone has not
@@ -1014,12 +1014,12 @@ We expect the four edit types to fall on a clear ordering: shirt and glasses
 are local edits that should displace the embedding only slightly, whereas
 skin-tone and signer-swap are whole-person edits that should move it much
 further, approaching the magnitude of a genuine signer change. The decisive
-question for the in-domain null is \emph{where} that displacement lands. If
+question for this null is \emph{where} that displacement lands. If
 real-versus-synthetic separability is low, the counterfactuals are faithful and the null is one of
 saturation: the high-signer ASL Citizen backbone had already learned the
 invariance the edits supply, consistent with the marginal
 Table~\ref{tab:asl_citizen_retrieval} gain and with the opposite,
-low-signer NGT744 result (\S\ref{sec:results-crossdomain}). If instead the
+low-signer NGT744 result (\S\ref{sec:results-lowdiv}). If instead the
 displacement is highly separable, the edits
 carry a sim-to-real gap that offsets their benefit in feature space. This is
 the mechanistic evidence behind the reading in
@@ -1098,7 +1098,7 @@ component is only $32$--$53\%$ of a typical displacement's length, and
 no single principal direction explains more than about $10\%$ of the
 displacement cloud's variance), but the scatter carries no class
 information; everything a linear probe can use is the mean offset. This
-is the mechanistic reading behind the in-domain null: the entire
+is the mechanistic reading behind the null: the entire
 linearly detectable synthetic signature is a single shared offset per
 edit type, a direction a classifier can trivially factor out.
 
