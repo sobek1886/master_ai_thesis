@@ -436,7 +436,6 @@ complexity.\todome{sentence added 04.08 from your todo}
 
 \section{Future work}
 \label{sec:future-work}
-\todo{future work is too long, decide what is actually important. Make things less verbose}
 \textbf{Parametric avatars in place of per-avatar mocap retargeting.} The
 natural next step for the NGT744 pipeline is to replace hand-built
 CharacterCreator avatars with parametric SMPL-X
@@ -449,24 +448,6 @@ corpora~\cite{yuSignAvatarsLargeScale3D2025} make this increasingly
 practical, though driving avatars from estimated~\cite{kanazawaEndtoEndRecoveryHuman2018} or generated SMPL-X
 parameters remains harder than working directly with recorded motion
 capture, as our pipeline does.
-
-\todome{ADDITION START (Claude 12.08): future-work counterpart of the
-co-training conjecture in the discussion.}
-\textbf{Does co-training preserve what fine-tuning flattens?} The
-conjecture raised in \S\ref{sec:discussion-regimes}, that co-training
-transfers better than fine-tuning partly because it preserves the
-pretrained form organisation, is directly testable without any new data.
-Starting from the same pretrained checkpoint, train one target model by
-fine-tuning and one by co-training with the source objective retained,
-then measure both target accuracy and the form-dose response
-(\S\ref{sec:results-iconicity-main}) at matched accuracy. The conjecture
-predicts that the two reach comparable accuracy while only the fine-tuned
-space loses its form organisation. Running it across pretrain and target
-pairs of varying vocabulary overlap would also separate the two
-explanations we cannot currently distinguish, whether the small in-domain
-gain reflects a target vocabulary already covered by pretraining or a
-ceiling on what fine-tuning can add at all.
-\todome{ADDITION END}
 
 \textbf{Signer identity persists through the synthetic-avatar swap.}
 \todome{moved here from Limitations 04.08 per your todo; the second half
