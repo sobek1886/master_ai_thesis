@@ -569,13 +569,14 @@ edits alone, and the pair-SupCon rows use them as explicit positives
 (\S\ref{sec:method-objectives}); unmarked rows train on real videos only.
 The three pose rows are the published results of the original SignCLIP
 model~\cite{jiangSignCLIPConnectingText2024} rather than our runs, which
-is why they are reported to two decimals where ours carry three. The last
-block searches over combinations: two head recipes, each trained on the
-frozen backbone and on three fine-tuned versions of it (CE-FT is
-cross-entropy on the real videos, aug-FT adds the synthetic edits as data,
-SDDA-FT adds the SDDA invariance term, \S\ref{sec:method-losses}). It
-uses a different frame preprocessing from the rows above, so it carries
-its own frozen-backbone rows and is read within the block.
+is why they are reported to two decimals where ours carry three. The
+second block searches over head recipes with the backbone held frozen;
+the third then carries two of those recipes, the weakest and the best,
+onto backbones we had fine-tuned (CE-FT is cross-entropy on the real
+videos, aug-FT adds the synthetic edits as data, SDDA-FT adds the SDDA
+invariance term, \S\ref{sec:method-losses}). That third block uses a
+different frame preprocessing from the rows above, so it carries its own
+frozen-backbone rows and is read within the block.
 
 The head is worth adding, and the edits help it a little. On frozen Logos
 features a head trained from scratch already reaches $0.750$ R@1, far
@@ -586,9 +587,8 @@ $0.800$, the best configuration on frozen features; training on the edits
 alone is worse than training on the real videos ($0.760$ against
 $0.789$). All of these differences are one to three points.
 
-The last two blocks search for the best combination, putting a head on
-backbones we had already fine-tuned. Their answer is that the two do not
-stack. A from-scratch head does gain from a fine-tuned backbone ($0.744$
+Carrying those recipes onto fine-tuned backbones shows that the two do
+not stack. A from-scratch head does gain from a fine-tuned backbone ($0.744$
 on the matched frozen control against $0.772$--$0.782$), but the best head
 recipe does not: it scores highest on the frozen backbone ($0.818$) and
 slightly lower on every fine-tuned one ($0.809$--$0.812$). Whatever
@@ -626,7 +626,7 @@ SignCLIP from scratch        & MediaPipe pose & 0.39 & 0.71 & 0.84 & 2 \\
 SignCLIP fine-tuned          & MediaPipe pose & 0.46 & 0.77 & 0.84 & 2 \\
 SignCLIP fine-tuned + linear & MediaPipe pose & \textbf{0.60} & \textbf{0.84} & \textbf{0.89} & 1 \\
 \midrule
-\multicolumn{6}{l}{\textit{Head recipes on the frozen backbone}} \\
+\multicolumn{6}{l}{\textit{Head-recipe search, backbone frozen}} \\
 From scratch          & I3D                  & 0.32  & 0.63  & 0.73  & 3 \\
 From scratch          & Logos (frozen) & 0.750 & 0.950 & 0.970 & 1 \\
 From scratch $+$ synth.\ data & Logos (frozen) & 0.756 & 0.955 & 0.970 & 1 \\
@@ -634,7 +634,7 @@ Fine-tuned            & Logos (frozen) & 0.789 & 0.962 & 0.975 & 1 \\
 Fine-tuned, synth.\ data only & Logos (frozen) & 0.760 & 0.957 & 0.971 & 1 \\
 Fine-tuned $+$ synth.\ data & Logos (frozen) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
 \midrule
-\multicolumn{6}{l}{\textit{Recipe search: head recipe $\times$ backbone}$^{\ddagger}$} \\
+\multicolumn{6}{l}{\textit{The same recipes on fine-tuned backbones}$^{\ddagger}$} \\
 From scratch              & Logos (frozen)   & 0.744 & \textbf{0.966} & \textbf{0.977} & 1 \\
 From scratch              & Logos (CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
 From scratch              & Logos (aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
@@ -699,7 +699,7 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   Fine-tuned, synth.\ data only & Logos (frozen) & 0.884 & 0.863 & 0.796 & 1.216 \\
   Fine-tuned $+$ synth.\ data      & Logos (frozen) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
   \midrule
-  \multicolumn{6}{l}{\textit{Recipe search: best head recipe $\times$ backbone}} \\
+  \multicolumn{6}{l}{\textit{The best recipe on fine-tuned backbones}} \\
 
   Fine-tuned $+$ synth.\ data & Logos (frozen)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
   Fine-tuned $+$ synth.\ data & Logos (CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
