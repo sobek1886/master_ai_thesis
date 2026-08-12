@@ -30,14 +30,6 @@ by retrieval (\S\ref{sec:eval-protocols}).
 
 SLR faces two distinct problems that this
 thesis addresses together.
-
-\todome{STRENGTHENED (12.08): the data-scarcity point was one asserted
-sentence; it now carries verified numbers. YouTube-SL-25's 3{,}207 hours
-were checked to be the largest sign language video corpus by hours as of
-August 2026 (SignVerse-2M and SignNet-1M report larger \emph{clip} counts
-but are re-segmentations or synthetic augmentations of existing footage,
-not new material), and Whisper's 680{,}000 hours is quoted from its
-abstract.}
 The first is \emph{data scarcity}, whose scale is easy to understate. The
 largest sign language video corpus holds roughly $3{,}200$ hours, and
 covers only about twenty-five of the more than three hundred sign
@@ -50,12 +42,7 @@ glossed~\cite{tanzerYouTubeSL25, liUniSignUnifiedSign2025}, and glossing
 proper is slow expert work, about an hour per ninety seconds of video for
 How2Sign~\cite{duarteHow2Sign2021}, with formats that are not
 standardised across
-corpora~\cite{desistoChallengesSignLanguage2022, DataProblem}. Nor does
-the web close the gap, since the signing video on it largely lacks the
-aligned captions supervised training needs and carries biometric
-information that makes redistribution a privacy
-question~\cite{rustPrivacyAwareSignLanguage2024a}.
-\todome{END STRENGTHENED}
+corpora~\cite{desistoChallengesSignLanguage2022, DataProblem}. 
 
 The second is \emph{appearance bias}: a video model can score well on a benchmark by
 exploiting the static, incidental visual properties of whoever happened to
@@ -210,31 +197,5 @@ summarises how they enter training. Concretely:
 % two probes (lines 2008-2021).
 \end{description}
 
-\section{Contributions}
-
-\textbf{First, a positive in a low-diversity data setting.} 
-On NGT744, a self-recorded NGT corpus with four training signers and a single
-studio environment at train time, motion-locked re-renders more than double cross-signer retrieval
-(R@1 $0.234 \to 0.649$ test$\to$train; $0.247 \to 0.695$ train$\to$test,
-3 seeds).
-% Numbers and "more than double" quoted from the abstract, lines 90-91;
-% table values are 0.234->0.649 and 0.247->0.695 (lines 1419/1422 and
-% 1434/1437 of tab:ngt_synthetic_views).
-A real-multiview control at the same view count shows that extra
-viewpoints of the same signers do not reproduce the gain: what drives it
-is appearance and identity diversity.
-% Supported by the E2 discussion, lines 1525-1534 ("Extra viewpoints of
-% the same identities are therefore not what drives the effect;
-% appearance and identity diversity is.").
-At matched view count, content, and viewpoint, generative edits of
-the same videos retain roughly $65$--$80\%$ of this gain: a
-substantial but incomplete substitute for the motion-locked renders.
-% "65--80%" and "substantial but incomplete substitute" from lines
-% 1518-1524 (the E3-vs-E4 head-to-head).
-
-\textbf{Second, a benchmark-scale evaluation of the generative
-approximation in a high-diversity data setting.} 
-
-\textbf{Third, a diagnostic account of where signer identity lives.}
 
 
