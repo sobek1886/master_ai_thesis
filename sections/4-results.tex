@@ -254,20 +254,20 @@ edits are added.}
 Figure~\ref{fig:ngt_synthetic_views_r1} plots R@1 against $K$ by
 augmentation family, which makes the family structure that
 Table~\ref{tab:ngt_synthetic_views} lists row-wise directly visible.
-With viewpoint held fixed, both synthetic routes recover a large share of the cross-signer gap. Over the real-only baseline (E1, test$\to$train R@1 $0.234$), the
-matched-$K{=}3$ Unreal arm (E3) reaches $0.649$ and the matched-$K{=}3$ Flux arm
-(E4) $0.505$; each route's paired gain over E1 is significant on every
-seed (exact McNemar $p<0.05$, $3/3$ seeds in both directions: Unreal
-E1$\to$E5 $\Delta$R@1 $+0.203$ test$\to$train / $+0.234$ train$\to$test, Flux E1$\to$E6
-$+0.257$ / $+0.363$).
-\todome{NUMBERS BUG (03.08, verified against tab:ngt\_synthetic\_views): the
-sentence's subject is the matched-$K{=}3$ arms E3 and E4, but the quoted
-deltas are the full-strength comparisons E1$\to$E5 and E1$\to$E6 ---
-E3$-$E1 is $0.649-0.234=0.415$ test$\to$train, not $+0.203$. Either pull
-the actual E1$\to$E3 and E1$\to$E4 McNemar results from the synthetic-view eval
-artifacts (do NOT reuse the E5/E6 values), or reword the sentence to
-attribute the quoted significance to E5/E6 and drop the per-route claim
-for E3/E4. A reviewer redoing the arithmetic will catch this.}
+With viewpoint held fixed, both synthetic routes recover a large share of
+the cross-signer gap. Over the real-only baseline (E1, test$\to$train R@1
+$0.234$), the matched-$K{=}3$ Unreal arm (E3) reaches $0.649$ and the
+matched-$K{=}3$ Flux arm (E4) $0.505$: paired gains of $\Delta$R@1
+$+0.416$ and $+0.272$ test$\to$train, $+0.448$ and $+0.359$
+train$\to$test. Exact McNemar was run on the full-strength arms, where the
+substantially smaller gains over E1 (E5 $+0.203$, E6 $+0.257$
+test$\to$train) are already significant on $3/3$ seeds in both directions.
+\todome{NUMBERS BUG FIXED (12.08): the deltas here previously quoted the
+E1$\to$E5 and E1$\to$E6 comparisons under a sentence about E3 and E4. Now
+recomputed from unrounded means in ngt\_summary.json. Note the McNemar
+test itself was only ever run for E5/E6, so significance is attributed to
+those; if you want it stated for E3/E4 directly, that test still needs
+running on the per-sentence ranks.}
 At matched strength the motion-locked route wins the head-to-head:
 E3 exceeds E4 by $\Delta$R@1 $0.144$ (test$\to$train) / $0.089$ (train$\to$test), significant on
 all three seeds test$\to$train and two of three train$\to$test. The generative route therefore
