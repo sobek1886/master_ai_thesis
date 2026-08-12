@@ -572,8 +572,46 @@ held-out pairs) give a converging, load-bearing answer: yes on training
 pairs, not on held-out ones.
 
 \subsection{SignCLIP head on frozen Logos/I3D features}
-We next evaluate appearance augmentation as training data for a
-contrastive SignCLIP-style head trained on top of frozen backbone features.
+We next evaluate the appearance edits as training data for a contrastive
+SignCLIP-style head trained on top of frozen backbone features
+(Table~\ref{tab:asl_citizen_retrieval}).
+
+\todome{ADDITION START (Claude 12.08): setup paragraph and the reading of
+the video-to-text table. The setup text is moved out of the table caption,
+which previously carried the row naming, the pose provenance and the
+$\ddagger$ footnote; the reading is new, the subsection had none.}
+Rows are named compositionally. \emph{Synth.} marks any training that uses
+the Flux appearance edits: \emph{$+$ synth.\ data} adds them to the real
+training videos as extra items, \emph{synth.\ data only} trains on the
+edits alone, and the pair-SupCon rows use them as explicit positives
+(\S\ref{sec:method-objectives}); unmarked rows train on real videos only.
+The three pose rows are the published results of the original SignCLIP
+model~\cite{jiangSignCLIPConnectingText2024} rather than our runs, which
+is why they are reported to two decimals where ours carry three. The lower
+two blocks train the same head recipes on \emph{fine-tuned} rather than
+frozen features, tagged by how that backbone was fine-tuned: CE-FT is
+cross-entropy on the real videos, aug-FT adds the synthetic edits as data,
+and SDDA-FT adds the SDDA invariance term (\S\ref{sec:method-losses}).
+Those two blocks use \texttt{logos\_native} preprocessing where the rows
+above use \texttt{direct224}, so the ``Scratch on native (frozen)'' row is
+included as the matched control that separates the preprocessing change
+from the effect of fine-tuning the backbone.
+
+The head is worth adding, and the edits help it a little. On frozen Logos
+features a head trained from scratch already reaches $0.750$ R@1, far
+above the same head on I3D features ($0.32$) or the published pose-input
+SignCLIP models ($0.39$--$0.60$). Fine-tuning the head lifts this to
+$0.789$, and adding the synthetic edits as extra training pairs to
+$0.800$, the best configuration on frozen features; training on the edits
+alone is worse than training on the real videos ($0.760$ against
+$0.789$). Carrying the same recipe onto fine-tuned backbones adds a
+little more, peaking at $0.818$. Every one of these differences is
+between one and three points. The pair-SupCon rows are the exception and
+the largest effect in the table: the same edits, entering as explicit
+positives instead of as data, cost $0.233$ R@1 at $K{=}3$ and $0.386$ at
+$K{=}5$ against the $0.800$ they support as data
+(\S\ref{sec:results-iconicity-main} returns to why).
+\todome{ADDITION END}
 
 % TABLE CONVENTION (updated 2026-08-05 per Piotr):
 % - \textbf on a data cell = best value in that metric column within its
@@ -624,27 +662,14 @@ $K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (MViTv2-S, Logos) & 0.567 
 $K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & RGB (MViTv2-S, Logos) & 0.414 & 0.767 & 0.858 & 2 \\
 \bottomrule
 \end{tabular}
-\caption{Video-to-text retrieval on ASL Citizen (random-baseline Median R
-$=1366$, 2731 unique glosses).
-Row naming: \emph{synth.} marks training that uses the Flux synthetic
-appearance edits: \emph{$+$ synth.\ data} adds them to the real training
-videos as extra items, \emph{synth.\ data only} fine-tunes on the edits
-alone, and the pair-SupCon rows fine-tune with a SupCon objective treating
-each video and its synthetic edits as explicit positives; unmarked rows
-train on real videos only. The three pose-input rows are the published
-results of the original SignCLIP model~\cite{jiangSignCLIPConnectingText2024},
-not our runs.\todome{provenance sentence added 04.08 per your note ---
-verify the three pose numbers (0.39/0.46/0.60) against the SignCLIP
-paper's tables before sending}
-$^{\ddagger}$These heads train the named recipe on \emph{fine-tuned}
-(rather than frozen) MViTv2-S features (backbone tags: CE-FT $=$
-cross-entropy on real videos; aug-FT $=$ CE $+$ synth.\ data; SDDA-FT $=$
-CE $+$ synth.\ data $+$ SDDA invariance term,
-\S\ref{sec:method-losses}); the CE/aug/SDDA-FT rows use
-\texttt{logos\_native} preprocessing, whereas the frozen rows above use
-\texttt{direct224}; the ``Scratch on native (frozen)'' row is the matched
-control that isolates the preprocessing difference from the fine-tuning effect.
-}
+\caption[Video-to-text retrieval on ASL Citizen]{Video-to-text
+retrieval on ASL Citizen (random-baseline Median R $=1366$, 2731 unique
+glosses); row naming and the backbone tags marked $^{\ddagger}$ are
+explained in the text. Bold marks the best value in a column within its
+block, a blue cell the best in the whole column, and the shaded row the
+strongest configuration overall.\todome{open since 04.08: verify the
+three published pose numbers (0.39/0.46/0.60) against the SignCLIP
+paper's tables.}}
 \label{tab:asl_citizen_retrieval}
 \end{table*}
 
@@ -653,14 +678,22 @@ control that isolates the preprocessing difference from the fine-tuning effect.
 \todome{DRAFT PROPOSAL START (03.08): this paragraph header had no body;
 the text below states only what the two tables show, no new claims.}
 Table~\ref{tab:asl_citizen_t2v} repeats the comparison in the
-text-to-video direction, where precision@$k$ replaces recall@$k$ because
-the gallery holds several correct videos per gloss query. The ordering
+text-to-video direction, where precision@$k$ replaces recall@$k$: the
+gallery holds several correct videos per gloss query, so recall@1 is
+capped by gallery multiplicity however good the model is, while
+precision@$k$ measures directly whether the top-ranked videos are
+correct. The original SignCLIP work does not report this direction on ASL
+Citizen at full scale. The ordering
 matches the video-to-text table: fine-tuning alone lifts P@1 from
 $0.871$ to $0.895$, synthetic data alone adds little ($0.883$ from
 scratch, $0.884$ as the only fine-tuning data), and the combination is
 the strongest configuration on every metric (P@1 $0.919$, Mean~R
 $1.128$). Carried onto the fine-tuned backbones, the same recipe reaches
-P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour.
+P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour. Which of
+those backbones leads does depend on the direction, however: the recipe on
+native features is strongest video-to-text ($0.818$ against $0.809$ on
+CE-FT) while CE-FT is strongest text-to-video ($0.935$ against $0.925$),
+so the shaded row differs between the two tables.
 \todome{DRAFT PROPOSAL END. Interpretive reading (why T2V moves more
 than V2T --- the anchor-neighbourhood argument) was cut in the 03.08
 cleanup; reconnect it here or leave the paragraph descriptive.}
@@ -690,13 +723,9 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \bottomrule
   \end{tabular}
   }
-  \caption{Text-to-video retrieval on ASL Citizen, same configurations as
-  Table~\ref{tab:asl_citizen_retrieval}. Reported as precision@k rather than
-  recall@k: the test gallery contains multiple correct videos per gloss query,
-  so recall@1 is bounded by gallery multiplicity regardless of model quality,
-  while precision@k directly measures whether the top-ranked video(s) are
-  correct. The original SignCLIP work does not report this direction for ASL-Citizen at
-  full scale.}
+  \caption[Text-to-video retrieval on ASL Citizen]{Text-to-video
+  retrieval on ASL Citizen, same configurations as
+  Table~\ref{tab:asl_citizen_retrieval} and the same marking convention.}
   \label{tab:asl_citizen_t2v}
 \end{table*}
 
