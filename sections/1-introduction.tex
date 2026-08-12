@@ -141,15 +141,21 @@ approximation, not a substitute: the edits are per-frame appearance
 rewrites, so the signing motion is preserved only insofar as the editor
 leaves it untouched, not by construction as in the avatar renders.
 
-In this thesis we therefore study two dataset regimes, both with signer-disjoint evaluation. The first is a
-low-resource setting in which motion capture is available: NGT744, a
-small, self-recorded Dutch Sign Language (NGT) corpus with mocap data available. There the motion-locked
-pipeline runs in full, and we compare the two counterfactual routes head
-to head, avatar re-renders against generative edits of the same videos,
-under matched conditions. The second is a higher-resource setting in
-which only RGB video is available: ASL Citizen, a larger, signer-diverse
-benchmark. There only the generative
-route applies, and we ask whether synthetic appearance data still helps. SDDA follows the same instinct as our generative-edit arm in a single setting
+In this thesis we therefore study two dataset regimes that differ in
+appearance diversity, both with signer-disjoint evaluation. The first is
+a low-diversity setting in which motion capture is available: NGT744, a
+small, self-recorded Dutch Sign Language (NGT) corpus recorded from four
+signers in a single studio and evaluated in another, so that both signer
+identity and capture conditions are near-constant during training. There
+the motion-locked pipeline runs in full, and we compare the two
+counterfactual routes head to head, avatar re-renders against generative
+edits of the same videos, under matched conditions. The second is a
+high-diversity setting in which only RGB video is available: ASL Citizen,
+whose 35 training signers record themselves on their own webcams, so that
+identity, lighting, framing and background all vary. There only the
+generative route applies, and we ask whether synthetic appearance data
+still helps. NGT744 is additionally low-resource in absolute size; ASL
+Citizen is not large by general-vision standards, but it is diverse. SDDA follows the same instinct as our generative-edit arm in a single setting
 (generative signer variety with a consistency objective on one
 studio-recorded corpus~\cite{fuSignerDiversitydrivenData2024b}), and we
 return to that comparison throughout. The two settings turn out to give
@@ -160,15 +166,6 @@ the thesis.
 
 This thesis asks whether appearance bias is measurable in modern sign
 language representations, and whether synthetic appearance counterfactuals can reduce it. Concretely:
-
-The two corpora studied here differ in appearance diversity. NGT744 is
-recorded from four signers in a single studio and evaluated in another,
-so both signer identity and capture conditions are near-constant during
-training. ASL Citizen contributes 35 training signers recording
-themselves on their own webcams, so identity, lighting, framing and
-background all vary. NGT744 is additionally low-resource in absolute
-size; ASL Citizen is not large by general-vision standards, but it is
-diverse.
 
 \begin{description}
 \item[RQ1 (Diagnosis).] Do sign language video representations, namely pose-based
