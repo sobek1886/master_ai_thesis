@@ -290,10 +290,21 @@ where the text side is the gloss rendered as a caption; following
 VideoCLIP, the embeddings are not $\ell_2$-normalised and no temperature is
 applied. Synthetic counterfactuals enter in one of two ways: as additional
 $(v, t)$ pairs carrying their source video's gloss (aug-as-data), or, in
-the pair-SupCon configurations, by replacing the video--text loss with
-the supervised-contrastive form of Eq.~\eqref{eq:supcon} below, computed
-over video embeddings alone with an original and its edits sharing one
-instance label (counterfactual-contrastive). 
+the pair-SupCon configurations, through a second training stage that
+starts from the already-trained head and replaces the video--text loss
+with the supervised-contrastive form of Eq.~\eqref{eq:supcon} below,
+computed over video embeddings alone (counterfactual-contrastive).
+\todome{ADDITION START (Claude 12.08): setup facts checked against
+mmpt/tasks/ngt\_pair\_task.py, where supcon\_labels =
+arange(B).repeat\_interleave(K), and the run configs.}
+There the $K$ views of one item are a source video together with its
+$K-1$ appearance edits ($K{=}3$ uses two edits, $K{=}5$ all four), and
+they share one \emph{instance} label, so every other clip in the batch
+counts as a negative, including other recordings of the same sign. This
+stage therefore carries no gloss supervision whatsoever; and because it
+removes the video--text objective, its retrieval scores are not directly
+comparable with the aug-as-data rows.
+\todome{ADDITION END}
 
 \subsubsection{Backbone fine-tuning}
 All fine-tuning objectives operate on the same representation: the
@@ -355,7 +366,9 @@ with temperature $\tau = 0.07$, where $u$ and $v$ range over the $N$ clips
 in the batch (anchors with an empty positive set are excluded from the
 average). Here this term takes the pull's place in the total loss, with the
 same weight $\lambda_{\mathrm{cons}} = 0.5$. Unlike the consistency pull, this also
-repels different videos, preventing representation collapse.
+repels different videos, preventing representation collapse; because the
+positive set is the source instance, that repulsion applies to other
+recordings of the same gloss as much as to different glosses.
 
 \paragraph{Gloss-level supervised contrast (optional auxiliary).}
 The same objective as Eq.~\eqref{eq:supcon}, but positives are defined by
@@ -500,7 +513,9 @@ pretraining recipe matters throughout this thesis, because it is baked
 into every feature the backbone produces. The organising construct of
 the Logos dataset is the
 \emph{visually similar sign} (VSSign): signs that share the same manual
-form but differ in meaning, covering both polysemy and minimal pairs.
+form but differ in meaning, whether because one form carries several
+related meanings or because two separate signs differ too slightly to
+tell apart on video.
 Rather than forcing the encoder to separate such signs, the Logos authors
 group VSSigns under one label and show that this yields a \emph{better}
 transfer encoder than keeping them apart~\cite{ovodovLogosWellTemperedPretrain2025}.

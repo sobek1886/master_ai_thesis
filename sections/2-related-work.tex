@@ -158,6 +158,28 @@ of whether the improved robustness of pose-based approaches stems solely
 from appearance invariance, or whether RGB-based models simply fail to
 capture motion cues in the presence of strong appearance signals.
 
+\todome{MOVED HERE FROM THE INTRODUCTION (12.08): the detailed pose
+critique. The intro now keeps one sentence and points here.}
+The robustness attributed to pose input is also bounded by the extractor
+that produces it, which is itself a learned RGB model. The standard
+training and evaluation sets for pose estimation under-represent
+darker-skinned individuals~\cite{lachanceCaseStudyFairness2023,
+hasanHi5SyntheticData2024}, the few existing fairness audits of pose
+estimators reach conclusions that flip with the choice of evaluation
+set~\cite{lachanceCaseStudyFairness2023, xiangFairHumanCentricImage2025},
+and on ASL Citizen the pose-based baseline shows larger skin-tone and
+gender performance disparities than its RGB
+counterpart~\cite{atwellStudyingMitigatingBiases2024}. There are
+mechanical failure modes too: MediaPipe Holistic's hand
+region-of-interest prediction breaks down on non-ideal hand
+orientations~\cite{moryossefOptimizingHandRegion2024}, and both OpenPose
+and MediaPipe degrade precisely where hands interact with each other or
+the face, interactions that are linguistically load-bearing in
+signing~\cite{moryossefEvaluatingImmediateApplicability2021}. In our own
+extraction MediaPipe produced no usable feature file for $8\%$ of ASL
+Citizen training videos (Table~\ref{tab:raw_feature_l2_probe}).
+\todome{END MOVED BLOCK}
+
 \citet{byvshevAre3DConvolutional2022a} show that the appearance bias observed in 3D convolutional video models
 is not an inherent architectural limitation but a consequence of the
 statistical structure of training data:

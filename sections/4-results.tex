@@ -1079,8 +1079,10 @@ Qualitative companions to these numbers (a t-SNE of the augments around their so
 \label{sec:results-iconicity-main}
 The organising
 construct of the Logos dataset is the \emph{visually similar sign}
-(VSSign): signs with different meanings but the same manual component,
-subsuming both polysemy and minimal pairs. Logos authors show
+(VSSign): signs that are made with the same hands, movement and location
+but mean different things, whether because one form carries several
+related meanings or because two separate signs differ too slightly to
+tell apart on video. Logos authors show
 that \emph{grouping} VSSigns under one label (training the encoder
 precisely \emph{not} to separate signs that look alike) yields a
 better transfer encoder than keeping them
@@ -1155,12 +1157,20 @@ it. Only the pair-SupCon heads exceed the frozen level, and only they
 were trained with the counterfactuals as explicit positives.
 
 This is the same trade-off the retrieval tables record, seen from the
-other side. The pair-SupCon objective replaces the video--text loss
-entirely (\S\ref{sec:method-objectives}), so nothing in it tells the
-model that GUN1 and LIGHTER are different words; visual form is the only
-axis left, and the space duly organises by it, at a cost of $0.567$
-against $0.800$ V2T R@1 for the same edits used as ordinary training
-data. Cross-entropy fine-tuning applies the opposite pressure, pulling
+other side, and the pair-SupCon result is the more surprising half.
+That objective carries no gloss supervision whatsoever: it replaces the
+video--text loss (\S\ref{sec:method-objectives}) with a contrast whose
+positives are only the $K$ views of a single source video, its original
+and its appearance edits, and whose negatives are every other item in the
+batch, \emph{including other recordings of the same sign}. Two GUN1
+videos are pushed apart exactly as GUN1 and LIGHTER are. The rise in form
+organisation is therefore emergent rather than trained: collapsing
+appearance variation within each item removes the axis the space was
+mostly using, and visual form is what remains to organise it, so
+form-similar glosses drift together as a side effect of an objective that
+never grouped them. It is bought at $0.567$ against $0.800$ V2T R@1 for
+the same edits used as ordinary training data.
+Cross-entropy fine-tuning applies the opposite pressure, pulling
 glosses apart whatever they look like, and buys $2.4$ retrieval points
 while taking the form response to zero. Neither extreme is the goal:
 form organisation is what makes an embedding space look semantic on
