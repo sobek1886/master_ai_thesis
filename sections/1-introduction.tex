@@ -1,14 +1,4 @@
 \chapter{Introduction}
-
-\todo{the content is here, but the introduction needs to be reorganized and rewritten}
-\todome{ADDITION START (12.08): motivation opener replacing the earlier
-linguistics primer. All figures and quotations verified against the cited
-sources. Two provenance notes: (i) the WFD's own FAQ says ``200+ national
-sign languages'' while the UN, citing the WFD, says more than 300 --- I
-used the WFD's own number since we cite the WFD; (ii) the WFD's
-``70 million'' is an undated organisational estimate with no primary
-methodology document, which is why it is attributed rather than stated
-flatly.}
 Sign languages are the primary languages of Deaf communities, and they
 are full natural languages rather than manual renderings of the
 surrounding spoken language. The World Federation of the Deaf estimates
@@ -24,7 +14,7 @@ however, do not yet exist, and reported progress rests substantially on
 having seen the signer before: recent translation systems lose most of
 their accuracy when re-evaluated on signers unseen in
 training~\cite{artiagaRethinkingSignLanguage2025}. Closing that gap needs
-representations that generalise beyond the few signers and recording
+representations that generalise beyond the signers and recording
 conditions any one corpus contains, which is the prerequisite this thesis
 works on.
 
@@ -37,11 +27,10 @@ is transcribed as a gloss sequence; both are distinct from translation,
 which targets spoken-language text. This thesis works at the isolated
 level on one corpus and the sentence level on the other, evaluating both
 by retrieval (\S\ref{sec:eval-protocols}).
-\todome{ADDITION END}
 
 SLR faces two distinct problems that this
 thesis addresses together. The first is \emph{data scarcity}: compared to
-speech or text, annotated sign language corpora are small, expensive to
+speech or text, most annotated sign language corpora are small, expensive to
 collect, and dominated by a handful of recording setups and
 signers~\cite{DataProblem, desistoChallengesSignLanguage2022}.
 The second is \emph{appearance bias}: a video model can score well on a benchmark by
@@ -184,8 +173,7 @@ leaves it untouched, not by construction as in the avatar renders.
 \includegraphics[width=\textwidth]{method_overview.pdf}
 \caption[Method overview: appearance counterfactuals in contrastive
 training]{\textbf{Method overview.} Setting A is the high-diversity
-regime, Setting B the low-diversity one; the two are never combined in
-training. Objectives and loss weights are defined in
+regime, Setting B the low-diversity one. Objectives and loss weights are defined in
 \S\ref{sec:method-objectives}.}
 \label{fig:method_overview}
 \end{figure*}
