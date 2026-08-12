@@ -1,28 +1,51 @@
 \chapter{Introduction}
 
 \todo{the content is here, but the introduction needs to be reorganized and rewritten}
-\todome{ADDITION START (12.08): task definition. Neither the introduction
-nor related work said what SLR is, what a gloss is, or that non-manual
-articulators are linguistically contrastive --- the last point is relied
-on later to justify preserving facial expression in the edits.}
-Sign languages are natural languages with their own phonology,
-morphology and syntax, not manual renderings of the surrounding spoken
-language. A sign is articulated by the hands, through handshape,
-location, movement and orientation, together with non-manual elements:
-facial expression, mouthing, and head and body posture. The non-manual
-channel is linguistically contrastive, so a change of facial expression
-can alter meaning as surely as a change of handshape.
+\todome{ADDITION START (12.08): motivation opener replacing the earlier
+linguistics primer. All figures and quotations verified against the cited
+sources. Two provenance notes: (i) the WFD's own FAQ says ``200+ national
+sign languages'' while the UN, citing the WFD, says more than 300 --- I
+used the WFD's own number since we cite the WFD; (ii) the WFD's
+``70 million'' is an undated organisational estimate with no primary
+methodology document, which is why it is attributed rather than stated
+flatly.}
+Sign languages are the primary languages of Deaf communities, and they
+are full natural languages rather than manual renderings of the
+surrounding spoken language. The World Federation of the Deaf estimates
+that more than 70 million deaf people belong to signing communities,
+using over 200 national sign languages, of which only about 40\% are
+legally recognised~\cite{wfd2026faq}.
 
-\emph{Sign language recognition} (SLR) is the task of mapping video of
-signing to linguistic units. It is conventionally split into
-\emph{isolated} SLR, where a clip contains a single sign and the model
-predicts a \emph{gloss} (a written label for a sign, by convention in
-capitals) from a fixed vocabulary, and \emph{continuous} SLR, where a
-sentence-length recording is transcribed as a gloss sequence. Both are
-distinct from sign language translation, which targets spoken-language
-text. This thesis works at the isolated level on one corpus and at the
-sentence level on the other, and evaluates both by retrieval rather than
-classification (\S\ref{sec:eval-protocols}).
+Automatic processing of these languages has been studied for decades, and
+recent surveys document an active literature spanning recognition,
+translation and
+generation~\cite{bragg2019sign, koller2020quantitative,
+nunezmarcos2023survey, decoster2024machine}. Widely usable tools,
+however, do not yet exist. Bragg et al.\ note that ``few systems are
+robust enough for real-world deployment or use''~\cite{bragg2019sign},
+and the most recent review of signed-to-spoken translation concludes that
+the field is still ``dealing with a low-resource machine translation
+problem'', with the largest public translation dataset holding roughly
+seven thousand training examples~\cite{decoster2024machine}.
+
+Closing that gap depends on representations that generalise beyond the
+handful of signers and recording conditions any one corpus contains. This
+thesis works on that prerequisite: whether current sign language
+representations encode the signer rather than the sign, and whether
+synthetic appearance variation can reduce that dependence. Recognition is
+not the whole of accessible sign language technology, but more robust
+representations are a precondition for it, and for the wider access such
+tools would give Deaf signers to services built around spoken language.
+
+\emph{Sign language recognition} (SLR) maps video of signing to
+linguistic units. It is conventionally split into \emph{isolated} SLR,
+where a clip contains a single sign and the model predicts a \emph{gloss}
+(a written label for a sign, by convention in capitals) from a fixed
+vocabulary, and \emph{continuous} SLR, where a sentence-length recording
+is transcribed as a gloss sequence; both are distinct from translation,
+which targets spoken-language text. This thesis works at the isolated
+level on one corpus and the sentence level on the other, evaluating both
+by retrieval (\S\ref{sec:eval-protocols}).
 \todome{ADDITION END}
 
 SLR faces two distinct problems that this
@@ -165,6 +188,23 @@ approximation, not a substitute: the edits are per-frame appearance
 rewrites, so the signing motion is preserved only insofar as the editor
 leaves it untouched, not by construction as in the avatar renders.
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{method_overview.pdf}
+\caption[Method overview: appearance counterfactuals in contrastive
+training]{\textbf{Method overview.} How synthetic appearance
+counterfactuals enter training in the two settings, which share the
+recipe but are never mixed. Setting A (ASL Citizen, high diversity):
+generative edits of an isolated clip act as extra positives beside the
+real one, used either to train a video--text head on frozen features or
+to fine-tune the backbone. Setting B (NGT744, low diversity):
+motion-locked re-renders and generative edits of one sentence recording
+act as $K$ views under a supervised contrastive objective. The
+objectives and the loss weights shown are defined in
+\S\ref{sec:method-objectives}.}
+\label{fig:method_overview}
+\end{figure*}
+
 In this thesis we therefore study two dataset regimes that differ in
 appearance diversity, both with signer-disjoint evaluation. The first is
 a low-diversity setting in which motion capture is available: NGT744, a
@@ -185,7 +225,9 @@ synthetic appearance variation earns its cost and where it does not, is
 the core result of the thesis.
 
 This thesis asks whether appearance bias is measurable in modern sign
-language representations, and whether synthetic appearance counterfactuals can reduce it. Concretely:
+language representations, and whether synthetic appearance
+counterfactuals can reduce it; Figure~\ref{fig:method_overview}
+summarises how they enter training. Concretely:
 
 \begin{description}
 \item[RQ1 (Diagnosis).] Do sign language video representations, namely pose-based

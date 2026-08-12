@@ -1,20 +1,8 @@
 \chapter{Methodology}
 \label{chap:method}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{method_overview.pdf}
-\caption[Method overview: appearance counterfactuals in contrastive
-training]{\textbf{Method overview.} How synthetic appearance
-counterfactuals enter contrastive training in the two settings, which
-share the recipe but are never mixed: as extra positives beside one real
-clip on the isolated-sign corpus (Setting A, ASL Citizen), or as $K$
-views of a single recording on the continuous corpus (Setting B,
-NGT744). The objectives are Eq.~\eqref{eq:nce} for the head runs,
-Eq.~\eqref{eq:master} for the FT runs, and Eq.~\eqref{eq:supcon} for
-Setting B; the loss weights shown are the ones used throughout.}
-\label{fig:method_overview}
-\end{figure*}
-This chapter presents the methodological contribution of the thesis: a
+This chapter specifies the components sketched in
+Figure~\ref{fig:method_overview}. It presents the methodological
+contribution of the thesis: a
 formal framing of signer appearance as an intervenable nuisance factor
 (\S\ref{sec:method-notation}), a taxonomy of appearance counterfactuals
 together with two synthesis routes that realise them

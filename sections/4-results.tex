@@ -708,76 +708,10 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \label{tab:asl_citizen_t2v}
 \end{table*}
 
+A qualitative view of the gloss organisation of nine of these spaces,
+projected with t-SNE on a shared clip sample, is given in
+Appendix~\ref{app:tsne_grid}.
 
-
-
-
-
-
-Figure~\ref{fig:tsne_grid} gives a qualitative view of the gloss
-organisation of nine of these spaces on a shared clip sample.
-% FIGURE (t-SNE grid) redesigned 2026-07-30: the original 58-gloss probe
-% set (built for the gendered-pair analogy task) turned up ZERO glosses
-% sharing an exact 5/5 ASL-LEX phonological match among its high-iconicity
-% members, so the gloss subset was replaced with 6 real phonological
-% "minimal families" (triplets, exact match on MajorLocation/MinorLocation/
-% Handshape/Movement/SignType) found by a full-corpus search over all 2725
-% ASL-Citizen train glosses joined to ASL-LEX (994 rated; provenance:
-% family_search_full.py, probe_families.json). Families were further
-% chosen (2026-07-30 refinement) to MAXIMIZE diversity ACROSS families:
-% MajorLocation/MinorLocation are Neutral for every eligible candidate (a
-% hard property of this corpus, not a choice), so the 6 families instead
-% cover 6 distinct handshapes (the max of 8 available given the 6-family
-% cap) and jointly represent all 3 Movement values and both SignType
-% values. Colour now encodes family, marker shape encodes
-% member-within-family (consistent across all 9 panels). Panel set:
-% dropped the two pair-SupCon panels (K=3, K=5);
-% added the fine-tuned-feature SignCLIP family (augft_on_{ce,aug,sdda})
-% and the headless fine-tuned-backbone "Logos" family (ce, aug) --
-% extracted via dump_kq_spaces_families.py (cluster job 25054868, genoa
-% CPU partition, no GPU/SBU cost). augft_on_sdda has no bare-backbone
-% sibling in the grid (ce/aug were chosen over sdda/consistency as the
-% two healthiest backbone-FT recipes per the signer-probe results above);
-% this is a deliberate 9th-panel choice, not an oversight. The
-% signer-coloured twin is still NOT buildable from local caches (kqfeat
-% exports carry no signer or video IDs) and stays deferred to
-% jobs/visualize_embedding_spaces.job.
-\begin{figure*}[t]
-\centering
-\includegraphics[width=.85\textwidth]{tsne_grid_gloss.png}
-\caption[t-SNE projections across nine embedding spaces]{t-SNE projections (shared hyper-parameters: perplexity 30, PCA
-initialisation, fixed seed) of the same video sample in nine embedding
-spaces. The 18 plotted glosses are six phonological ``minimal families''
-(triplets): groups of three ASL-Citizen glosses that are simultaneously
-high-iconicity (top tertile of ASL-LEX deaf-signer ratings among
-well-sampled train glosses), share an exact match on all five ASL-LEX
-form features (major/minor location, handshape, movement, sign type), and
-were chosen to be as phonologically distinct from one another as the
-corpus allows -- major/minor location is Neutral for every eligible
-family (unavoidable: that is where high-iconicity phonological overlap
-concentrates in this corpus), but the six families span six different
-handshapes and, jointly, all three movement types and both sign types --
-e.g.\ \{CANOE, CAR, SHOVEL1\}, all Neutral-space, S handshape, curved,
-symmetrical/alternating signs, versus \{GUN1, LIGHTER, REMOTECONTROL\},
-Neutral-space but A handshape, no path movement, one-handed. Colour
-identifies the family, marker shape the member within it, consistent
-across every panel so the same gloss can be tracked across spaces ($n$
-per panel in the title). Panel titles report the silhouette score $s$ of
-the plotted clips computed in the original 768-dimensional L2-normalised
-feature space, so cluster quality is a property of the space rather than
-of the projection. Every Logos-based space separates these hard,
-phonologically-confusable cases by gloss ($s{=}0.31$--$0.51$): the frozen
-backbone alone is loosest ($s{=}0.31$), backbone fine-tuning helps a
-little (CE $0.33$, aug $0.34$), and every SignCLIP head is tighter still,
-with the three fine-tuned-feature heads (on CE/aug/SDDA-FT backbones,
-$s{=}0.50$--$0.51$) essentially matching the frozen-backbone head
-($s{=}0.50$). The original pose-based SignCLIP model (bottom right;
-$n{=}238$ where pose extraction succeeds) shows no gloss structure on
-this out-of-domain sample ($s{=}-0.07$). A signer-coloured companion
-requires per-clip signer metadata not present in the cached exports and
-is deferred to the embedding-visualisation job.}
-\label{fig:tsne_grid}
-\end{figure*}
 
 \subsection{Does any objective actually remove signer identity? Distance and
 decoding probes on the fine-tuned spaces}
@@ -1141,8 +1075,6 @@ CE control never trained on augments and is correspondingly symmetric.}
 Qualitative companions to these numbers (a t-SNE of the augments around their source videos and the per-edit-type cosine distributions) are shown in Appendix~\ref{app:aug_geometry_grid} (Figs.~\ref{fig:aug_vs_orig_tsne} and~\ref{fig:aug_vs_orig_cosine}).
 
 
-
-
 \subsection{Iconicity analysis}
 \label{sec:results-iconicity-main}
 The organising
@@ -1160,15 +1092,31 @@ travels with the frozen features from RSL to our ASL inputs.
 recomputed from the buckets\_*.npz artifacts on the cluster (dose-5 means
 raw 0.179 / SDDA 0.126 / CE 0.089; Spearman .064/.034/.002; 2,178 pairs);
 they match the appendix and the presentation figure.}
-ASL Citizen contains such groups too, and they sit at the top of the
-iconicity scale. Figure~\ref{fig:iconicity_family} shows one:
-GUN1, LIGHTER and REMOTECONTROL agree on all five ASL-LEX form features
-(neutral location, \texttt{a} handshape, no path movement, one-handed)
-because each depicts handling the object it names, and all three carry
-high deaf-signer iconicity ratings ($5.3$--$5.6$ of $7$). Iconic
-vocabulary is thus exactly where distinct meanings converge on the same
-form, so how a space treats form-similar pairs decides what it can say
-about iconic signs.
+To test what that bias does to an ASL space we need a description of sign
+form that is independent of it. ASL-LEX~2.0 provides
+one~\cite{sehyrASLLEX2021,caselliASLLEX2017}: a linguistic database that
+codes each of $2{,}723$ ASL signs on five phonological features
+(movement, major and minor location, handshape, sign type) and rates its
+iconicity, how much its form resembles its meaning, on a $1$--$7$ scale
+from deaf signers. The difference from the VSSign premise matters twice
+over. VSSign membership is a binary judgement about Russian signs, made
+by the Logos annotators and used as \emph{training labels}; ASL-LEX is an
+external coding of American signs that we use only as a
+\emph{measurement}, and because it codes five features separately it
+turns ``looks alike'' into a graded quantity, from zero to five shared
+features, rather than a yes/no. Measuring an ASL space this way is
+therefore not a restatement of the backbone's supervision: whatever form
+organisation we find has transferred across languages and across
+annotation schemes.
+
+ASL Citizen contains such form-similar groups too, and they sit at the top
+of the iconicity scale. Figure~\ref{fig:iconicity_family} shows one:
+GUN1, LIGHTER and REMOTECONTROL agree on all five features (neutral
+location, \texttt{a} handshape, no path movement, one-handed) because
+each depicts handling the object it names, and all three rate $5.3$--$5.6$
+for iconicity. Iconic vocabulary is exactly where distinct meanings
+converge on the same form, so how a space treats form-similar pairs
+decides what it can say about iconic signs.
 
 \begin{figure}[t]
 \centering
@@ -1180,10 +1128,9 @@ iconicity.}
 \label{fig:iconicity_family}
 \end{figure}
 
-We quantify this treatment with the form-dose measure of
-Appendix~\ref{sec:results-iconicity}: bucket every pair of gloss
-centroids by how many of the five form features the glosses share and
-trace cosine similarity against that count.
+We quantify this treatment with a \emph{form-dose} measure: bucket every
+pair of gloss centroids by how many of the five features the two glosses
+share, and trace cosine similarity against that count.
 Figure~\ref{fig:form_dose_ft} places the frozen backbone between the two
 kinds of training we apply to it, and they move in opposite directions.
 The frozen space responds strongly on its own: mean centroid similarity
@@ -1198,6 +1145,15 @@ with the counterfactuals as explicit positives does the reverse and
 overshoots the frozen level, more so with more positives per item
 ($0.25$ at $K{=}3$, $\rho=.09$; $0.39$ at $K{=}5$, $\rho=.16$).
 
+Figure~\ref{fig:form_dose_rho} reduces every space we trained to the same
+single number and shows the split is systematic, not particular to the
+three recipes above. All four backbone fine-tunes fall below the frozen
+level, and the plain one falls furthest. Text-aligned SignCLIP heads on
+the frozen backbone stay close to it, and heads built on already
+fine-tuned backbones inherit the flattening rather than recovering from
+it. Only the pair-SupCon heads exceed the frozen level, and only they
+were trained with the counterfactuals as explicit positives.
+
 This is the same trade-off the retrieval tables record, seen from the
 other side. The pair-SupCon objective replaces the video--text loss
 entirely (\S\ref{sec:method-objectives}), so nothing in it tells the
@@ -1209,26 +1165,57 @@ glosses apart whatever they look like, and buys $2.4$ retrieval points
 while taking the form response to zero. Neither extreme is the goal:
 form organisation is what makes an embedding space look semantic on
 iconic vocabulary, and it is also what makes form-similar signs hard to
-tell apart. The matched-pair iconicity battery in
-Appendix~\ref{sec:results-iconicity} shows the consequence for iconicity
-itself, present in the frozen space, washed out by text alignment, and
-partially restored by pair training.
+tell apart.
+
+That first half deserves stating plainly, because it bounds what any
+embedding-space evaluation in this literature can claim. For a highly
+iconic sign, looking alike and meaning alike are the same thing: whatever
+groups HAMMER with hammering-like motion needs no concept of hammering.
+A purely visual space will therefore appear semantic when probed on
+iconic vocabulary, and only on arbitrary signs, where form and meaning
+come apart, does the distinction become testable. Reports of
+``semantically meaningful'' neighbourhoods in sign-video embedding spaces
+are hard to interpret unless iconicity is controlled, and the spread is
+wide enough to matter: within ASL Citizen's vocabulary, ASL-LEX rates
+EYEGLASSES at $6.77$ and SCISSORS at $6.03$, against NEPHEW at $1.14$ and
+COMPUTER at $1.84$. A matched-pair test on iconicity itself
+(Appendix~\ref{sec:results-iconicity}, 248 pairs balanced for lexical
+class and frequency) points the same way as the form-dose result, but its
+effects are small and only the location-overlap contrasts survive
+multiple comparisons, so we treat it as corroborating rather than
+load-bearing.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{form_dose_main.png}
 \caption[Form-dose response across training recipes]{Centroid cosine
-similarity against the number of shared ASL-LEX form features (pair
-counts below each level; $\rho$ is the Spearman correlation over all
-centroid pairs). The frozen backbone sits between two opposite
+similarity against the number of shared ASL-LEX form features. Boxes are
+quartiles, the dashed line the bucket mean. The frozen backbone sits between two opposite
 pressures: fine-tuning the backbone flattens the response, most
 completely with plain cross-entropy, while training a head with the
 appearance counterfactuals as explicit positives amplifies it beyond
 the frozen level and increasingly so with $K$. The pair-SupCon panels
 also start higher at zero shared features, so the claim concerns the
-slope rather than the absolute level.}
+slope rather than the absolute level. Mean centroid similarity at five
+shared features: $0.18$ frozen, $0.09$ CE, $0.13$ SDDA, $0.25$ at
+$K{=}3$, $0.39$ at $K{=}5$; the six buckets hold $546{,}736$ to
+$2{,}178$ centroid pairs, from zero to five shared features.}
 \label{fig:form_dose_ft}
 \end{figure*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{form_dose_rho.png}
+\caption[Form organisation across every trained space]{Form organisation
+of every space we trained, as the Spearman correlation between shared
+form features and centroid cosine over all gloss pairs. The dashed line
+is the frozen backbone. Every backbone fine-tune falls below it, heads
+trained on frozen features stay near it, heads on fine-tuned backbones
+inherit the flattening, and only the pair-SupCon heads, the ones trained
+with the appearance counterfactuals as explicit positives, rise above
+it.}
+\label{fig:form_dose_rho}
+\end{figure}
 \todome{ADDITION END}
 
 \section{Summary}

@@ -155,42 +155,21 @@ vocabulary-wide and graded. It also cuts the other way: reports of
 ``semantically meaningful'' neighbourhoods in sign-video embedding
 spaces are hard to interpret unless iconicity is controlled.
 
-Before testing iconicity itself, we measure how strongly each space is
-organised by phonological \emph{form}. We propose a \emph{form-dose}
-measure for this: for every pair of gloss
-centroids we count how many of five ASL-LEX~2.0 form
-features~\cite{sehyrASLLEX2021} the two
-glosses share (Movement, MajorLocation, MinorLocation, Handshape,
-SignType; 0--5 shared), and bucket the pairwise cosine similarities by
-that count (\texttt{form\_dose.py}). Figure~\ref{fig:form_dose}a shows
-the result for the frozen space: similarity rises steadily with shared
-form, from a mean of $0.01$ at zero shared features to $0.18$ at five.
-Panel~b overlays the same dose--response for all thirteen spaces (each
-curve shifted so its own 0-shared level is zero), and panel~c reduces
-each space to one number: the Spearman correlation between
-shared-feature count and cosine over all centroid pairs. The
-cross-model picture is consistent: backbone fine-tuning \emph{flattens}
-the form organisation ($\rho$ drops from $.06$ to $.00$--$.03$), the
-SignCLIP heads keep it near the frozen level, SignCLIP heads trained on
-fine-tuned backbones inherit the flattening, and the pair-SupCon heads
-\emph{amplify} it ($\rho = .09$ at $K{=}3$, $.16$ at $K{=}5$):
-training with appearance counterfactuals as positives makes the space
-more form-organised, not less.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{thesis_form_dose.png}
-\caption[Dose-response of phonological form organisation]{How strongly each embedding space is organised by phonological
-form. (a)~In the frozen space, cosine similarity between two gloss
-centroids rises with the number of ASL-LEX form features the glosses
-share (Movement, MajorLocation, MinorLocation, Handshape, SignType);
-boxes are quartiles, the dashed line the mean, pair counts below each
-level. (b)~The same dose--response for all thirteen spaces, each curve
-shifted so its own 0-shared level is zero. (c)~Spearman correlation
-between shared-feature count and cosine per space: backbone fine-tuning
-flattens form organisation, pair-SupCon training amplifies it.}
-\label{fig:form_dose}
-\end{figure}
+\todome{TRIMMED 12.08 (Claude): the form-dose measure, its dose-response
+and the per-space comparison all moved to the main text
+(\S\ref{sec:results-iconicity-main},
+Figs.~\ref{fig:form_dose_ft} and~\ref{fig:form_dose_rho}); the old
+three-panel figure duplicated them and is dropped.}
+Before testing iconicity itself we measure how strongly each space is
+organised by phonological \emph{form}, using the form-dose measure
+defined in \S\ref{sec:results-iconicity-main}: for every pair of gloss
+centroids, count how many of the five ASL-LEX~2.0 form
+features~\cite{sehyrASLLEX2021} the two glosses share (movement, major
+and minor location, handshape, sign type; $0$--$5$) and bucket the
+pairwise cosine similarities by that count (\texttt{form\_dose.py}).
+Figures~\ref{fig:form_dose_ft} and~\ref{fig:form_dose_rho} report the
+result for the five headline spaces and for every space we trained
+respectively. The iconicity test below is run on the same spaces.
 
 The iconicity test compares the top against the bottom iconicity
 tertile, per space. The vocabulary join is near-total: the ASL Citizen
@@ -207,6 +186,50 @@ video$\to$centroid retrieval accuracy; and the fraction of the ten
 nearest centroids that share the gloss's major location, handshape, or
 movement. Each contrast gets a paired sign-flip permutation test with
 $10^4$ resamples.
+
+\todome{RESTORED 12.08 (Claude): this results passage and its figure existed
+in the pre-move draft but were dropped when the thesis moved to this repo,
+leaving the section with a method and no findings (and
+\texttt{thesis\_iconicity\_contrast.png} unreferenced in media/figures).
+Ported verbatim apart from the added short caption.}
+Figure~\ref{fig:iconicity_contrast} shows every contrast in every
+space. Our prediction was that iconicity would be invisible in the raw
+space and that a high$-$low contrast would \emph{emerge} with text
+alignment; the data say roughly the opposite. In the frozen space,
+high-iconicity signs sit in less location-typical neighbourhoods
+($-0.080$, $p=0.004$) and are slightly less compact ($-0.013$,
+$p=0.030$) than their matched low-iconicity partners. In the SignCLIP
+heads these contrasts shrink and lose significance. The pair-trained
+heads bring them back: $K{=}5$ restores the location contrast
+($-0.097$, $p=0.002$) and both pair heads show the compactness deficit
+($p\approx0.03$). Two cautions apply. First, the effects are small,
+and across 36 tests one or two cells at $p\approx0.03$ are expected by
+chance; the two location-overlap cells at $p<0.005$ are the only ones
+we would defend individually. Second, the hearing-rating robustness
+pass shows essentially nothing (one cell at $p=0.047$ across 36
+tests), so whatever the frozen space picks up is specific to
+deaf-signer iconicity. A reading consistent with this pattern is that
+iconic signs take their form from what they depict rather than from
+the common phonological inventory, so they have fewer form-neighbours
+to begin with; a visual space mirrors that lexicon-level fact, text
+alignment re-ranks neighbourhoods and blurs it, and form-amplifying
+pair training sharpens it again. We flag this as an interpretation
+consistent with the data, not a demonstrated mechanism.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{thesis_iconicity_contrast.png}
+\caption[Matched high-low iconicity contrasts across spaces]{Matched
+high$-$low iconicity contrasts (248 pairs, deaf-signer
+ratings) on six neighbourhood measures across six spaces. Solid bars
+are significant under the paired sign-flip permutation test
+($^{*}p<0.05$, $^{**}p<0.01$); faded bars are not. The pattern:
+present in the frozen space (iconic signs have lower location overlap
+and compactness), washed out in the text-aligned heads, partially
+restored by the pair-trained heads.}
+\label{fig:iconicity_contrast}
+\end{figure}
+\todome{END RESTORED}
 
 \section{Generative appearance-edit prompts}
 \label{app:flux_prompts}
@@ -323,3 +346,70 @@ the wording passed to the editor. Tiers $1$--$4$ are excluded: lighter
 tones are already well represented among the corpus signers.}
 \label{tab:mst_tiers}
 \end{table}
+
+\todome{MOVED 12.08 (Claude): the t-SNE grid was demoted from Results to
+here; Results now points at it. Caption unchanged.}
+\section{t-SNE projections of the embedding spaces}
+\label{app:tsne_grid}
+% FIGURE (t-SNE grid) redesigned 2026-07-30: the original 58-gloss probe
+% set (built for the gendered-pair analogy task) turned up ZERO glosses
+% sharing an exact 5/5 ASL-LEX phonological match among its high-iconicity
+% members, so the gloss subset was replaced with 6 real phonological
+% "minimal families" (triplets, exact match on MajorLocation/MinorLocation/
+% Handshape/Movement/SignType) found by a full-corpus search over all 2725
+% ASL-Citizen train glosses joined to ASL-LEX (994 rated; provenance:
+% family_search_full.py, probe_families.json). Families were further
+% chosen (2026-07-30 refinement) to MAXIMIZE diversity ACROSS families:
+% MajorLocation/MinorLocation are Neutral for every eligible candidate (a
+% hard property of this corpus, not a choice), so the 6 families instead
+% cover 6 distinct handshapes (the max of 8 available given the 6-family
+% cap) and jointly represent all 3 Movement values and both SignType
+% values. Colour now encodes family, marker shape encodes
+% member-within-family (consistent across all 9 panels). Panel set:
+% dropped the two pair-SupCon panels (K=3, K=5);
+% added the fine-tuned-feature SignCLIP family (augft_on_{ce,aug,sdda})
+% and the headless fine-tuned-backbone "Logos" family (ce, aug) --
+% extracted via dump_kq_spaces_families.py (cluster job 25054868, genoa
+% CPU partition, no GPU/SBU cost). augft_on_sdda has no bare-backbone
+% sibling in the grid (ce/aug were chosen over sdda/consistency as the
+% two healthiest backbone-FT recipes per the signer-probe results above);
+% this is a deliberate 9th-panel choice, not an oversight. The
+% signer-coloured twin is still NOT buildable from local caches (kqfeat
+% exports carry no signer or video IDs) and stays deferred to
+% jobs/visualize_embedding_spaces.job.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.85\textwidth]{tsne_grid_gloss.png}
+\caption[t-SNE projections across nine embedding spaces]{t-SNE projections (shared hyper-parameters: perplexity 30, PCA
+initialisation, fixed seed) of the same video sample in nine embedding
+spaces. The 18 plotted glosses are six phonological ``minimal families''
+(triplets): groups of three ASL-Citizen glosses that are simultaneously
+high-iconicity (top tertile of ASL-LEX deaf-signer ratings among
+well-sampled train glosses), share an exact match on all five ASL-LEX
+form features (major/minor location, handshape, movement, sign type), and
+were chosen to be as phonologically distinct from one another as the
+corpus allows -- major/minor location is Neutral for every eligible
+family (unavoidable: that is where high-iconicity phonological overlap
+concentrates in this corpus), but the six families span six different
+handshapes and, jointly, all three movement types and both sign types --
+e.g.\ \{CANOE, CAR, SHOVEL1\}, all Neutral-space, S handshape, curved,
+symmetrical/alternating signs, versus \{GUN1, LIGHTER, REMOTECONTROL\},
+Neutral-space but A handshape, no path movement, one-handed. Colour
+identifies the family, marker shape the member within it, consistent
+across every panel so the same gloss can be tracked across spaces ($n$
+per panel in the title). Panel titles report the silhouette score $s$ of
+the plotted clips computed in the original 768-dimensional L2-normalised
+feature space, so cluster quality is a property of the space rather than
+of the projection. Every Logos-based space separates these hard,
+phonologically-confusable cases by gloss ($s{=}0.31$--$0.51$): the frozen
+backbone alone is loosest ($s{=}0.31$), backbone fine-tuning helps a
+little (CE $0.33$, aug $0.34$), and every SignCLIP head is tighter still,
+with the three fine-tuned-feature heads (on CE/aug/SDDA-FT backbones,
+$s{=}0.50$--$0.51$) essentially matching the frozen-backbone head
+($s{=}0.50$). The original pose-based SignCLIP model (bottom right;
+$n{=}238$ where pose extraction succeeds) shows no gloss structure on
+this out-of-domain sample ($s{=}-0.07$). A signer-coloured companion
+requires per-clip signer metadata not present in the cached exports and
+is deferred to the embedding-visualisation job.}
+\label{fig:tsne_grid}
+\end{figure*}
