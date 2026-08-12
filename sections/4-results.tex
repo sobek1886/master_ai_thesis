@@ -440,31 +440,15 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 4 & 0.344\pmsd{0.014} & 0.394\pmsd{0.021} & $+0.049$ \\
 \bottomrule
 \end{tabular}
-\caption{Real-signer-count ablation: fixed 180 sentences per condition,
-signer count $S{=}1\ldots4$, cross-signer retrieval R@1 (0--1 scale, as
-in Table~\ref{tab:ngt_synthetic_views}), mean$\pm$sd over 3 seeds; $\Delta(S)$ =
-paired gain of the Unreal arm over the matched real-only arm (unrounded
-means). Each panel pairs a real-only
-baseline with the same arm plus motion-locked avatars, so the panels differ
-in what the avatars are free to add: identity alone at a fixed camera
-(\emph{appearance only}), identity and viewpoint together
-(\emph{appearance $+$ viewpoint}), or identity on top of a baseline that
-already has real viewpoint diversity (\emph{appearance over real
-viewpoints}); arm codes refer to
-Table~\ref{tab:ngt_synthetic_views}, except E2$+$av., the E2 arm carrying
-the same six avatar views ($K{=}9$), which has no counterpart
-there. Per-seed exact McNemar (364 paired
-queries), $p<0.05$: appearance-only in $3/3$ seeds for every $S$ and
-direction; appearance $+$ viewpoint $3/3$ except $S{=}4$
-test$\to$train ($2/3$); appearance over real viewpoints $3/3/2/3$
-(test$\to$train) and $3/2/1/2$ (train$\to$test) for $S{=}1\ldots4$:
-robust test$\to$train, thinning in train$\to$test exactly where the gain
-is smallest. Evaluation: the frozen 364-sentence
-protocol of Table~\ref{tab:ngt_setups}.
-\todome{04.08, from your overflow todo: in-table panel headers shortened
-(the multiview one also had a duplicated parenthetical), arm
-compositions moved into the caption, McNemar details compressed. No
-numbers changed.}}
+\caption{Real-signer-count ablation: cross-signer retrieval R@1 (0--1
+scale), mean$\pm$sd over 3 seeds. $\Delta(S)$ is the paired gain of the
+avatar arm over its matched real-only baseline, from unrounded means.
+Arm codes are Table~\ref{tab:ngt_synthetic_views}'s, except E2$+$av., the
+E2 arm carrying the same six avatar views ($K{=}9$). Per-seed exact
+McNemar ($p<0.05$) holds in $3/3$ seeds for appearance-only everywhere,
+$3/3$ for appearance $+$ viewpoint except $S{=}4$ test$\to$train, and
+$3/3/2/3$ and $3/2/1/2$ (the two directions) for appearance over real
+viewpoints.}
 \label{tab:ngt_signer_count}
 \end{table}
 
