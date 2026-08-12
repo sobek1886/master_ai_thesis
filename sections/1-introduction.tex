@@ -196,32 +196,28 @@ separates the two settings: both are evaluated signer-independently.
   and contrastively text-aligned (SignCLIP \cite{jiangSignCLIPConnectingText2024}),
   encode signer identity beyond sign content, and to what degree?
 
-\item[RQ2 (Low-diversity regime).] In a low-diversity setting (the
+\item[RQ2a (Low-diversity regime).] In a low-diversity setting (the
   NGT744 corpus), do motion-locked re-renders (avatar renders driven by
   real motion capture) improve retrieval when used as extra views under a
   supervised contrastive objective~\cite{khosla2020supervised}?
 
-\item[RQ3 (Synthesis routes compared).] At matched strength, content and
-  viewpoint, how much of the motion-locked gain does the scalable
-  generative-edit route retain?
+\item[RQ2b (Synthesis routes compared).] In that same setting, at matched
+  strength, content and viewpoint, how much of the motion-locked gain does
+  the scalable generative-edit route retain?
 
-\item[RQ4 (High-diversity regime).] In a high-diversity setting (ASL
+\item[RQ3 (High-diversity regime).] In a high-diversity setting (ASL
   Citizen), do generative appearance edits
   (clothing, glasses, skin tone, signer swap), our
   scalable approximation of motion-locked synthesis, improve
   retrieval, either as training data for a contrastive embedding head or as
   counterfactual supervision when fine-tuning the backbone itself?
-\todome{two review notes on the RQs (03.08): (i) RQ3 lists the
-contrastive head before backbone fine-tuning, but the Results chapter now
-presents backbone fine-tuning first --- swap the clause order when
-finalising; (ii) no RQ covers the matched-$K$ Unreal-vs-Flux head-to-head
-(E3 vs E4), the only place the two synthesis routes are compared under
-matched conditions and arguably the most novel single comparison in the
-thesis --- consider folding it into RQ2 (``...and how much of that gain
-does the scalable generative approximation retain at matched strength?'')
-or making it the first clause of RQ4.}
+\todome{review note (03.08), still open: RQ3 lists the contrastive head
+before backbone fine-tuning, but the Results chapter presents backbone
+fine-tuning first --- swap the clause order when finalising. (The second
+note, that no RQ covered the matched-$K$ re-render-vs-edit head-to-head,
+is resolved: it is now RQ2b.)}
 \todome{DRAFT START (Claude 04.08): RQ4 widened from the old cosine-similarity question to the probe + geometry analyses actually run}
-\item[RQ5 (Interpretation).] What do the RQ4 interventions do
+\item[RQ4 (Interpretation).] What do the RQ3 interventions do
   to the embedding space itself: where do the synthetic counterfactuals
   land relative to their source videos and to a genuine signer change
   (do they stay local, and do they occupy a separable ``synthetic'' region),
@@ -237,13 +233,8 @@ or making it the first clause of RQ4.}
 % (lines 2158-2174); "distance geometry ... linear decodability" echoes the
 % two probes (lines 2008-2021).
 \todome{DRAFT END: (i) deliberately model-agnostic, matching your todo at
-line 287 about keeping RQs model-free; (ii) the 03.08 review note at lines
-309-317 suggests folding the matched-$K$ Unreal-vs-Flux head-to-head into
-RQ2 or making it RQ4's first clause --- this draft does NOT include it, so
-if you want it covered, prepend a clause like ``how much of the
-motion-locked gain does the scalable generative approximation retain at
-matched strength, and ...''; (iii) one long sentence --- split after
-``region'' if you find it heavy.}
+line 287 about keeping RQs model-free; (ii) one long sentence --- split
+after ``region'' if you find it heavy.}
 \end{description}
 
 \section{Contributions}
