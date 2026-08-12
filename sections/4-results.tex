@@ -158,12 +158,15 @@ information moves.
 \section{Cross-domain intervention: NGT744}
 \label{sec:results-crossdomain}
 
-\subsection{Isolating the appearance axis: single-view arms}
-\label{sec:ngt-single-view}
+\subsection{Which synthetic views help? Sources and dose}
+\label{sec:ngt-synthetic-views}
 Synthetic multi-view training bundles two axes at once: added
 \emph{identities} (avatars or edits) and added \emph{viewpoints} (cameras).
-The single-view ladder holds viewpoint fixed and varies appearance
-only. Its baseline trains on the front camera alone ($K{=}1$; with no
+The synthetic-view arms vary which views form the positive set: their
+source (real camera, Unreal avatar, generative edit) and their number
+$K$. The matched-viewpoint comparison that isolates appearance alone is
+E1 vs.\ E3 vs.\ E4, where every view sits at the front camera. The
+baseline trains on the front camera alone ($K{=}1$; with no
 positive pairs, SupCon degenerates, so this arm uses the video-only
 InfoNCE of \S\ref{sec:method-objectives});
 the treatment arms add, at the \emph{same} front camera, either both Unreal
@@ -220,8 +223,8 @@ E9 Unreal-only ($K{=}3$)     & 0.252\pmsd{0.017} & 0.484\pmsd{0.059} & 0.596\pms
 E10 Flux-only ($K{=}3$)      & 0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
 \bottomrule
 \end{tabular}
-\caption{Single-view NGT744 ladder: cross-signer retrieval (0--1 scale) with viewpoint
-held to the front camera, mean$\pm$sd over 3 seeds. Arm composition ($K$ =
+\caption{Synthetic-view arms on NGT744: cross-signer retrieval (0--1 scale),
+mean$\pm$sd over 3 seeds. Arm composition ($K$ =
 views per training item; every arm except E9/E10 includes the real
 front-view clip): E1 $=$ real front view only (video-only InfoNCE; all
 other arms SupCon over the $K$ views); E2 $=$ E1 $+$ 2 further real
@@ -243,21 +246,21 @@ by $|\Delta$ clip count$|$.}
 % table and tab:ngt_signer_count are the summarize_ngt_experiments.py
 % percentages divided by 100 (same values, same precision, new
 % representation); surrounding prose converted to match. The PNGs
-% Axis scales: both ngt_ladder_r1_vs_k.png and ngt_dropoff.png now render
+% Axis scales: both ngt_synthetic_views_r1_vs_k.png and ngt_dropoff.png now render
 % R@1 on the tables' 0--1 scale (ladder rescaled 2026-07-30).
 % A presentation version of the ladder figure (test->train only, descriptive
 % point labels, no E-codes needed) lives at thesis/ngt_ladder_presentation.png
 % (context/results/ngt_ladder_plot/plot_ngt_ladder_presentation.py) — slides
 % only, not included in the thesis.
-\label{tab:ngt_ladder}
+\label{tab:ngt_synthetic_views}
 \end{table*}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{ngt_ladder_r1_vs_k.png}
-\caption[NGT744 ladder: cross-signer R@1 against views per item]{Single-view NGT744 ladder: cross-signer R@1 against the number of
+\includegraphics[width=\linewidth]{ngt_synthetic_views_r1_vs_k.png}
+\caption[Synthetic-view arms: cross-signer R@1 against views per item]{Synthetic-view arms on NGT744: cross-signer R@1 against the number of
 views per training item $K$, by augmentation family (3-seed mean$\pm$sd;
-front-view evaluation as in Table~\ref{tab:ngt_ladder}, same 0--1 scale).
+front-view evaluation as in Table~\ref{tab:ngt_synthetic_views}, same 0--1 scale).
 Lines trace the
 Unreal (E1$\to$E3$\to$E5) and Flux (E1$\to$E4$\to$E6$\to$E7) families from
 the shared real-only baseline; isolated points mark the real-multiview
@@ -268,12 +271,12 @@ $K{=}3$ (E2, E3, E4, E9, E10) sit in one column. The Unreal route peaks
 sharply at matched $K{=}3$ and
 collapses at full strength ($K{=}7$), whereas the Flux route stays flat as
 edits are added.}
-\label{fig:ngt_ladder_r1}
+\label{fig:ngt_synthetic_views_r1}
 \end{figure}
 
-Figure~\ref{fig:ngt_ladder_r1} plots the ladder's R@1 against $K$ by
+Figure~\ref{fig:ngt_synthetic_views_r1} plots R@1 against $K$ by
 augmentation family, which makes the family structure that
-Table~\ref{tab:ngt_ladder} lists row-wise directly visible.
+Table~\ref{tab:ngt_synthetic_views} lists row-wise directly visible.
 With viewpoint held fixed, both synthetic routes recover a large share of the \todo{move descriptions of $EX = E1 + xxx$ to the table}
 cross-signer gap. Over the real-only baseline (E1, test$\to$train R@1 $0.234$), the
 matched-$K{=}3$ Unreal arm (E3) reaches $0.649$ and the matched-$K{=}3$ Flux arm
@@ -281,11 +284,11 @@ matched-$K{=}3$ Unreal arm (E3) reaches $0.649$ and the matched-$K{=}3$ Flux arm
 seed (exact McNemar $p<0.05$, $3/3$ seeds in both directions: Unreal
 E1$\to$E5 $\Delta$R@1 $+0.203$ test$\to$train / $+0.234$ train$\to$test, Flux E1$\to$E6
 $+0.257$ / $+0.363$).
-\todome{NUMBERS BUG (03.08, verified against tab:ngt\_ladder): the
+\todome{NUMBERS BUG (03.08, verified against tab:ngt\_synthetic\_views): the
 sentence's subject is the matched-$K{=}3$ arms E3 and E4, but the quoted
 deltas are the full-strength comparisons E1$\to$E5 and E1$\to$E6 ---
 E3$-$E1 is $0.649-0.234=0.415$ test$\to$train, not $+0.203$. Either pull
-the actual E1$\to$E3 and E1$\to$E4 McNemar results from the ladder eval
+the actual E1$\to$E3 and E1$\to$E4 McNemar results from the synthetic-view eval
 artifacts (do NOT reuse the E5/E6 values), or reword the sentence to
 attribute the quoted significance to E5/E6 and drop the per-route claim
 for E3/E4. A reviewer redoing the arithmetic will catch this.}
@@ -318,7 +321,7 @@ $\Delta$R@1 $+0.054$/$+0.128$, $2/3$ and $3/3$ seeds), an effect that recurs,
 attenuated, on the test-matched subset tier (E6s $>$ E5s, $+0.018$/$+0.065$,
 $1/3$ and $2/3$ seeds).
 
-Taken together, the ladder's view-composition arms separate what viewpoint
+Taken together, the synthetic-view arms separate what viewpoint
 diversity contributes from what identity diversity contributes. Adding real
 viewpoints does help: the two extra camera views in E2 lift the real-only
 baseline (E1) from R@1 $0.234$ to $0.266$ test$\to$train and, far more sharply, from
@@ -359,7 +362,7 @@ fixed-budget ablation design: we train at
 $S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
 subset of the next), and measure at each $S$ the paired gain
 $\Delta(S)$ of two Unreal arms over the real-only arm (E1, $K{=}1$): the
-matched-$K$ arm (the ladder's E3 setup, $K{=}3$: front camera plus both
+matched-$K$ arm (the synthetic-view E3 setup, $K{=}3$: front camera plus both
 avatars' front views) and the full Unreal arm (E5, $K{=}7$).
 
 The load-bearing control is that data volume is fixed while diversity
@@ -373,7 +376,7 @@ between signers (1.5--2.4 takes per sentence) cannot masquerade as a
 diversity effect. All arms of a condition use the same sentences and the
 same takes; the Unreal arms differ only by attaching avatar views of each
 take (the two avatar front views for E3, all six avatar views for E5). Evaluation is the same frozen 364-sentence protocol as the
-ladder (Table~\ref{tab:ngt_setups}),
+synthetic-view arms (Table~\ref{tab:ngt_setups}),
 with galleries built from features independent of what was trained on, so
 the eval set never varies across conditions; it therefore contains
 sentences outside a given condition's 180-sentence training pool and, for
@@ -445,11 +448,11 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 \end{tabular}
 \caption{Real-signer-count ablation: fixed 180 sentences per condition,
 signer count $S{=}1\ldots4$, cross-signer retrieval R@1 (0--1 scale, as
-in Table~\ref{tab:ngt_ladder}), mean$\pm$sd over 3 seeds; $\Delta(S)$ =
+in Table~\ref{tab:ngt_synthetic_views}), mean$\pm$sd over 3 seeds; $\Delta(S)$ =
 paired gain of the Unreal arm over the matched real-only arm (unrounded
-means). Arms as in Table~\ref{tab:ngt_ladder}: \textbf{single-view} = E1
+means). Arms as in Table~\ref{tab:ngt_synthetic_views}: \textbf{single-view} = E1
 front camera vs E5 front $+$ 6 avatar views; \textbf{matched-$K$} = the
-same E1 vs E3 (front $+$ both avatar front views, the ladder's strongest
+same E1 vs E3 (front $+$ both avatar front views, the synthetic-view arms' strongest
 arm); \textbf{multiview} = E2 (3 real views) vs E2 $+$ 6 avatar views,
 a viewpoint-matched real baseline. Per-seed exact McNemar (364
 paired queries), $p<0.05$: matched-$K$ in $3/3$ seeds for every $S$ and

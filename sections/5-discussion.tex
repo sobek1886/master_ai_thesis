@@ -205,7 +205,7 @@ further to
 The same synthetic videos therefore help or hurt depending purely on
 the objective through which they enter (as data, a small gain; as
 forced positives, a large loss), mirroring the high-$K$ degradation
-in the NGT744 ladder (\S\ref{sec:future-work} discusses the candidate
+in the NGT744 synthetic-view arms (\S\ref{sec:future-work} discusses the candidate
 discriminative fix). Our overall answer is accordingly narrow: a
 SignCLIP-style text-aligned head on frozen features is a cheap,
 slightly-better-than-neutral addition in this regime, it is the only
@@ -474,7 +474,7 @@ in-domain contrast between frozen-feature heads and backbone
 fine-tuning (\S\ref{sec:discussion-regimes}).
 
 \textbf{A discriminative term for the high-$K$ arms.} \todo{can we just run it now since we have more compute?} In the NGT744
-ladder, retrieval falls as more counterfactual views are packed into
+synthetic-view arms, retrieval falls as more counterfactual views are packed into
 each training item ($K{\geq}5$ arms below their $K{=}3$ counterparts),
 and the pair-SupCon head points the same way on ASL Citizen ($0.567$ at
 $K{=}3$, against $0.800$ for the same data without explicit pairing);

@@ -426,8 +426,8 @@ unseen during training. Evaluation on this corpus is therefore low-data,
 cross-signer, and cross-studio.
 
 The NGT744 experiments use this corpus under two splits, summarised
-in Table~\ref{tab:ngt_setups}. The single-view ladder \todo{rename the single-view ladder, the old name is confusing as we also have muktiview runs in that table}
-(Table~\ref{tab:ngt_ladder}) and the signer-count
+in Table~\ref{tab:ngt_setups}. The synthetic-view experiment
+(Table~\ref{tab:ngt_synthetic_views}) and the signer-count
 ablation (Table~\ref{tab:ngt_signer_count}) draw on all four
 signers and are scored on the same frozen 364-sentence evaluation set,
 used for every arm and condition, so train and test counts need not
@@ -444,8 +444,8 @@ varies.
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lcc}
 \toprule
- & \textbf{Single-view ladder} & \textbf{Signer-count ablation} \\
- & (Table~\ref{tab:ngt_ladder}) & (Table~\ref{tab:ngt_signer_count}) \\
+ & \textbf{Synthetic-view arms} & \textbf{Signer-count ablation} \\
+ & (Table~\ref{tab:ngt_synthetic_views}) & (Table~\ref{tab:ngt_signer_count}) \\
 \midrule
 Train signers & 4 (all sessions) & $S\in\{1,\ldots,4\}$, nested \\
 Train sentences & 744 (1{,}313 takes) & 180 per condition (one take) \\
@@ -453,7 +453,7 @@ Views per item $K$ & 1--10 by arm & 1 vs.\ 7; 3 vs.\ 9 \\
 Sentences evaluated & 364 (frozen) & 364 (frozen across $S$) \\
 \bottomrule
 \end{tabular}
-\caption{The two NGT744 dataset splits. The single-view ladder and the
+\caption{The two NGT744 dataset splits. The synthetic-view arms and the
 signer-count ablation
 share one frozen 364-sentence evaluation protocol; the signer-count
 ablation additionally pins data volume at 180 sentences per condition. In
@@ -576,11 +576,11 @@ Using simultaneous views of one performance as positives is established
 practice in action recognition~\cite{shahMultiViewActionRecognition2023}.
 The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
-(\S\ref{sec:eval-protocols}); the ladder trains on 744
+(\S\ref{sec:eval-protocols}); the synthetic-view experiment trains on 744
 sentence-recordings and the signer-count ablation on 180 per condition,
 $K$ views each. Loss details are given in \S\ref{sec:method-losses}.
 
-The single-view ladder and the signer-count ablations hold the
+The synthetic-view arms and the signer-count ablations hold the
 \emph{contrastive batch} constant at 64 items for every arm
 (equal in-batch negatives at every $K$, with encoder compute scaling
 with $K$), and set the learning-rate schedule length to each
