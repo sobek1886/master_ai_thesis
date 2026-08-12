@@ -317,10 +317,8 @@ with a reach toward the foot pedal used to stop the recording. Both add
 frames unrelated to signing (idle standing and extraneous motion),
 and because the idle portion differs in length per signer, no trivial
 automated trim existed; we judged manual cleaning not worth thesis time.
-The reported NGT744 numbers therefore include this noise floor.
 \textbf{Frame-independent generative editing introduces flicker.} Our
-editing pipeline (\S\ref{sec:setup-generation}\todome{ref re-pointed
-03.08: pipeline instance detail moved to Setup; was sec:method-diffusion}) edits each frame of a
+editing pipeline (\S\ref{subsection:GAE}) edits each frame of a
 source video independently: every edited frame follows the appearance-edit
 prompt on its own, with no explicit mechanism enforcing consistency with
 the frame before or after it, so consecutive edited frames drift slightly
@@ -330,12 +328,7 @@ consistent unit rather than frame-by-frame, trying LTX 2.3 (22B)
 ~\cite{hacohen2026ltx2}, LTX 2.3 with an Edit Anything
 LoRA~\cite{alissonerdx2026editanything}, Wan
 2.2~\cite{wan2025}, and Lucy Edit 1.1 dev
-(5B)~\cite{decart2025lucyedit}\todome{citations added 04.08,
-web-verified; caveats: the Wan cite is the team's own suggested citation
-but is technically the 2.1 tech report (no 2.2 paper exists); LTX-2.3
-has no own paper, Lightricks points to the LTX-2 report;
-Edit-Anything is a community LoRA (no paper) cited as @misc to its HF
-repo --- drop that cite and keep just the name if you prefer};
+(5B)~\cite{decart2025lucyedit};
 in every case the edited
 output was substantially worse than the frame-by-frame Flux9B route, so we
 kept the per-frame pipeline and report the resulting flicker as a
@@ -346,15 +339,15 @@ occasionally hallucinates content that was not in the source frame:
 most visibly, adding a spurious or malformed handshape to a frame whose
 original signer was not making that shape, or to a frame that did not
 contain a visible hand at all. This risk is highest for the skin-tone and
-signer-swap edit types (\S\ref{sec:method-diffusion}), and is a direct
+signer-swap edit types (\S\ref{subsection:GAE}), and is a direct
 consequence of editing each frame independently rather than conditioning
 on the sign actually being performed.
-\todo{example frames:  source frames from nano\_banana/output/flux-aug} A more heavily
+ A more heavily
 constrained editing pipeline (for instance, conditioning the editor
 on the source pose via ControlNet-style
-conditioning~\cite{zhangAddingConditionalControl2023}\todome{ADDITION 11.08: ControlNet was named but uncited (candidates \#1)}) could reduce these hallucinations
+conditioning~\cite{zhangAddingConditionalControl2023}) could reduce these hallucinations
 further, but their prevalence was not high enough to justify the added
-complexity.\todome{sentence added 04.08 from your todo}
+complexity.
 
 \section{Future work}
 \label{sec:future-work}
@@ -372,12 +365,7 @@ parameters remains harder than working directly with recorded motion
 capture, as our pipeline does.
 
 \textbf{Signer identity persists through the synthetic-avatar swap.}
-\todome{moved here from Limitations 04.08 per your todo; the second half
-of that todo (``make sure it is also addressed in the discussion'') is
-still open --- the natural spot is the identity-diversity attribution in
-\S\ref{sec:results-lowdiv}/the regime discussion, which currently
-credits the NGT744 gain to identity diversity without acknowledging that
-the avatars retain the source signer's motion signature} Even
+Even
 when signer identity is changed by re-rendering with a synthetic avatar,
 the avatar does not fully erase who provided the underlying motion
 capture: body shape, body posture, range of motion when signing, and
@@ -395,11 +383,6 @@ signer-identity probe on the rendered views themselves) would be a
 cheap first step, and motion retargeting that also perturbs kinematic
 style the harder follow-up.
 
-\textbf{Scaling laws for synthetic signers.} The synthetic-signer
-dose-response (0/1/2 avatars, and beyond with new renders) remains the
-most valuable follow-up on the synthetic axis: does the NGT744 gain grow,
-saturate, or invert as synthetic appearance diversity increases?
-
 \textbf{Augmenting the full ASL Citizen training set, not just a targeted
 subset.} Our generative augmentation covers a deliberately targeted subset
 of the ASL Citizen training set, chosen worst-first by signer scarcity and
@@ -411,11 +394,7 @@ open question whether augmenting the entire training set, rather than the
 selected worst-first subset, would have produced a larger gain
 than the targeted budget did, or whether the targeted-subset advantage
 holds here too and full-corpus augmentation would mostly add compute cost
-without adding retrieval gain. The compute constraint that motivated the
-original subset choice (\S\ref{sec:setup-generation}\todome{ref
-re-pointed 03.08: the compute-budget rationale moved to Setup; was
-sec:method-diffusion}) would need to be
-relaxed to test this directly.
+without adding retrieval gain.
 
 \textbf{End-to-end training for the NGT744 encoder.} All NGT744 results come
 from an encoder trained on pre-extracted, frozen Logos clip features
@@ -428,7 +407,7 @@ visual backbone, giving the low-data regime its own counterpart to the
 contrast between frozen-feature heads and backbone
 fine-tuning (\S\ref{sec:discussion-regimes}).
 
-\textbf{A discriminative term for the high-$K$ arms.} \todo{can we just run it now since we have more compute?} In the NGT744
+\textbf{A discriminative term for the high-$K$ arms.} In the NGT744
 synthetic-view arms, retrieval falls as more counterfactual views are packed into
 each training item ($K{\geq}5$ arms below their $K{=}3$ counterparts),
 and the pair-SupCon head points the same way on ASL Citizen ($0.567$ at
@@ -441,32 +420,11 @@ natural test is to add a discriminative term to the NGT744 training setup
 (a 12-layer encoder trained with SupCon on frozen Logos clip features;
 \S\ref{sec:results-lowdiv}): cross-entropy on sentence
 (or gloss) identity plus $\lambda$ times the SupCon term, sweeping
-$\lambda \in \{0.1, 1\}$ over a subset of arms (E1, E3, E5, E8, 3 seeds
-each, ${\approx}700$ GPU-hours-equivalent SBU). If the high-$K$ drop
+$\lambda \in \{0.1, 1\}$ over a subset of arms. If the high-$K$ drop
 disappears, the tradeoff is objective-specific and fixable; if it
-persists, appearance invariance itself is what costs retrieval.\todo{framing check}
+persists, appearance invariance itself is what costs retrieval.
 
-\textbf{Appearance-matched hard negatives.} Our pair objectives use the
-synthetic edits as appearance-matched \emph{positives}: views that
-change the signer while preserving the motion are pulled toward their
-source clip. The mirror image is to use the same augmentation for hard
-\emph{negatives}: clips sharing one synthetic identity (the same avatar,
-or the same Flux signer edit) but performing different sentences or
-glosses, so that appearance can no longer separate the negative pair and
-only motion can. This drops into the existing SupCon setup as a
-batch-construction change rather than a new loss: negatives are
-currently simply the other items in the batch
-(\S\ref{sec:method-objectives}), and would instead be sampled so that
-each anchor also meets its own synthetic identity performing other
-signs. The expected insight bears on the form-dose result: explicit
-motion-discrimination pressure would test whether the form organisation
-that pair-trained heads currently \emph{amplify}
-(\S\ref{sec:results-iconicity-main}, Fig.~\ref{fig:form_dose_rho}) recedes once
-negatives, and not only positives, are appearance-controlled, or
-sharpens further as the space reorganises around
-motion.\todo{framing check}
-
-\textbf{A from-scratch control for the high-diversity null.} \todo{refine writing, this is the experiment suggested by Angelos} The two-regime
+\textbf{A from-scratch control for the high-diversity null.} The two-regime
 reading attributes the flat high-diversity result to invariance already
 consumed during pretraining (\S\ref{sec:discussion-regimes}), and this
 is directly testable: train the same MViTv2-S from random initialisation
@@ -476,17 +434,6 @@ from-scratch model lands well below the pretrained one and the
 augmentations now help it, pretraining diversity, not a saturated
 recipe, explains the null; if augmentation still adds nothing, the
 ceiling is not a pretraining artifact. 
-
-\textbf{Counterfactual supervision for a self-supervised RGB backbone.}
-SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} learns its sign
-representation without gloss labels, using pose-derived pretraining
-targets plus an adversarial style loss to hold appearance at bay. Our
-counterfactuals could replace that inferred style signal with direct
-supervision: an original and its motion-locked or generative
-counterpart form an explicit invariance pair during pretraining. This
-would also test the two-regime reading on a backbone whose pretraining
-has not already consumed the invariance the way Logos's gloss-supervised,
-signer-diverse pretraining has.
 
 \textbf{Fine-tuning I3D as a second backbone for the embedding-space
 analyses.} Throughout this thesis I3D is used only as a frozen,
