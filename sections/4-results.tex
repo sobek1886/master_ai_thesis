@@ -34,7 +34,7 @@ Negative & Different sign, same signer & 0.589 \\
 Control  & Different sign, different signer & 0.573 \\
 \hline
 \end{tabular}
-\caption{SignCLIP counterfactual analysis on WLASL: mean cosine similarity
+\caption[SignCLIP counterfactual analysis on WLASL]{SignCLIP counterfactual analysis on WLASL: mean cosine similarity
 by pair type.}
 \label{tab:wlasl_counterfactual}
 \end{table}
@@ -60,7 +60,7 @@ SignCLIP embeddings & 0.302 (0.013) & 0.471 \\
 MediaPipe (1218-d mean+std) & 0.207 (0.013) & 0.374 \\
 \hline
 \end{tabular}
-\caption{Cross-gloss signer retrieval probe, SignCLIP embeddings vs.\ raw
+\caption[Cross-gloss signer retrieval probe]{Cross-gloss signer retrieval probe, SignCLIP embeddings vs.\ raw
 MediaPipe pose features.}
 \label{tab:cross_gloss_signer_probe}
 \end{table}
@@ -98,7 +98,7 @@ so the missing videos drive no comparison.
 
 \begin{table}[t]
 \centering\footnotesize
-\caption{Signer-separability probes on raw ASL Citizen features (train
+\caption[Signer-separability probes on raw ASL Citizen features]{Signer-separability probes on raw ASL Citizen features (train
 split, common subset). Median ratio = per-gloss median of the
 inter-signer/intra-signer L2, with the $95\%$ gloss-bootstrap confidence
 interval; decoding = linear-head top-1 signer accuracy under 3-fold
@@ -213,7 +213,7 @@ E9  & 1 re-render $\times$ 3 views, no real video, $K{=}3$ &  0.252\pmsd{0.017} 
 E10 & E6's 3 edits only, no real video, $K{=}3$ &  0.513\pmsd{0.034} & 0.755\pmsd{0.012} & 0.837\pmsd{0.020} & 0.625\pmsd{0.020} \\
 \bottomrule
 \end{tabular}
-\caption{Synthetic-view arms on NGT744: cross-signer retrieval (0--1
+\caption[Synthetic-view arms on NGT744: cross-signer retrieval]{Synthetic-view arms on NGT744: cross-signer retrieval (0--1
 scale), mean$\pm$sd over 3 seeds. Re-renders are motion-locked Unreal
 avatars and edits are generative appearance edits, both at the front
 camera unless a view is named. E1 has no positive pairs at $K{=}1$ and so
@@ -406,7 +406,7 @@ $S$ (signers) & real-only arm & $+$avatar arm & $\Delta(S)$ \\
 4 & 0.344\pmsd{0.014} & 0.394\pmsd{0.021} & $+0.049$ \\
 \bottomrule
 \end{tabular}
-\caption{Real-signer-count ablation: cross-signer retrieval R@1 (0--1
+\caption[Real-signer-count ablation on NGT744]{Real-signer-count ablation: cross-signer retrieval R@1 (0--1
 scale), mean$\pm$sd over 3 seeds. $\Delta(S)$ is the paired gain of the
 $+$avatar arm over the real-only arm in the same panel, from unrounded
 means.
@@ -569,14 +569,13 @@ edits alone, and the pair-SupCon rows use them as explicit positives
 (\S\ref{sec:method-objectives}); unmarked rows train on real videos only.
 The three pose rows are the published results of the original SignCLIP
 model~\cite{jiangSignCLIPConnectingText2024} rather than our runs, which
-is why they are reported to two decimals where ours carry three. The lower
-two blocks train the same head recipes on \emph{fine-tuned} rather than
-frozen features, tagged by how that backbone was fine-tuned: CE-FT is
+is why they are reported to two decimals where ours carry three. The last
+block searches over combinations: two head recipes, each trained on the
+frozen backbone and on three fine-tuned versions of it (CE-FT is
 cross-entropy on the real videos, aug-FT adds the synthetic edits as data,
-and SDDA-FT adds the SDDA invariance term (\S\ref{sec:method-losses}).
-Those two blocks were generated with a different frame preprocessing
-from the rows above, so each carries its own frozen-backbone row as the
-matched control and is read within the block.
+SDDA-FT adds the SDDA invariance term, \S\ref{sec:method-losses}). It
+uses a different frame preprocessing from the rows above, so it carries
+its own frozen-backbone rows and is read within the block.
 
 The head is worth adding, and the edits help it a little. On frozen Logos
 features a head trained from scratch already reaches $0.750$ R@1, far
@@ -620,46 +619,45 @@ why).
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{llcccc}
 \toprule
-\textbf{Setup} & \textbf{Features} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{Med.\,R} \\
+\textbf{Setup} & \textbf{Backbone} & \textbf{R@1} & \textbf{R@5} & \textbf{R@10} & \textbf{Med.\,R} \\
 \midrule
-SignCLIP from scratch        & Pose (MediaPipe) & 0.39 & 0.71 & 0.84 & 2 \\
-SignCLIP fine-tuned          & Pose (MediaPipe) & 0.46 & 0.77 & 0.84 & 2 \\
-SignCLIP fine-tuned + linear & Pose (MediaPipe) & \textbf{0.60} & \textbf{0.84} & \textbf{0.89} & 1 \\
+\multicolumn{6}{l}{\textit{Published SignCLIP baselines}} \\
+SignCLIP from scratch        & MediaPipe pose & 0.39 & 0.71 & 0.84 & 2 \\
+SignCLIP fine-tuned          & MediaPipe pose & 0.46 & 0.77 & 0.84 & 2 \\
+SignCLIP fine-tuned + linear & MediaPipe pose & \textbf{0.60} & \textbf{0.84} & \textbf{0.89} & 1 \\
 \midrule
-From scratch          & RGB (I3D)                  & 0.32  & 0.63  & 0.73  & 3 \\
-From scratch          & RGB (Logos) & 0.750 & 0.950 & 0.970 & 1 \\
-From scratch $+$ synth.\ data & RGB (Logos) & 0.756 & 0.955 & 0.970 & 1 \\
-Fine-tuned            & RGB (Logos) & 0.789 & 0.962 & 0.975 & 1 \\
-Fine-tuned, synth.\ data only & RGB (Logos) & 0.760 & 0.957 & 0.971 & 1 \\
-Fine-tuned $+$ synth.\ data & RGB (Logos) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
+\multicolumn{6}{l}{\textit{Head recipes on the frozen backbone}} \\
+From scratch          & I3D                  & 0.32  & 0.63  & 0.73  & 3 \\
+From scratch          & Logos (frozen) & 0.750 & 0.950 & 0.970 & 1 \\
+From scratch $+$ synth.\ data & Logos (frozen) & 0.756 & 0.955 & 0.970 & 1 \\
+Fine-tuned            & Logos (frozen) & 0.789 & 0.962 & 0.975 & 1 \\
+Fine-tuned, synth.\ data only & Logos (frozen) & 0.760 & 0.957 & 0.971 & 1 \\
+Fine-tuned $+$ synth.\ data & Logos (frozen) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
 \midrule
-\multicolumn{6}{l}{\textit{From-scratch head, varying the backbone underneath}$^{\ddagger}$} \\
-From scratch              & RGB (Logos, frozen)   & 0.744 & \textbf{0.966} & \textbf{0.977} & 1 \\
-From scratch              & RGB (Logos, CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
-From scratch              & RGB (Logos, aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
-From scratch              & RGB (Logos, SDDA-FT)  & \textbf{0.782} & 0.958 & 0.970 & 1 \\
-\midrule
-\multicolumn{6}{l}{\textit{Best head recipe, varying the backbone underneath}$^{\ddagger}$} \\
+\multicolumn{6}{l}{\textit{Recipe search: head recipe $\times$ backbone}$^{\ddagger}$} \\
+From scratch              & Logos (frozen)   & 0.744 & \textbf{0.966} & \textbf{0.977} & 1 \\
+From scratch              & Logos (CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
+From scratch              & Logos (aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
+From scratch              & Logos (SDDA-FT)  & \textbf{0.782} & 0.958 & 0.970 & 1 \\
+\addlinespace
 \rowcolor{rowhl}
-Fine-tuned $+$ synth.\ data & RGB (Logos, frozen)   & \tbest{\textbf{0.818}} & \tbest{\textbf{0.972}} & \tbest{\textbf{0.982}} & 1 \\
-Fine-tuned $+$ synth.\ data & RGB (Logos, CE-FT)    & 0.809 & 0.946 & 0.957 & 1 \\
-Fine-tuned $+$ synth.\ data & RGB (Logos, aug-FT)   & 0.812 & 0.942 & 0.954 & 1 \\
-Fine-tuned $+$ synth.\ data & RGB (Logos, SDDA-FT)  & 0.810 & 0.964 & 0.974 & 1 \\
+Fine-tuned $+$ synth.\ data & Logos (frozen)   & \tbest{\textbf{0.818}} & \tbest{\textbf{0.972}} & \tbest{\textbf{0.982}} & 1 \\
+Fine-tuned $+$ synth.\ data & Logos (CE-FT)    & 0.809 & 0.946 & 0.957 & 1 \\
+Fine-tuned $+$ synth.\ data & Logos (aug-FT)   & 0.812 & 0.942 & 0.954 & 1 \\
+Fine-tuned $+$ synth.\ data & Logos (SDDA-FT)  & 0.810 & 0.964 & 0.974 & 1 \\
 \midrule
 \multicolumn{6}{l}{\textit{Pair-SupCon head (fine-tune; synth.\ edits as explicit positives)}} \\
-$K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (Logos) & 0.567 & 0.887 & 0.934 & 1 \\
-$K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & RGB (Logos) & 0.414 & 0.767 & 0.858 & 2 \\
+$K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & Logos (frozen) & 0.567 & 0.887 & 0.934 & 1 \\
+$K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & Logos (frozen) & 0.414 & 0.767 & 0.858 & 2 \\
 \bottomrule
 \end{tabular}
 \caption[Video-to-text retrieval on ASL Citizen]{Video-to-text
-retrieval on ASL Citizen. The \textbf{Features} column names the backbone the head is
-trained on and, where relevant, how that backbone was itself fine-tuned;
-row naming is explained in the text. $^{\ddagger}$These two blocks were
-generated with a different frame preprocessing from the rows above, so
-they should be read within the block, against their own frozen-backbone
-row, rather than against the earlier numbers. Bold marks the best value in
-a column within its block, a blue cell the best in the column overall, and
-the shaded row the strongest single configuration.}
+retrieval on ASL Citizen; row naming is explained in the text.
+$^{\ddagger}$This block uses a different frame preprocessing from the rows
+above, so read it against its own frozen-backbone rows rather than against
+the earlier numbers. Bold marks the best value per column within a block,
+a blue cell the best in the column, and the shaded row the strongest
+configuration.}
 \label{tab:asl_citizen_retrieval}
 \end{table*}
 
@@ -693,20 +691,20 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \makebox[\linewidth][c]{
   \begin{tabular}{llcccc}
   \toprule
-  \textbf{Setup} & \textbf{Features} & \textbf{P@1} & \textbf{P@5} & \textbf{P@10} & \textbf{Mean R} \\
+  \textbf{Setup} & \textbf{Backbone} & \textbf{P@1} & \textbf{P@5} & \textbf{P@10} & \textbf{Mean R} \\
   \midrule
-  From scratch          & RGB (Logos) & 0.871 & 0.854 & 0.786 & 1.228 \\
-  From scratch $+$ synth.\ data    & RGB (Logos) & 0.883 & 0.861 & 0.790 & 1.213 \\
-  Fine-tuned           & RGB (Logos) & 0.895 & 0.876 & 0.808 & 1.166 \\
-  Fine-tuned, synth.\ data only & RGB (Logos) & 0.884 & 0.863 & 0.796 & 1.216 \\
-  Fine-tuned $+$ synth.\ data      & RGB (Logos) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
+  From scratch          & Logos (frozen) & 0.871 & 0.854 & 0.786 & 1.228 \\
+  From scratch $+$ synth.\ data    & Logos (frozen) & 0.883 & 0.861 & 0.790 & 1.213 \\
+  Fine-tuned           & Logos (frozen) & 0.895 & 0.876 & 0.808 & 1.166 \\
+  Fine-tuned, synth.\ data only & Logos (frozen) & 0.884 & 0.863 & 0.796 & 1.216 \\
+  Fine-tuned $+$ synth.\ data      & Logos (frozen) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
   \midrule
-  \multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone} }\\
+  \multicolumn{6}{l}{\textit{Recipe search: best head recipe $\times$ backbone}} \\
 
-  Fine-tuned $+$ synth.\ data & RGB (Logos, frozen)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
-  Fine-tuned $+$ synth.\ data & RGB (Logos, CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
-  Fine-tuned $+$ synth.\ data & RGB (Logos, aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
-  Fine-tuned $+$ synth.\ data & RGB (Logos, SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
+  Fine-tuned $+$ synth.\ data & Logos (frozen)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
+  Fine-tuned $+$ synth.\ data & Logos (CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
+  Fine-tuned $+$ synth.\ data & Logos (aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
+  Fine-tuned $+$ synth.\ data & Logos (SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
   \bottomrule
   \end{tabular}
   }
@@ -769,7 +767,7 @@ fine-tuned $+$ cosine consistency & 16.66$\times$ & 56.3\% \\
 fine-tuned $+$ SDDA       & 17.12$\times$ & 67.6\% \\
 \bottomrule
 \end{tabular}
-\caption{Signer-identity probes on the re-extracted top-2-family spaces.
+\caption[Signer-identity probes on the fine-tuned spaces]{Signer-identity probes on the re-extracted top-2-family spaces.
 $\rho$ = median over multi-signer glosses of the inter-signer/intra-signer
 L2 ratio (prototype-based); in every space 100\% of glosses have
 inter $>$ intra. Decoding = linear-head top-1 signer accuracy
@@ -792,7 +790,7 @@ $K{=}3$ pair-SupCon                & 23.35$\times$ & 20.1\% \\
 $K{=}5$ pair-SupCon                & 26.34$\times$ & 21.2\% \\
 \bottomrule
 \end{tabular}
-\caption{The same two probes on the SignCLIP-head spaces. Head features
+\caption[Signer-identity probes on the SignCLIP-head spaces]{The same two probes on the SignCLIP-head spaces. Head features
 exist only for the train split, so this panel uses the matched train
 split (35 signers, chance 0.029) and is not comparable row-for-row with
 the test-split panel above; the frozen-backbone row gives the same-split
@@ -989,7 +987,7 @@ the mechanistic evidence behind the reading in
 \;\;signer swap & 1.05 & 1.000 & 0.50 & 0.59 & 0.77 \\
 \bottomrule
 \end{tabular}
-\caption{Augmentation geometry in the \textbf{frozen} Logos space
+\caption[Augmentation geometry in the frozen Logos space]{Augmentation geometry in the \textbf{frozen} Logos space
 (fine-tuned spaces: Table~\ref{tab:aug_geometry_spaces}). All values are
 medians over pairs. n.disp = displacement as a fraction of a real signer
 change (measurement 1); AUC = real-vs-synthetic linear separability under
@@ -1069,7 +1067,7 @@ edit type, a direction a classifier can trivially factor out.
 \;\;SDDA        & 0.80 & 0.66 & 0.961 & 0.50 \\
 \bottomrule
 \end{tabular}
-\caption{The same geometry across feature spaces, shown for the
+\caption[Augmentation geometry across feature spaces]{The same geometry across feature spaces, shown for the
 signer-swap edit (the strongest intervention; the local edits show the
 same pattern; full grid with uncertainty in
 Appendix~\ref{app:aug_geometry_grid}). n.disp and gloss@1
