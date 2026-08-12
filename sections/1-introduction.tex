@@ -39,11 +39,10 @@ but are re-segmentations or synthetic augmentations of existing footage,
 not new material), and Whisper's 680{,}000 hours is quoted from its
 abstract.}
 The first is \emph{data scarcity}, whose scale is easy to understate. The
-largest sign language video corpus holds roughly $3{,}200$ hours, and it
-is named for the twenty-five or so sign languages that reach even fifteen
-hours within it, out of more than three hundred in use
-worldwide~\cite{tanzerYouTubeSL25}; a single speech recognition model of
-the same period was trained on $680{,}000$ hours of
+largest sign language video corpus holds roughly $3{,}200$ hours, and
+covers only about twenty-five of the more than three hundred sign
+languages in use worldwide~\cite{tanzerYouTubeSL25}; a single speech
+recognition model of the same period was trained on $680{,}000$ hours of
 audio~\cite{radfordRobustSpeechRecognition2022}. Annotated data is
 scarcer again: the largest corpora are weakly supervised harvests whose
 text is scraped or machine-transcribed rather than
@@ -56,19 +55,6 @@ the web close the gap, since the signing video on it largely lacks the
 aligned captions supervised training needs and carries biometric
 information that makes redistribution a privacy
 question~\cite{rustPrivacyAwareSignLanguage2024a}.
-
-Scarcity of \emph{signers} is sharper still, and it is the axis this
-thesis turns on. The benchmarks the field trains on are recorded from
-tens of people: nine signers in
-PHOENIX-2014T~\cite{camgozNeuralSignLanguage2018}, ten in
-CSL-Daily~\cite{CSL-daily}, eleven in
-How2Sign~\cite{duarteHow2Sign2021}, fifty-two in ASL
-Citizen~\cite{aslcitizen}, and four in the NGT744 corpus used here; even
-the largest isolated-sign pretraining corpus by signer count reaches
-381~\cite{ovodovLogosWellTemperedPretrain2025}. A model thus sees far
-more distinct signs than distinct human appearances, which is precisely
-the condition under which appearance becomes available as a shortcut, and
-which makes the two problems one.
 \todome{END STRENGTHENED}
 
 The second is \emph{appearance bias}: a video model can score well on a benchmark by
