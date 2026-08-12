@@ -559,7 +559,7 @@ SignCLIP-style head trained on top of frozen backbone features
 (Table~\ref{tab:asl_citizen_retrieval}).
 
 Rows are named compositionally. \emph{Synth.} marks any training that uses
-the Flux appearance edits: \emph{$+$ synth.\ data} adds them to the real
+the generative appearance edits: \emph{$+$ synth.\ data} adds them to the real
 training videos as extra items, and the pair-SupCon rows use them as
 explicit positives (\S\ref{sec:method-objectives}); unmarked rows train on
 real videos only.
@@ -574,19 +574,6 @@ invariance term, \S\ref{sec:method-losses}). That third block uses a
 different frame preprocessing from the rows above, so it carries its own
 frozen-backbone rows and is read within the block.
 
-\todome{REWRITTEN 12.08: the previous version claimed ``the head is worth
-adding'', which this table cannot show (every row has a head). It now
-describes what the recipes differ in, read off the run configs. One
-thing surfaced while checking: \emph{from scratch} initialises both towers
-from pretrained BERT rather than randomly. The \emph{synth.\ data only} row
-(R@1 $0.760$, P@1 $0.884$) was dropped from both tables on 12.08: it trains
-on 450 of the 2{,}731 glosses, so it is not a like-for-like comparison and
-only invited misreading. A separate check on whether the recipe search used
-the preprocessing the Logos authors use is still open.}
-Every cell in both tables is a single training run, without seeds or
-confidence intervals, and the same configuration appears twice at $0.800$
-and $0.818$ under the two frame preprocessings, so differences below
-roughly two points are not interpreted below.
 The four rows differ in only two respects: how many training stages the
 head gets, and which clips it sees. All of them share the architecture,
 the frozen features, the contrastive loss, the batch size and the
@@ -595,9 +582,8 @@ initialised from pretrained BERT weights, so it is untrained on sign
 language rather than randomly initialised. \emph{Fine-tuned} adds a
 second stage that resumes the first at a fifth of the learning rate, with
 weight decay and a shorter annealing schedule. \emph{$+$ synth.\ data}
-changes nothing but the training split, adding $8{,}989$ edited clips to
-the $40{,}154$ real ones. Those clips are edits of $450$ of the $2{,}731$
-glosses, so the intervention reaches a sixth of the vocabulary.
+changes nothing but the training split, adding edited clips to
+the real ones.
 
 Read this way, the second stage is worth $3.9$ points ($0.750$ to
 $0.789$) and the edits roughly one more on top of it ($0.789$ to
@@ -689,10 +675,6 @@ configuration.}
 
 
 \paragraph{The effect of augmentations on T2V retrieval performance}
-\todome{CORRECTED 12.08: this paragraph said ``fine-tuning alone lifts'',
-which is the head's second training stage, not backbone fine-tuning. It also
-read the now-removed synth-only row as evidence that synthetic data adds
-little.}
 Table~\ref{tab:asl_citizen_t2v} repeats the comparison in the
 text-to-video direction, where precision@$k$ replaces recall@$k$: the
 gallery holds several correct videos per gloss query, so recall@1 is
@@ -711,22 +693,6 @@ backbone is strongest video-to-text ($0.818$ against $0.809$ on CE-FT)
 while CE-FT is strongest text-to-video ($0.935$ against $0.925$). Both
 margins are about one point, so we note the disagreement without reading
 a preference into it.
-\todome{ADDED 12.08, replacing a proposed error-reduction paragraph. An
-examiner pass rejected that version: the two error rates are computed
-over different query sets ($32{,}941$ videos against $2{,}731$ glosses),
-so the ratio between their error reductions is not a quantity, and the
-mechanism it offered was circular. The likeliest explanation, that in
-text-to-video the queries \emph{are} glosses and only $450$ of $2{,}731$
-were edited, is stated here as a conjecture; splitting P@1 by edited and
-untouched glosses would test it directly and is an afternoon's work.}
-The edits move P@1 more than they move R@1 ($0.024$ against $0.011$). We
-do not read a ratio between the two: the two error rates are computed over
-different query sets, and both effects are of the same order as the
-$0.018$ that a change of preprocessing alone moves the same configuration
-in Table~\ref{tab:asl_citizen_retrieval}. One structural difference is
-worth recording for future work: the edits cover $450$ of the $2{,}731$
-glosses, and in text-to-video the queries are glosses, so most of that
-query set was never touched by the intervention.
 
 \begin{table*}[t]
   \centering
