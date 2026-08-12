@@ -161,17 +161,10 @@ at the class level: every gloss is ranked by its number of distinct training
 signers (ascending), with ties broken by a difficulty proxy (per-class
 nearest-centroid gloss accuracy computed on the from-scratch contrastive
 baseline's test embeddings,
-\todome{REWRITE START (Claude 12.08): the old wording claimed this measure
-``degrades precisely when embeddings organise by signer rather than by
-sign'', which \S\ref{sec:results-ft-probes} contradicts: signer structure
-is enormous in distance terms for every multi-signer gloss
-($\rho=17.7\times$) while gloss clustering stays good. Restated as the
-selection-time assumption it was, with a forward pointer.}
 a clustering measure that is low for classes the baseline representation
-separates poorly; we read it at selection time as a signer-entanglement
+separates poorly (we read it at selection time as a signer-entanglement
 proxy, though \S\ref{sec:results-ft-probes} later shows distance-based
-structure and signer decodability dissociate\todome{REWRITE END}), and
-entire classes are taken in rank order until the budget fills.
+structure and signer decodability dissociate). Entire classes are taken in rank order until the budget fills.
 We propose a taxonomy of four independent appearance edit types
 (Fig.~\ref{fig:aug_examples}); for each
 selected source video we generate up to four edits, applied frame-by-frame:
