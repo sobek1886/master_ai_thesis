@@ -352,7 +352,7 @@ four recording sessions, each a distinct real signer. We propose a
 fixed-budget ablation design: we train at
 $S \in \{1,2,3,4\}$ real signers, nested (each condition's signers are a
 subset of the next), and measure at each $S$ the paired gain
-$\Delta(S)$ of two Unreal arms over the real-only arm (E1, $K{=}1$): the
+$\Delta(S)$ of two avatar arms over the real-only arm (E1, $K{=}1$): the
 appearance-only arm (the synthetic-view E3 setup, $K{=}3$: front camera plus
 both avatars' front views) and the full Unreal arm (E5, $K{=}7$).
 
@@ -375,9 +375,10 @@ $S{<}4$, gallery videos of signers absent from that condition's training.
 
 
 Table~\ref{tab:ngt_signer_count} shows both outcomes at once. The
-real-only baseline barely moves with $S$: at a fixed 180-sentence budget,
-adding real signers does not by itself improve cross-signer retrieval
-(R@1 $0.21$--$0.24$ test$\to$train). The avatar gain does move, and in the
+real-only arm barely moves with $S$: spreading the same 180 sentences
+over one, two, three or four real signers leaves cross-signer retrieval at
+R@1 $0.21$--$0.24$ (test$\to$train), so real signer variety at constant
+data volume does not by itself help. The avatar gain does move, and in the
 direction the two-regime account predicts: appearance $+$ viewpoint
 shrinks from $+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train),
 and appearance over real viewpoints repeats the pattern from a stronger
@@ -391,7 +392,7 @@ viewpoint gain, and significant in $3/3$ seeds in every cell.
 \footnotesize
 \begin{tabular}{lccc}
 \toprule
-$S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
+$S$ (signers) & real-only arm & $+$avatar arm & $\Delta(S)$ \\
 \midrule
 \multicolumn{4}{l}{\textbf{Appearance $+$ viewpoint}: 1 real view $\to$ $+$ 6 avatar views \;(E1 $\to$ E5)} \\
 \midrule
@@ -435,7 +436,8 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 \end{tabular}
 \caption{Real-signer-count ablation: cross-signer retrieval R@1 (0--1
 scale), mean$\pm$sd over 3 seeds. $\Delta(S)$ is the paired gain of the
-avatar arm over its matched real-only baseline, from unrounded means.
+$+$avatar arm over the real-only arm in the same panel, from unrounded
+means.
 Arm codes are Table~\ref{tab:ngt_synthetic_views}'s, except E2$+$av., the
 E2 arm carrying the same six avatar views ($K{=}9$). Per-seed exact
 McNemar ($p<0.05$) holds in $3/3$ seeds for appearance-only everywhere,
