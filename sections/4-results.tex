@@ -604,15 +604,19 @@ all within the two-point range above. Whatever backbone fine-tuning has
 to contribute at this point, the head has already contributed.
 
 The pair-SupCon rows are the largest effect among the head recipes on
-Logos features, and they are the cleanest comparison in the table: they resume the same from-scratch head as the
+Logos features. They resume the same from-scratch head as the
 fine-tuned rows, so all of these runs are second stages from one
 checkpoint and differ only in what that stage optimises. Keeping the
 video--text loss and adding the edits as data carries the head from
 $0.750$ to $0.800$. Replacing that loss with SupCon over each video and
 its own edits leaves it below where it started: $0.567$ with two edits
-and $0.414$ with four. The same clips therefore help or hurt according to
-the objective they enter through, and within the SupCon runs more of them
-is worse (\S\ref{sec:results-iconicity-main} returns to why).
+and $0.414$ with four. That gap is not a verdict on the edits. This stage
+drops the text tower and every form of gloss supervision
+(\S\ref{sec:method-objectives}) and is still scored on video-to-text
+retrieval, so a large loss is expected before a single edit is added, and
+no run separates the two. What the two rows do compare is each other:
+only the number of edits per anchor differs, and more of them is worse
+(\S\ref{sec:results-iconicity-main} returns to why).
 
 % TABLE CONVENTION (updated 2026-08-05 per Piotr):
 % - \textbf on a data cell = best value in that metric column within its

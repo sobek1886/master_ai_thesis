@@ -35,10 +35,10 @@ one checkpoint.
 
 A second factor compounds this signer-diversity gap for the raw, untrained
 backbone specifically. That Logos transfers well onto ASL Citizen even
-before any ASL-Citizen-specific training (\S\ref{sec:discussion-signclip})\todome{this ref
-points at the SignCLIP discussion section, which is currently an empty
-todo stub --- either fill that section or re-anchor this claim to the
-retrieval table directly}
+before any ASL-Citizen-specific training
+(Table~\ref{tab:backbone_ft_retrieval}: the unmodified frozen backbone
+already exceeds the benchmark's published baselines with no target-corpus
+training at all)
 makes sense once the pretraining recipe is considered: Logos is trained
 jointly with WLASL, and WLASL and ASL Citizen share a large fraction of
 their vocabulary: both are American Sign Language isolated-sign corpora
@@ -125,73 +125,8 @@ sentence; bib metadata matches the ACL Anthology record}
 % Fold 8); Table 1 gives the correct 7,096/519/642. No bib entry yet.
 
 
-\section{Does SignCLIP-style text alignment help or hurt?}
-\label{sec:discussion-signclip}
-% RECOMMENDATION (Claude 04.08): WRITE, do not remove. Removal is not a
-% local operation: RQ1 names SignCLIP, the WLASL diagnosis probes it, the
-% whole in-domain head experiment IS a SignCLIP head, the head signer-probe
-% panel, six of nine t-SNE panels, and the appendix analogy/gender/iconicity
-% analyses are computed in SignCLIP-head spaces; sec:discussion-regimes
-% cross-references this section. Draft below; adopt/trim/reject.
-\todome{DRAFT START (Claude 04.08): section 1 of 2. Strictly restates
-what tab:asl\_citizen\_retrieval, tab:asl\_citizen\_t2v,
-tab:head\_signer\_probes and fig:tsne\_grid already show; no new numbers,
-no new citations. The open-vocabulary/anchor-neighbourhood argument cut
-on 03.08 (see the todome at line 1905) is deliberately NOT
-reconstructed here.}
-
-For task quality, the answer in our high-diversity regime is: it helps,
-modestly, and it is the only place the ASL Citizen synthetic data moved
-anything. A SignCLIP-style head trained from scratch on frozen Logos
-features already reaches
-0.750 % line 1829 (from-scratch head, V2T R@1)
-V2T R@1 over 2{,}731 glosses % line 1854 (caption: 2731 unique glosses)
-(random-baseline Median R $1366$), % line 1853-1854 (caption)
-which is the concrete sense in which the pretrained Logos backbone,
-itself never trained on ASL Citizen by its
-authors~\cite{ovodovLogosWellTemperedPretrain2025}, already carries the
-benchmark: the head is the only target-corpus learning involved
-(\S\ref{sec:discussion-regimes} points here for exactly this claim).
-On top of that, fine-tuning the head adds real-data gains
-(0.789), % line 1831 (Fine-tuned)
-adding the Flux edits as plain extra training items adds the
-$+1.1$-point gain quoted in \S\ref{sec:discussion-regimes}
-(0.800), % line 1833 (Fine-tuned + synth. data); +1.1 vs 0.789 at line 1831
-and carrying the same recipe onto fine-tuned backbones tops out at
-0.818. % line 1843 (FT+synth. recipe on native)
-The text-to-video direction repeats the ordering, with the combination
-strongest on every metric
-(P@1 $0.919$, % line 1908 (Fine-tuned + synth. data, T2V)
-$0.925$--$0.935$ on fine-tuned backbones), % lines 1912-1917 (recipe-on-FT rows)
-and the head also tightens the gloss geometry that the backbone leaves
-loose: on the phonologically confusable t-SNE families, every head sits
-at silhouette $s{=}0.50$--$0.51$ against $0.31$ for the frozen backbone
-alone. % lines 1989-1994 (fig:tsne_grid caption)
-None of this is a large effect on an already-strong backbone (the
-gains are one to three R@1 points), but the direction is consistently
-positive, and nothing in the retrieval tables suggests that adding a
-text tower costs accuracy.
-
-What text alignment does to \emph{signer identity} is more interesting
-than what it does to accuracy, because the two probe readouts pull
-apart. Relative to the backbone spaces, every head makes signers
-\emph{more} geometrically separated at fixed gloss
-($\rho$ of $22.0$--$26.3\times$ % lines 2076-2080 (tab:head_signer_probes)
-against $17.67\times$ for the frozen reference) % line 2075 (frozen row)
-while making identity far \emph{less} linearly decodable
-($20$--$25\%$ against $66.9\%$ on the same train split). % lines 2090-2092 (caption)
-% (35 signers, chance 0.029 -- caption lines 2085-2087)
-We resist reading a mechanism into this beyond what the probes state:
-the head reorganises the space so that whatever signer information
-survives is no longer linearly accessible, while the coarse prototype
-geometry, if anything, stretches. Which of the two readouts one
-privileges decides whether text alignment ``helped'' with signer
-invariance, and \S\ref{sec:results-ft-probes} argues neither should be
-read as a proxy for the other. What can be said flatly is that text
-alignment did not remove signer structure (no objective in this
-thesis did); it moved where that structure is measurable.
-
-\todome{ADDITION START (Claude 12.08): your hypothesis about why co-training
+\todome{MOVED 12.08 from the cut SignCLIP section; both inbound
+references already pointed here. Your hypothesis about why co-training
 beat fine-tuning for the Logos authors. Framed as an explicitly unverifiable
 conjecture. Checked against the Logos paper: they never claim fine-tuning
 costs anything, and their fine-tune does beat their frozen encoder, so the
@@ -209,8 +144,8 @@ target-set accuracy throughout, so a fine-tune that raises accuracy while
 eroding the structure of the representation would be invisible to it,
 which is precisely what we measure here: cross-entropy fine-tuning buys
 $2.4$ retrieval points over the frozen backbone
-(Table~\ref{tab:backbone_ft_retrieval}) and takes the space's form
-organisation to zero on the way. Co-training keeps the source objective
+(Table~\ref{tab:backbone_ft_retrieval}) and flattens the space's form
+organisation on the way. Co-training keeps the source objective
 alive and would not pay that price.
 Two things make the conjecture worth stating and neither makes it safe to
 assert. It is consistent with an observation they report but leave
@@ -230,35 +165,6 @@ before fine-tuning began, which is one reading of why the gain is small
 while the structural cost is not. Testing this properly needs the
 intermediate checkpoints of a co-training run, which are not public.
 \todome{ADDITION END}
-
-The clearest ``hurt'' is not the text alignment itself but what happens
-when the counterfactuals are pushed into the head as explicit
-positives: pair-SupCon at $K{=}3$ drops V2T R@1 to
-0.567 % line 1849 (K=3 pair-SupCon)
-against
-0.800 % line 1833 (Fine-tuned + synth. data)
-for the same edits used as plain additional data, and $K{=}5$ falls
-further to
-0.414.
-The same synthetic videos therefore help or hurt depending purely on
-the objective through which they enter (as data, a small gain; as
-forced positives, a large loss), mirroring the high-$K$ degradation
-in the NGT744 synthetic-view arms (\S\ref{sec:future-work} discusses the candidate
-discriminative fix). Our overall answer is accordingly narrow: a
-SignCLIP-style text-aligned head on frozen features is a cheap,
-slightly-better-than-neutral addition in this regime, it is the only
-component through which the ASL Citizen synthetic data produced any gain,
-and it changes the signer-identity story qualitatively rather than
-erasing it.
-
-\todome{DRAFT END: caveats. (i) The three published pose-row numbers
-(0.39/0.46/0.60, lines 1836-1838) are deliberately not used here
-pending the verification todo at lines 1874-1876. (iii) The head-probe
-comparison to 66.9\% is train-split, 35 signers --- do not mix it with
-the 75.3\% test-split figure in prose. (iv) If Piotr prefers a shorter
-section, paragraph 1 + paragraph 3 suffice; paragraph 2 (the
-dissociation) overlaps most with \S\ref{sec:results-ft-probes} and can
-be compressed to two sentences.}
 
 
 \section{RGB versus pose, revisited}
@@ -353,6 +259,22 @@ What the probes do establish is the narrower, assumption-level point:
 signer identity is not removed by pose extraction by construction, and
 a pipeline that adopts pose \emph{for} invariance or privacy inherits
 an unexamined assumption rather than a guarantee.
+
+\todome{MOVED 12.08 from the cut SignCLIP section, which was the only
+place the thesis answered RQ4's ``does any objective reduce signer
+identity''.}
+The same dissociation reappears one level up, after training. Every
+SignCLIP-style head we trained leaves signers \emph{more} separated at
+fixed gloss, at an inter/intra ratio of $22.0$--$26.3\times$ against
+$17.67\times$ for the frozen reference, while making identity far
+\emph{less} linearly decodable, $20$--$25\%$ against $66.9\%$
+(Table~\ref{tab:head_signer_probes}; the decoding figures share a split,
+the ratios do not, so the latter is the coarser comparison). The two
+readouts disagree about whether training removed signer identity, and the
+answer we can defend is that no objective in this thesis removed signer
+structure: they moved where it is measurable. Which readout one
+privileges decides the verdict, which is the reason to report both rather
+than to treat linear decodability as \emph{the} appearance-bias metric.
 
 If neither pose input nor unconstrained RGB is satisfactory, the
 constructive direction is the one
@@ -510,8 +432,8 @@ fine-tuning (\S\ref{sec:discussion-regimes}).
 synthetic-view arms, retrieval falls as more counterfactual views are packed into
 each training item ($K{\geq}5$ arms below their $K{=}3$ counterparts),
 and the pair-SupCon head points the same way on ASL Citizen ($0.567$ at
-$K{=}3$ and $0.414$ at $K{=}5$, against $0.800$ for the same data without
-explicit pairing); the convergence audit rules out undertraining. Our
+$K{=}3$ falling to $0.414$ at $K{=}5$); the convergence audit rules out
+undertraining. Our
 reading is that pure
 SupCon at high $K$ spends its capacity making views of the same item
 indistinguishable, at the cost of keeping different items apart. A
