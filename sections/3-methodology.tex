@@ -281,7 +281,7 @@ recording identity for the view-contrastive encoder.}
 \label{tab:objective_map}
 \end{table*}
 
-\paragraph{Video--text head objective.}
+\subsubsection{Video--text head}
 The video--text head is trained with the symmetric InfoNCE
 loss~\cite{oordRepresentationLearningContrastive2018}
 we take from VideoCLIP~\cite{xuVideoCLIPContrastivePretraining2021}, over frozen
@@ -307,7 +307,7 @@ the supervised-contrastive form of Eq.~\eqref{eq:supcon} below, computed
 over video embeddings alone with an original and its edits sharing one
 instance label (counterfactual-contrastive). 
 
-\paragraph{Backbone fine-tuning objectives.}
+\subsubsection{Backbone fine-tuning}
 All fine-tuning objectives operate on the same representation: the
 encoder embedding $z = f_\theta(x)$ of \S\ref{sec:method-notation},
 instantiated as the 768-d CLS token the video backbone produces for a
@@ -325,7 +325,7 @@ appearance-invariance term (the cosine pull below, the CLS-level contrast
 that replaces it, or the pair of SDDA terms with their own weights),
 $\mathcal{L}_{\mathrm{sup}}^{\mathrm{gloss}}$ for the optional gloss-level
 contrastive auxiliary, and the runs differ only in which weights are
-non-zero and in what the invariance term treats as positives. The four
+non-zero and in what the invariance term treats as positives. The
 paragraphs that follow define these ingredients; they belong to the
 backbone fine-tuning runs only, not to the video--text head.
 
@@ -387,7 +387,7 @@ gradient-reversal layer (weight $10^{-4}$), so that the encoder is
 penalised for representations from which the discriminator can still tell
 originals from appearance-edited copies.
 
-\paragraph{View-contrastive objective.}
+\subsubsection{View-contrastive encoder}
 Architecturally, the view-contrastive encoder is the \emph{video tower}
 of the same contrastive model used for the head experiments
 (Table~\ref{tab:objective_map}), consuming frozen backbone features
@@ -468,7 +468,7 @@ high-diversity regime: a
 large, signer-disjoint isolated American Sign Language dataset (train split:
 40{,}154 videos, 2{,}731 glosses, 35 signers), recorded under varied
 real-world webcam conditions rather than in a single studio.
-\textbf{WLASL} is used only for the signer-identity diagnostic probes \todo{cite WLASL}
+\textbf{WLASL}~\cite{WLASL} is used only for the signer-identity diagnostic probes
 (\S\ref{sec:results-diagnosis}).
 
 \section{Models and training settings}
