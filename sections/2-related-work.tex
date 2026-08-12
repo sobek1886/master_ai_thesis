@@ -65,43 +65,70 @@ That action-recognition benchmarks reward static appearance cues is an
 empirical finding rather than an assumption: RESOUND quantifies the
 representation bias of action datasets and shows the standard ones are
 skewed towards static objects, scenes and
-people~\cite{liRESOUNDActionRecognition2018}. The effect is severe enough
-that action labels remain partly recoverable from background sequences
-with the actor removed
-altogether~\cite{heHumanActionRecognition2016}.
+people~\cite{liRESOUNDActionRecognition2018}. RESOUND both resamples
+existing corpora to reduce that bias and collects Diving48, a
+fine-grained benchmark designed to remove it. The effect is severe enough
+that actions stay recognisable once the actor is gone: masking out
+detected people in UCF101 still leaves a two-stream network at $53.1\%$,
+against $84.3\%$ on the unmodified
+videos~\cite{heHumanActionRecognition2016}.
 \todome{ADDITION (12.08): the ``action recognition without human'' result
-from your presentation, which was not cited anywhere in the thesis.
-Metadata correction: it is He, Shirakabe, Satoh and Kataoka, ECCV 2016
-Workshops, not ``Kataoka et al.\ 2024'' as the slide has it (Kataoka is
-last author). I have deliberately not quoted a figure: the slide says
-$65.5\%$ masked versus just over $70\%$, whereas the paper's two-stream
-CNN result is $47.42\%$ without the human against $56.91\%$ with, so
-check which table your slide number came from before reusing it.}
-Crucially for this thesis,
-the bias is a property of the training data rather than of the
-architecture: \citet{byvshevAre3DConvolutional2022a} show that 3D
-convolutional models learn temporally sensitive representations once
-motion and appearance are artificially decoupled, and
-\citet{kowalQuantifyingLearningStatic2025} find most spatiotemporal
-models dominated by static information but reduce that dominance with a
-training-time intervention. If the bias is inherited from data, it can be
+from your presentation, which the thesis never cited. Two corrections for
+the slide: it is He, Shirakabe, Satoh and Kataoka, ECCV 2016 Workshops,
+not ``Kataoka et al.\ 2024'', and the slide's $65.5\%$ is the ResNet-C3D
+number on the detector-masked split, not a two-stream result. I quote the
+two-stream pair here so both figures come from the same architecture.}
+
+Crucially for this thesis, the bias is a property of the training data
+rather than of the architecture.
+\citet{byvshevAre3DConvolutional2022a} measure how much temporal
+structure a 3D convolutional network's filters retain and find it
+collapsing with depth in Kinetics-trained models, then retrain the same
+architectures on synthetic data in which motion and appearance are
+decoupled by construction; there the collapse disappears, and they
+conclude that the architecture is not inherently appearance-biased.
+\citet{kowalQuantifyingLearningStatic2025} reach a compatible conclusion
+with a representation-level probe, pairing restyled videos (dynamics
+fixed, appearance changed) against frame-shuffled ones (appearance fixed,
+dynamics destroyed) to score how static each channel is, and find most
+models static-biased. If the bias is inherited from data, it can be
 attacked by reshaping data.
 
-Remedies in action recognition fall into two families. The first
-restructures the training signal so that positives share motion content
-while appearance varies, as in Motion Coherent
-Augmentation~\cite{zhangDontJudgeLook2024} and tubelet-contrastive
-self-supervision~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b}.
-The second removes the appearance signal directly, either adversarially
-across foreground and background
-cues~\cite{fioresiALBARAdversarialLearning2025,
-duanMitigatingRepresentationBias2023} or through causal interventions
-that separate action from background at training and test
-time~\cite{rastegarBackgroundNoMore2024}. Neither family transfers to
-signing one-to-one: both separate the actor from a biased background or
-scene, whereas in signing the confound sits on the signer's own body, so
-appearance must change while fine-grained hand and face motion is
-preserved, a much stronger constraint than background replacement.
+Remedies fall into two families. The first restructures the training
+signal so that positives share motion while appearance varies. Motion
+Coherent Augmentation permutes a clip's RGB channels and blends the
+result back into the original, a cheap hue shift that leaves saturation
+and value untouched, and pairs it with a loss aligning the augmented
+clip's prediction to the original clip's rather than to the
+label~\cite{zhangDontJudgeLook2024}. Tubelet-contrastive self-supervision
+goes further, building positive pairs that share only local motion by
+pasting synthetic moving tubelets into different videos, so that
+appearance cannot solve the pretext
+task~\cite{thokerTubeletContrastiveSelfSupervisionVideoEfficient2023b}.
+The second family suppresses the static signal directly. StillMix uses a
+2D network to flag frames from which the action is already predictable,
+then tiles such a frame into a motionless clip and blends it into
+training video~\cite{liMitigatingEvaluatingStatic2023a}; ALBAR repeats a
+single frame into a motionless clip, passes it through the same encoder
+as the real clip, and penalises any confident prediction from it with a
+negative cross-entropy and an entropy
+term~\cite{fioresiALBARAdversarialLearning2025}; SMAD combines
+multi-aspect adversarial training with spatial actionness
+reweighting~\cite{duanMitigatingRepresentationBias2023}; and
+\citet{rastegarBackgroundNoMore2024} treat the background as a confounder
+and intervene causally at both training and test time.
+
+Two of these lines already reach past the background to the actor:
+StillMix demonstrates that the foreground is itself a source of static
+bias, and ALBAR names clothing, skin colour and facial hair explicitly.
+Their mechanism, however, is to \emph{suppress} the static channel, by
+masking it, blending a motionless clip into it, or penalising confident
+predictions made from it. That is not available in signing, where the
+same channel carries linguistic content: facial expression, mouthing and
+fine handshape are part of what the label depends on. The intervention
+must therefore change appearance while preserving motion, rather than
+removing appearance information, which is what makes a counterfactual
+rather than a suppression the natural instrument here.
 
 Within sign language, the nearest work targets demographic disparity and
 research practice rather than the appearance content of the training

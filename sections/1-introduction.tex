@@ -29,10 +29,48 @@ level on one corpus and the sentence level on the other, evaluating both
 by retrieval (\S\ref{sec:eval-protocols}).
 
 SLR faces two distinct problems that this
-thesis addresses together. The first is \emph{data scarcity}: compared to
-speech or text, most annotated sign language corpora are small, expensive to
-collect, and dominated by a handful of recording setups and
-signers~\cite{DataProblem, desistoChallengesSignLanguage2022}.
+thesis addresses together.
+
+\todome{STRENGTHENED (12.08): the data-scarcity point was one asserted
+sentence; it now carries verified numbers. YouTube-SL-25's 3{,}207 hours
+were checked to be the largest sign language video corpus by hours as of
+August 2026 (SignVerse-2M and SignNet-1M report larger \emph{clip} counts
+but are re-segmentations or synthetic augmentations of existing footage,
+not new material), and Whisper's 680{,}000 hours is quoted from its
+abstract.}
+The first is \emph{data scarcity}, whose scale is easy to understate. The
+largest sign language video corpus holds roughly $3{,}200$ hours, and it
+is named for the twenty-five or so sign languages that reach even fifteen
+hours within it, out of more than three hundred in use
+worldwide~\cite{tanzerYouTubeSL25}; a single speech recognition model of
+the same period was trained on $680{,}000$ hours of
+audio~\cite{radfordRobustSpeechRecognition2022}. Annotated data is
+scarcer again: the largest corpora are weakly supervised harvests whose
+text is scraped or machine-transcribed rather than
+glossed~\cite{tanzerYouTubeSL25, liUniSignUnifiedSign2025}, and glossing
+proper is slow expert work, about an hour per ninety seconds of video for
+How2Sign~\cite{duarteHow2Sign2021}, with formats that are not
+standardised across
+corpora~\cite{desistoChallengesSignLanguage2022, DataProblem}. Nor does
+the web close the gap, since the signing video on it largely lacks the
+aligned captions supervised training needs and carries biometric
+information that makes redistribution a privacy
+question~\cite{rustPrivacyAwareSignLanguage2024a}.
+
+Scarcity of \emph{signers} is sharper still, and it is the axis this
+thesis turns on. The benchmarks the field trains on are recorded from
+tens of people: nine signers in
+PHOENIX-2014T~\cite{camgozNeuralSignLanguage2018}, ten in
+CSL-Daily~\cite{CSL-daily}, eleven in
+How2Sign~\cite{duarteHow2Sign2021}, fifty-two in ASL
+Citizen~\cite{aslcitizen}, and four in the NGT744 corpus used here; even
+the largest isolated-sign pretraining corpus by signer count reaches
+381~\cite{ovodovLogosWellTemperedPretrain2025}. A model thus sees far
+more distinct signs than distinct human appearances, which is precisely
+the condition under which appearance becomes available as a shortcut, and
+which makes the two problems one.
+\todome{END STRENGTHENED}
+
 The second is \emph{appearance bias}: a video model can score well on a benchmark by
 exploiting the static, incidental visual properties of whoever happened to
 be recorded (clothing, skin tone, body shape, background) rather than focusing exclusively on

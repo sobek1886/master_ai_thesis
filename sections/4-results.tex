@@ -560,9 +560,9 @@ SignCLIP-style head trained on top of frozen backbone features
 
 Rows are named compositionally. \emph{Synth.} marks any training that uses
 the Flux appearance edits: \emph{$+$ synth.\ data} adds them to the real
-training videos as extra items, \emph{synth.\ data only} trains on the
-edits alone, and the pair-SupCon rows use them as explicit positives
-(\S\ref{sec:method-objectives}); unmarked rows train on real videos only.
+training videos as extra items, and the pair-SupCon rows use them as
+explicit positives (\S\ref{sec:method-objectives}); unmarked rows train on
+real videos only.
 The three pose rows are the published results of the original SignCLIP
 model~\cite{jiangSignCLIPConnectingText2024} rather than our runs, which
 is why they are reported to two decimals where ours carry three. The
@@ -576,17 +576,18 @@ frozen-backbone rows and is read within the block.
 
 \todome{REWRITTEN 12.08: the previous version claimed ``the head is worth
 adding'', which this table cannot show (every row has a head). It now
-describes what the recipes differ in, read off the run configs. Two
-things surfaced while checking: \emph{from scratch} initialises both
-towers from pretrained BERT rather than randomly, and \emph{synth.\ data
-only} trains on 450 of the 2{,}731 glosses, which is the real reason it
-scores low. A separate check on whether the recipe search used the
-preprocessing the Logos authors use is still open.}
+describes what the recipes differ in, read off the run configs. One
+thing surfaced while checking: \emph{from scratch} initialises both towers
+from pretrained BERT rather than randomly. The \emph{synth.\ data only} row
+(R@1 $0.760$, P@1 $0.884$) was dropped from both tables on 12.08: it trains
+on 450 of the 2{,}731 glosses, so it is not a like-for-like comparison and
+only invited misreading. A separate check on whether the recipe search used
+the preprocessing the Logos authors use is still open.}
 Every cell in both tables is a single training run, without seeds or
 confidence intervals, and the same configuration appears twice at $0.800$
 and $0.818$ under the two frame preprocessings, so differences below
 roughly two points are not interpreted below.
-The five rows differ in only two respects: how many training stages the
+The four rows differ in only two respects: how many training stages the
 head gets, and which clips it sees. All of them share the architecture,
 the frozen features, the contrastive loss, the batch size and the
 evaluation. \emph{From scratch} is a single stage with both towers
@@ -596,16 +597,11 @@ second stage that resumes the first at a fifth of the learning rate, with
 weight decay and a shorter annealing schedule. \emph{$+$ synth.\ data}
 changes nothing but the training split, adding $8{,}989$ edited clips to
 the $40{,}154$ real ones. Those clips are edits of $450$ of the $2{,}731$
-glosses, so the intervention reaches a sixth of the vocabulary in every
-row that uses it, not only in the row named after it. \emph{Synth.\ data only} replaces the real
-videos with the edits, and is not a like-for-like comparison: the edited
-subset covers $450$ of the $2{,}731$ glosses, so that row trains on a
-sixth of the vocabulary.
+glosses, so the intervention reaches a sixth of the vocabulary.
 
 Read this way, the second stage is worth $3.9$ points ($0.750$ to
 $0.789$) and the edits roughly one more on top of it ($0.789$ to
-$0.800$), while the vocabulary-limited row ($0.760$) says nothing about
-how good the edits are. All of these are small beside the choice of
+$0.800$). Both are small beside the choice of
 features underneath: the same head reaches $0.32$ on I3D features against
 $0.750$ on frozen Logos ones, and the published pose-input SignCLIP
 models $0.39$--$0.60$.
@@ -640,8 +636,8 @@ is worse (\S\ref{sec:results-iconicity-main} returns to why).
 % - \rowcolor{rowhl} = the recommended configuration overall (may differ
 %   from per-column winners; say so in the caption if it does).
 % - Stub column header is "Setup"; setup labels are compositional:
-%   {From scratch | Fine-tuned} x {(real only) | + synth. data | , synth.
-%   data only}, "synth. data" (not "aug") everywhere.
+%   {From scratch | Fine-tuned} x {(real only) | + synth. data},
+%   "synth. data" (not "aug") everywhere.
 % Applied so far: T2V table + stub headers of both retrieval tables.
 % Remaining tables to be swept for per-block bolding (Phase 2).
 \begin{table*}[t]
@@ -662,7 +658,6 @@ From scratch          & I3D                  & 0.32  & 0.63  & 0.73  & 3 \\
 From scratch          & Logos (frozen) & 0.750 & 0.950 & 0.970 & 1 \\
 From scratch $+$ synth.\ data & Logos (frozen) & 0.756 & 0.955 & 0.970 & 1 \\
 Fine-tuned            & Logos (frozen) & 0.789 & 0.962 & 0.975 & 1 \\
-Fine-tuned, synth.\ data only & Logos (frozen) & 0.760 & 0.957 & 0.971 & 1 \\
 Fine-tuned $+$ synth.\ data & Logos (frozen) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
 \midrule
 \multicolumn{6}{l}{\textit{The same recipes on fine-tuned backbones}$^{\ddagger}$} \\
@@ -694,10 +689,10 @@ configuration.}
 
 
 \paragraph{The effect of augmentations on T2V retrieval performance}
-\todome{CORRECTED 12.08: this paragraph said ``fine-tuning alone lifts''
-(it is the head's second training stage, not backbone fine-tuning) and
-read the synth-only row as evidence that synthetic data adds little,
-which it cannot be, since that run sees 450 of the 2{,}731 glosses.}
+\todome{CORRECTED 12.08: this paragraph said ``fine-tuning alone lifts'',
+which is the head's second training stage, not backbone fine-tuning. It also
+read the now-removed synth-only row as evidence that synthetic data adds
+little.}
 Table~\ref{tab:asl_citizen_t2v} repeats the comparison in the
 text-to-video direction, where precision@$k$ replaces recall@$k$: the
 gallery holds several correct videos per gloss query, so recall@1 is
@@ -709,8 +704,7 @@ matches the video-to-text table: the second training stage lifts P@1 from
 $0.871$ to $0.895$, adding the edits as data during that stage lifts it
 again to $0.919$, the strongest configuration on every metric (Mean~R
 $1.128$), and adding them during the first stage instead is worth less
-($0.883$). The vocabulary-limited row ($0.884$) is no more comparable
-here than it was above. Carried onto the fine-tuned backbones, the same recipe reaches
+($0.883$). Carried onto the fine-tuned backbones, the same recipe reaches
 P@1 $0.928$--$0.935$, against $0.925$ on the frozen backbone. Which
 backbone leads is the one place the two directions disagree: the frozen
 backbone is strongest video-to-text ($0.818$ against $0.809$ on CE-FT)
@@ -745,7 +739,6 @@ query set was never touched by the intervention.
   From scratch          & Logos (frozen) & 0.871 & 0.854 & 0.786 & 1.228 \\
   From scratch $+$ synth.\ data    & Logos (frozen) & 0.883 & 0.861 & 0.790 & 1.213 \\
   Fine-tuned           & Logos (frozen) & 0.895 & 0.876 & 0.808 & 1.166 \\
-  Fine-tuned, synth.\ data only & Logos (frozen) & 0.884 & 0.863 & 0.796 & 1.216 \\
   Fine-tuned $+$ synth.\ data      & Logos (frozen) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
   \midrule
   \multicolumn{6}{l}{\textit{The best recipe on fine-tuned backbones}} \\
