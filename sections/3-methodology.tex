@@ -209,9 +209,12 @@ tones are already over-represented among the corpus signers); and
 specified in detail over age, gender presentation, ethnicity, hair,
 eyewear and clothing, since underspecified identities drift more between
 independently edited frames. \emph{Glasses} is a single fixed edit. Each
-video draws one value per attribute by hashing its identifier, so the
-target is reproducible and constant across the clip: the intervention is
-a counterfactual, not a per-frame perturbation.
+video is assigned one shirt colour, one skin-tone tier and one identity,
+drawn by seeding on its identifier so the assignment is reproducible
+without storing a mapping, and that target is then applied to every frame
+of the clip. Holding it fixed across frames is what makes the result a
+counterfactual, an alternative version of the same recording, rather than
+frame-level appearance noise.
 
 \paragraph{Prompt design.}
 Every prompt pairs the requested change with a clause enumerating what
