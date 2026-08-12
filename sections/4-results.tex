@@ -511,13 +511,10 @@ consistency, $+$ CLS-SupCon, and $+$ SDDA $=$ CE on real $+$ synthetic
 data plus the named invariance term; $+$ gloss-SupCon adds a
 supervised-contrastive term over same-gloss clips
 (\S\ref{sec:method-losses}).
-\todome{recommendation 04.08: KEEP DCG, it is the benchmark's signature
-metric and the column comparable to the reference systems.}
-\todo{unfreeze levels are a separate table, move it. separate question}}
+}
 \label{tab:backbone_ft_retrieval}
 \end{table*}
 
-\todome{ADDITION START (05.08): credit-framing sentence per your note}
 Before the findings, one framing note: the frozen Logos row is not an
 achievement of this thesis. It is the unmodified Logos backbone of
 Ovodov et al.~\cite{ovodovLogosWellTemperedPretrain2025}, whose authors
@@ -526,14 +523,13 @@ benchmark's published end-to-end baselines and SignRep's frozen
 representation, with no target-corpus training at all, is a property of
 their pretraining. For this thesis it is the baseline: the bar that
 every fine-tuning and augmentation arm below attempts to clear.
-\todome{ADDITION END}
+
 Four findings stand out. (i) Cross-entropy fine-tuning improves retrieval R@1
 from 83.59 (best frozen) to 85.57 at top-2 depth (85.95 at top-6), while
 the linear probe is already best \emph{without} any fine-tuning (86.33):
 fine-tuning improves retrieval clustering at a small cost to linear
 separability. (ii) Depth helps only up to a point: full unfreeze (84.96)
-is worse than top-6 (85.95), suggesting the earliest, highest-resolution
-blocks overfit the training signers when adapted. (iii) No appearance or
+is worse than top-6 (85.95). (iii) No appearance or
 signer-invariance objective beats plain cross-entropy at matched depth,
 and several are worse: aug-as-data is statistically indistinguishable
 from the matched CE run (85.59 vs 85.57, a gap far below the retest
@@ -715,8 +711,6 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone} }\\
 
   FT$+$synth.\ recipe on native   & RGB (MViTv2-S, native)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
-  \rowcolor{rowhl}
-
   FT$+$synth.\ recipe on CE-FT    & RGB (MViTv2-S, CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
   FT$+$synth.\ recipe on aug-FT   & RGB (MViTv2-S, aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
   FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
