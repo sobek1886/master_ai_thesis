@@ -1163,8 +1163,15 @@ used as ordinary training data to $0.567$ at $K{=}3$ and $0.414$ at
 $K{=}5$: the space collapses the very contrasts the task must tell apart.
 The opposite error is harder to see here, because plain cross-entropy
 flattens the response furthest and still scores best on this benchmark
-($+2.4$ R@1 over frozen), so on retrieval alone the loss looks free. A
-reason to doubt that comes from the Logos paper itself. Its authors
+($+2.4$ R@1 over frozen), so on retrieval alone the loss looks free.
+Retrieval is not the only readout of those features, though. A linear
+classifier on the frozen features reaches $86.33$ R@1, the best probe
+score in the table, and no fine-tuned space improves on it. The frozen
+geometry is therefore not arranged for nearest-neighbour retrieval, which
+is why fine-tuning lifts that score, but the class structure is already
+there and linearly separable: fine-tuning rearranges the space to suit
+the retrieval metric more than it adds information.
+A second reason comes from the Logos paper itself. Its authors
 report that co-training on all three of their corpora transfers better to
 a low-resource target than fine-tuning their RSL-only model on that same
 target ($66.82$ against $65.57$ on WLASL), and account for it only by the
