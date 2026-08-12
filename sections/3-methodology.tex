@@ -5,35 +5,33 @@
 \includegraphics[width=\textwidth]{method_overview.pdf}
 \caption[Method overview: appearance counterfactuals in contrastive
 training]{\textbf{Method overview.} Synthetic appearance counterfactuals
-enter training as additional positives in two settings.
-\emph{Setting A (ASL Citizen, top):} an isolated-sign video and its four
-generative appearance edits (shirt, glasses, signer swap, skin tone) form one
-positive set that the objective pulls together; other real recordings of
-the same sign are optional gloss-level positives (dashed, weight
-$\lambda_{\mathrm{sup}}$), and clips of a different sign are pushed
-apart. Features come from the Logos MViTv2-S backbone, which is frozen
-under a trained SignCLIP head in the \emph{head runs} and fine-tuned
-directly, with the contrast applied to its CLS embedding, in the
-\emph{FT runs}.
-\emph{Setting B (NGT744, bottom):} for a continuous, full-sentence
-recording the positive set consists of $K$ views of the same take, namely
-real camera views, motion-preserving Unreal avatar renders (``Palmer'',
-``Digits'') and generative appearance edits, with $K$ varied per arm; a
-view-contrastive encoder is trained on frozen backbone features and other
-sentences are negatives.
-\emph{Objectives.} The head runs use the video--text InfoNCE
-(Eq.~\eqref{eq:nce}) with the edits as additional video--text pairs, or a
-second stage in which pair-SupCon (Eq.~\eqref{eq:supcon}) replaces it.
-The FT runs optimise Eq.~\eqref{eq:master}, where the edits also enter
-the cross-entropy as extra labelled data and the optional invariance term
-is one of: the cosine consistency pull
-($\lambda_{\mathrm{cons}}{=}0.5$), CLS-token SupCon ($0.5$), or the
-SDDA pair of a KL prediction consistency (weight $1$) with an adversarial
-original-versus-edit discriminator trained through gradient reversal
-(weight $10^{-4}$); $\lambda_{\mathrm{sup}}{\in}\{0,1\}$. Setting B
-trains with SupCon over the $K$ views alone (Eq.~\eqref{eq:supcon};
-video-only InfoNCE at $K{=}1$). Embedding spaces are per trained model;
-the two settings share the recipe but are never mixed.}
+enter contrastive training as additional positives, in two settings that
+share the recipe but are never mixed.
+\emph{Setting A (ASL Citizen, top):} an isolated-sign clip and four
+generative appearance edits of it ($\Delta$ shirt, glasses, signer, skin
+tone) form one positive set that the objective pulls together; other real
+recordings of the same sign are optional gloss-level positives (dashed
+box, weight $\lambda_{\mathrm{sup}}$), and a clip of a different sign is
+a negative. Two regimes consume this set. The \emph{head runs} train a
+SignCLIP head on the frozen Logos MViTv2-S backbone with the video--text
+InfoNCE (Eq.~\eqref{eq:nce}), the edits entering as extra video--text
+pairs. The \emph{FT runs} fine-tune the backbone itself and apply the
+contrast to its CLS embedding $z$, optimising Eq.~\eqref{eq:master}:
+gloss cross-entropy with the edits as extra labelled data, an optional
+invariance term (the cosine pull or CLS-SupCon at weight $0.5$, or SDDA,
+which pairs a KL prediction consistency at weight $1$ with an adversarial
+original-versus-edit discriminator at $10^{-4}$), and an optional
+gloss-level SupCon term over same-sign positives
+($\lambda_{\mathrm{sup}}{\in}\{0,1\}$).
+\emph{Setting B (NGT744, bottom):} for one continuous, full-sentence
+recording the positive set is $K$ views of that same take, combining
+motion-locked Unreal re-renders with generative appearance edits ($K{=}4$
+shown as an illustration, not an exhaustive gallery; $K$ varies per arm).
+A view-contrastive encoder with no text tower is trained on frozen
+backbone features using SupCon over the $K$ views and no other loss
+(Eq.~\eqref{eq:supcon}; video-only InfoNCE at $K{=}1$), with other
+sentences as negatives.
+The two embedding-space panels are schematic and per trained model.}
 \label{fig:method_overview}
 \end{figure*}
 This chapter presents the methodological contribution of the thesis: a
