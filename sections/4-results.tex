@@ -574,14 +574,35 @@ invariance term, \S\ref{sec:method-losses}). That third block uses a
 different frame preprocessing from the rows above, so it carries its own
 frozen-backbone rows and is read within the block.
 
-The head is worth adding, and the edits help it a little. On frozen Logos
-features a head trained from scratch already reaches $0.750$ R@1, far
-above the same head on I3D features ($0.32$) or the published pose-input
-SignCLIP models ($0.39$--$0.60$). Fine-tuning the head lifts this to
-$0.789$, and adding the synthetic edits as extra training pairs to
-$0.800$, the best configuration on frozen features; training on the edits
-alone is worse than training on the real videos ($0.760$ against
-$0.789$). All of these differences are one to three points.
+\todome{REWRITTEN 12.08: the previous version claimed ``the head is worth
+adding'', which this table cannot show (every row has a head). It now
+describes what the recipes differ in, read off the run configs. Two
+things surfaced while checking: \emph{from scratch} initialises both
+towers from pretrained BERT rather than randomly, and \emph{synth.\ data
+only} trains on 450 of the 2{,}731 glosses, which is the real reason it
+scores low. A separate check on whether the recipe search used the
+preprocessing the Logos authors use is still open.}
+The five rows differ in only two respects: how many training stages the
+head gets, and which clips it sees. All of them share the architecture,
+the frozen features, the contrastive loss, the batch size and the
+evaluation. \emph{From scratch} is a single stage with both towers
+initialised from pretrained BERT weights, so it is untrained on sign
+language rather than randomly initialised. \emph{Fine-tuned} adds a
+second stage that resumes the first at a fifth of the learning rate, with
+weight decay and a shorter annealing schedule. \emph{$+$ synth.\ data}
+changes nothing but the training split, adding $8{,}989$ edited clips to
+the $40{,}154$ real ones. \emph{Synth.\ data only} replaces the real
+videos with the edits, and is not a like-for-like comparison: the edited
+subset covers $450$ of the $2{,}731$ glosses, so that row trains on a
+sixth of the vocabulary.
+
+Read this way, the second stage is worth $3.9$ points ($0.750$ to
+$0.789$) and the edits roughly one more on top of it ($0.789$ to
+$0.800$), while the vocabulary-limited row ($0.760$) says nothing about
+how good the edits are. All of these are small beside the choice of
+features underneath: the same head reaches $0.32$ on I3D features against
+$0.750$ on frozen Logos ones, and the published pose-input SignCLIP
+models $0.39$--$0.60$.
 
 Carrying those recipes onto fine-tuned backbones shows that the two do
 not stack. A from-scratch head does gain from a fine-tuned backbone ($0.744$
