@@ -1090,22 +1090,17 @@ apart~\cite{ovodovLogosWellTemperedPretrain2025}. A backbone
 pre-trained this way is not merely agnostic about form-similar pairs;
 collapsing them is part of its supervision, and that metric bias
 travels with the frozen features from RSL to our ASL inputs.
-To test what that bias does to an ASL space we need a description of sign
-form that is independent of it. ASL-LEX~2.0 provides
-one~\cite{sehyrASLLEX2021,caselliASLLEX2017}: a linguistic database that
-codes each of $2{,}723$ ASL signs on five phonological features
-(movement, major and minor location, handshape, sign type) and rates its
-iconicity, how much its form resembles its meaning, on a $1$--$7$ scale
-from deaf signers. The difference from the VSSign premise matters twice
-over. VSSign membership is a binary judgement about Russian signs, made
-by the Logos annotators and used as \emph{training labels}; ASL-LEX is an
-external coding of American signs that we use only as a
-\emph{measurement}, and because it codes five features separately it
-turns ``looks alike'' into a graded quantity, from zero to five shared
-features, rather than a yes/no. Measuring an ASL space this way is
-therefore not a restatement of the backbone's supervision: whatever form
-organisation we find has transferred across languages and across
-annotation schemes.
+To measure that bias we use ASL-LEX~2.0, a linguistic database that codes
+each of $2{,}723$ ASL signs on five phonological features (movement,
+major and minor location, handshape, sign type) and rates its iconicity,
+how much its form resembles its meaning, from $1$ to
+$7$~\cite{sehyrASLLEX2021,caselliASLLEX2017}. The idea is close to the
+VSSign one, but the use is not: Logos groups look-alike signs in order to
+train on them, whereas we only measure, and counting shared features
+turns ``looks alike'' into a scale from zero to five instead of a
+yes/no. ASL Citizen is also a corpus Logos never trained on, in a
+different language, recorded under different conditions, so what the
+measurement asks is whether the form grouping survived that transfer.
 
 ASL Citizen contains such form-similar groups too, and they sit at the top
 of the iconicity scale. Figure~\ref{fig:iconicity_family} shows one:
@@ -1126,49 +1121,59 @@ iconicity.}
 \label{fig:iconicity_family}
 \end{figure}
 
-We quantify this treatment with a \emph{form-dose} measure: bucket every
-pair of gloss centroids by how many of the five features the two glosses
-share, and trace cosine similarity against that count.
-Figure~\ref{fig:form_dose_ft} places the frozen backbone between the two
-kinds of training we apply to it, and they move in opposite directions.
-The frozen space responds strongly on its own: mean centroid similarity
-climbs from $0.01$ at zero shared features to $0.18$ at five (Spearman
-$\rho=.06$ over all pairs, $n{=}2{,}178$ at dose five). Fine-tuning the
-backbone flattens that response, and plain cross-entropy flattens it
-most ($0.09$ at dose five, $\rho=.00$), with SDDA retaining about half
-the frozen slope ($0.13$, $\rho=.03$). Training a head
-with the counterfactuals as explicit positives does the reverse and
-overshoots the frozen level, more so with more positives per item
-($0.25$ at $K{=}3$, $\rho=.09$; $0.39$ at $K{=}5$, $\rho=.16$).
+We quantify this with a \emph{form-dose} measure: bucket every pair of
+gloss centroids by how many of the five features the two glosses share,
+and trace cosine similarity against that count. Four things follow, and
+together they say where form organisation should come from.
 
-Figure~\ref{fig:form_dose_rho} reduces every space we trained to the same
-single number and shows the split is systematic, not particular to the recipes above. All four backbone fine-tunes fall below the frozen
-level, and the plain one falls furthest. Text-aligned SignCLIP heads on
-the frozen backbone stay close to it, and heads built on already
-fine-tuned backbones inherit the flattening rather than recovering from
-it. Only the pair-SupCon heads exceed the frozen level, and only they
-were trained with the counterfactuals as explicit positives.
+\emph{It is built by pretraining, and it travels.} The frozen backbone
+responds strongly on its own: mean centroid similarity climbs from
+$0.01$ at zero shared features to $0.18$ at five (Spearman $\rho=.06$).
+Logos never trained on ASL Citizen, so this structure has crossed to
+another language, another set of signers and another recording setup. It
+is also what the Logos authors credit for the quality of their encoder,
+and on this benchmark the untouched frozen backbone still beats every
+published system (Table~\ref{tab:backbone_ft_retrieval}).
 
-This is the same trade-off the retrieval tables record, seen from the
-other side, and the pair-SupCon result is the more surprising half.
-That objective carries no gloss supervision whatsoever: it replaces the
-video--text loss (\S\ref{sec:method-objectives}) with a contrast whose
-positives are only the $K$ views of a single source video, its original
-and its appearance edits, and whose negatives are every other item in the
-batch, \emph{including other recordings of the same sign}. Two GUN1
-videos are pushed apart exactly as GUN1 and LIGHTER are. The rise in form
-organisation is therefore emergent rather than trained: collapsing
-appearance variation within each item removes the axis the space was
-mostly using, and visual form is what remains to organise it, so
-form-similar glosses drift together as a side effect of an objective that
-never grouped them. It is bought at $0.567$ against $0.800$ V2T R@1 for
-the same edits used as ordinary training data.
-Cross-entropy fine-tuning applies the opposite pressure, pulling
-glosses apart whatever they look like, and buys $2.4$ retrieval points
-while taking the form response to zero. Neither extreme is the goal:
-form organisation is what makes an embedding space look semantic on
-iconic vocabulary, and it is also what makes form-similar signs hard to
-tell apart.
+\emph{In-domain training moves it, and the objective decides which way.}
+Fine-tuning the backbone on gloss labels flattens the response, plain
+cross-entropy most of all ($0.09$ at five shared features, $\rho=.00$):
+the model reorganises around whatever separates this particular
+vocabulary and gives up the phonological structure it started with. SDDA
+is the one intervention that meaningfully protects it, keeping about half
+the frozen slope ($0.13$, $\rho=.03$), while aug-as-data and the
+consistency pull sit level with plain cross-entropy.
+Figure~\ref{fig:form_dose_rho} shows the pattern across every space we
+trained: the SignCLIP heads stay near the frozen level on frozen
+features, and inherit the flattening when built on a fine-tuned backbone.
+
+\emph{Pushing appearance invariance hard drives it back up, without
+being asked to.} The pair-SupCon heads are the only spaces above the
+frozen level ($0.25$ at $K{=}3$, $\rho=.09$; $0.39$ at $K{=}5$,
+$\rho=.16$), and they see no gloss labels at all: their positives are the
+$K$ views of one source video, and every other clip is a negative, two
+GUN1 recordings included (\S\ref{sec:method-objectives}). Nothing tells
+them which clips share a word. Collapsing appearance variation simply
+removes the axis the space was mostly using, and form is what is left to
+organise it, so form-similar glosses drift together as a side effect.
+
+\emph{Overshooting the pretrained level is what costs performance.}
+Retrieval falls as $K$ rises, from $0.800$ V2T R@1 for the same edits
+used as ordinary training data to $0.567$ at $K{=}3$ and $0.414$ at
+$K{=}5$: the space collapses the very contrasts the task must tell apart.
+The opposite error is harder to see here, because plain cross-entropy
+flattens the response furthest and still scores best on this benchmark
+($+2.4$ R@1 over frozen), so on retrieval alone the loss looks free. A
+reason to doubt that comes from the Logos paper itself. Its authors
+report that co-training on all three of their corpora transfers better to
+a low-resource target than fine-tuning their RSL-only model on that same
+target ($66.82$ against $65.57$ on WLASL), and account for it only by the
+higher accuracy reached~\cite{ovodovLogosWellTemperedPretrain2025}.
+Flattening offers a mechanism they never test: fine-tuning on one target
+gives up the form structure the pretraining built, whereas co-training
+keeps the source objective, and with it that structure, alive.
+\S\ref{sec:discussion-regimes} develops this. It stays a conjecture,
+because the intermediate checkpoints needed to test it are not public.
 
 \begin{figure*}[t]
 \centering
