@@ -152,11 +152,6 @@ cross-signer.
 \section{Synthetic appearance counterfactuals}
 \label{sec:method-diffusion}
 
-
-\todome{REORDER START (Claude 12.08): this subsection moved ahead of
-generative appearance editing so \S\ref{sec:method-diffusion} and
-\S\ref{sec:setup-generation} share one order, and its opener no longer ties
-the route to one corpus by definition. Resolves the 03.08 proposal.}
 \subsection{Motion-locked re-renders}
 The first route is motion-capture-driven: the captured 3D motion of a real
 signer is retargeted onto synthetic avatars and re-rendered under multiple
@@ -166,7 +161,6 @@ preserved by construction (the renders are \emph{motion-locked}), and it
 varies camera viewpoint as well as appearance, an axis a 2D edit cannot
 reach from a single input view. It requires motion-capture recordings, so
 it applies only where capture is controlled.
-\todome{REORDER END}
 
 \subsection{Generative appearance editing}
 \todome{REWRITE START (Claude 12.08): opener no longer binds this route to
@@ -174,7 +168,7 @@ the isolated corpus; it also ran on NGT744, and Setup says which route ran
 where. Resolves the 03.08 proposal.}
 The second route edits real training videos frame-by-frame with an open
 generative image editor. It needs nothing beyond the RGB video, so it
-applies to any corpus; the model, compute and edited-subset statistics are
+applies to any corpus. The model, compute and edited-subset statistics are
 given in \S\ref{sec:setup-generation}.
 \todome{REWRITE END}
 Rather than
@@ -192,16 +186,14 @@ selected source video we generate up to four edits, applied frame-by-frame:
 augmentations already include colour jitter, so this edit's marginal value
 over standard colour augmentation is itself an open question), \emph{glasses}
 (addition/removal, with some risk of altering facial expression near the
-eyes), \emph{skin tone} (the highest-risk edit for hallucination, e.g.\
+eyes), \emph{skin tone} (higher-risk edit for hallucination, e.g.\
 occasional extra or malformed hand shapes), and \emph{signer swap} (a full
 identity change, carrying the highest potential benefit for a
 signer-independent task alongside the highest hallucination risk).
-\todome{ADDITION START (Claude 11.08): methodological anchor for the skin-tone edit, candidates \#7. VERIFIED 12.08 against flux\_augment/config.py: the pipeline does use Monk tiers, restricted to 5--10.}
 The skin-tone edit follows the motivation of the Monk Skin Tone scale
 for inclusive coverage of apparent skin
 tones~\cite{heldrethWhichSkinTone2024,
 schumannConsensusSubjectivitySkin2023}.
-\todome{ADDITION END}
 
 \todome{ADDITION START (Claude 12.08): edit vocabularies, prompt design and
 frame-conditioning, read off flux\_augment/config.py and augment\_flux.py.
@@ -592,13 +584,8 @@ depending on the arm, real side cameras, motion-locked re-renders, or
 generative appearance edits), and a supervised contrastive loss pulls all $K$
 views of a sign together while pushing other signs apart (video-only
 InfoNCE at $K{=}1$, where no positive pairs exist).
-\todome{ADDITION START (Claude 11.08, reworded 12.08): multi-view
-contrastive precedent, candidates Tier 3 \#7. Moved here from the
-semicolon chain below, where it separated the evaluation protocol from the
-training counts.}
 Using simultaneous views of one performance as positives is established
 practice in action recognition~\cite{shahMultiViewActionRecognition2023}.
-\todome{ADDITION END}
 The trained encoder
 is evaluated by zero-shot cosine retrieval across the real signer gap
 (\S\ref{sec:eval-protocols}); the ladder trains on 744
