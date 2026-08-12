@@ -196,14 +196,18 @@ separates the two settings: both are evaluated signer-independently.
   and contrastively text-aligned (SignCLIP \cite{jiangSignCLIPConnectingText2024}),
   encode signer identity beyond sign content, and to what degree?
 
-\item[RQ2a (Low-diversity regime).] In a low-diversity setting (the
-  NGT744 corpus), do motion-locked re-renders (avatar renders driven by
-  real motion capture) improve retrieval when used as extra views under a
-  supervised contrastive objective~\cite{khosla2020supervised}?
-
-\item[RQ2b (Synthesis routes compared).] In that same setting, at matched
-  strength, content and viewpoint, how much of the motion-locked gain does
-  the scalable generative-edit route retain?
+\item[RQ2 (Low-diversity regime).] Do synthetic appearance
+  counterfactuals improve retrieval where training diversity is minimal
+  (the NGT744 corpus, four signers in a single studio)? We ask this of
+  each synthesis route on its own before comparing them:
+  \begin{description}
+  \item[RQ2a.] Do motion-locked re-renders (avatar renders driven by real
+    motion capture) help when added as extra views under a supervised
+    contrastive objective~\cite{khosla2020supervised}?
+  \item[RQ2b.] Do generative appearance edits help in the same role?
+  \item[RQ2c.] At matched strength, content and viewpoint, how do the two
+    routes compare?
+  \end{description}
 
 \item[RQ3 (High-diversity regime).] In a high-diversity setting (ASL
   Citizen), do generative appearance edits

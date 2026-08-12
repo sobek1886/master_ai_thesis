@@ -1144,9 +1144,7 @@ Qualitative companions to these numbers (a t-SNE of the augments around their so
 
 
 \subsection{Iconicity analysis}
-\todo{Add the plots from the presentation}
-\todo{Discuss how all interventions reduce iconicity}
-\todo{describe high iconicity signs based on ASL-LEX, include an example of high-iconicity family used in the presentation}
+\label{sec:results-iconicity-main}
 The organising
 construct of the Logos dataset is the \emph{visually similar sign}
 (VSSign): signs with different meanings but the same manual component,
@@ -1157,11 +1155,62 @@ better transfer encoder than keeping them
 apart~\cite{ovodovLogosWellTemperedPretrain2025}. A backbone
 pre-trained this way is not merely agnostic about form-similar pairs;
 collapsing them is part of its supervision, and that metric bias
-travels with the frozen features from RSL to our ASL inputs
+travels with the frozen features from RSL to our ASL inputs.
+\todome{ADDITION START (Claude 12.08): iconicity subsection body. Numbers
+recomputed from the buckets\_*.npz artifacts on the cluster (dose-5 means
+raw 0.179 / SDDA 0.126 / CE 0.089; Spearman .064/.034/.002; 2,178 pairs);
+they match the appendix and the presentation figure.}
+ASL Citizen contains such groups too, and they sit at the top of the
+iconicity scale. Figure~\ref{fig:iconicity_family} shows one:
+GUN1, LIGHTER and REMOTECONTROL agree on all five ASL-LEX form features
+(neutral location, \texttt{a} handshape, no path movement, one-handed)
+because each depicts handling the object it names, and all three carry
+high deaf-signer iconicity ratings ($5.3$--$5.6$ of $7$). Iconic
+vocabulary is thus exactly where distinct meanings converge on the same
+form, so how a space treats form-similar pairs decides what it can say
+about iconic signs.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{iconicity_family_example.png}
+\caption[A high-iconicity form family]{Same hands, same movement, same
+location, different words: GUN1, LIGHTER and REMOTECONTROL share all
+five ASL-LEX form features and rate $5.3$--$5.6$ of $7$ on deaf-signer
+iconicity.}
+\label{fig:iconicity_family}
+\end{figure}
 
+We quantify this treatment with the form-dose measure of
+Appendix~\ref{sec:results-iconicity}: bucket every pair of gloss
+centroids by how many of the five form features the glosses share and
+trace cosine similarity against that count.
+Figure~\ref{fig:form_dose_ft} compares the frozen backbone with the two
+fine-tuning recipes. The frozen space responds strongly: mean centroid
+similarity climbs from $0.01$ at zero shared features to $0.18$ at five
+(Spearman $\rho=.06$ over all pairs, $n{=}2{,}178$ at dose five). Both
+fine-tuning recipes flatten the response, CE almost completely ($0.09$
+at dose five, $\rho=.00$), SDDA partially ($0.13$, $\rho=.03$). The
+form and iconicity organisation is therefore a property of the
+pretrained space, and in-domain training weakens it rather than
+building on it; none of our interventions raises it above the frozen
+level. The full thirteen-space grid, and the matched-pair iconicity
+battery behind that last claim (the high-versus-low-iconicity contrast
+is present in the frozen space, washed out by text alignment, and only
+partially restored by pair training), are in
+Appendix~\ref{sec:results-iconicity}.
 
-
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{violin_raw_ce_sdda.png}
+\caption[Form-dose response: frozen vs fine-tuned]{Centroid cosine
+similarity against the number of shared ASL-LEX form features (pair
+counts below each level), for the frozen backbone and the two
+fine-tuning recipes. Fine-tuning flattens the dose-response: at five
+shared features the mean drops from $0.18$ (frozen) to $0.13$ (SDDA)
+and $0.09$ (CE).}
+\label{fig:form_dose_ft}
+\end{figure*}
+\todome{ADDITION END}
 
 \section{Summary}
 \todo{write this}
