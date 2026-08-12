@@ -52,8 +52,20 @@
 \renewcommand{\arraystretch}{1.08}
 
 \newcommand{\red}[1]{{\color{red}{#1}}}
-\newcommand{\todo}[1]{{\color{orange}\textbf{[TODO: #1]}}}
-\newcommand{\todome}[1]{{\color{magenta}\textbf{[TODO-PIOTR: #1]}}}
+
+% Draft annotations. \showdraftnotestrue renders them in the margin colour
+% for working on the document; \showdraftnotesfalse (the default) hides
+% them so the compiled PDF is submission-ready. The notes stay in the
+% source either way.
+\newif\ifshowdraftnotes
+\showdraftnotestrue
+\ifshowdraftnotes
+  \newcommand{\todo}[1]{{\color{orange}\textbf{[TODO: #1]}}}
+  \newcommand{\todome}[1]{{\color{magenta}\textbf{[TODO-PIOTR: #1]}}}
+\else
+  \newcommand{\todo}[1]{}
+  \newcommand{\todome}[1]{}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DOCUMENT METADATA
