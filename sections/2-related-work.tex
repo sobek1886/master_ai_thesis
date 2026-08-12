@@ -72,12 +72,6 @@ that actions stay recognisable once the actor is gone: masking out
 detected people in UCF101 still leaves a two-stream network at $53.1\%$,
 against $84.3\%$ on the unmodified
 videos~\cite{heHumanActionRecognition2016}.
-\todome{ADDITION (12.08): the ``action recognition without human'' result
-from your presentation, which the thesis never cited. Two corrections for
-the slide: it is He, Shirakabe, Satoh and Kataoka, ECCV 2016 Workshops,
-not ``Kataoka et al.\ 2024'', and the slide's $65.5\%$ is the ResNet-C3D
-number on the detector-masked split, not a two-stream result. I quote the
-two-stream pair here so both figures come from the same architecture.}
 
 Crucially for this thesis, the bias is a property of the training data
 rather than of the architecture.
@@ -166,10 +160,6 @@ both across two diversity regimes.
 
 \section{Benchmarks and the diversity axis}
 \label{sec:related-work-benchmarks}
-\todome{REWRITE (12.08): restored the arc your \\todo\\ asked for (studio
-corpora where RGB did well, then diverse corpora and the pose shift), and
-removed the duplicate Atwell mention; the bias-mitigation result is cited
-once, in \S\ref{sec:related-appearance-bias}.}
 As surveyed by \citet{kalinowskiMachineLearningSign2026}, a large share of
 sign language recognition research has been conducted on two
 studio-recorded benchmarks, Phoenix2014~\cite{kollerContinuousSignLanguage2015}
@@ -219,8 +209,6 @@ of whether the improved robustness of pose-based approaches stems solely
 from appearance invariance, or whether RGB-based models simply fail to
 capture motion cues in the presence of strong appearance signals.
 
-\todome{MOVED HERE FROM THE INTRODUCTION (12.08): the detailed pose
-critique. The intro now keeps one sentence and points here.}
 The robustness attributed to pose input is also bounded by the extractor
 that produces it, which is itself a learned RGB model. The standard
 training and evaluation sets for pose estimation under-represent
@@ -239,7 +227,6 @@ the face, interactions that are linguistically load-bearing in
 signing~\cite{moryossefEvaluatingImmediateApplicability2021}. In our own
 extraction MediaPipe produced no usable feature file for $8\%$ of ASL
 Citizen training videos (Table~\ref{tab:raw_feature_l2_probe}).
-\todome{END MOVED BLOCK}
 
 The appearance bias of RGB models is, however, a property of their
 training data rather than of the modality itself
@@ -249,37 +236,13 @@ survives the move to transformer backbones, which
 video Swin transformer. That is the question we ask of the transformer
 backbones now common in SLR.
 
-\subsection{Pose as supervision rather than input}
-SignRep~\cite{wongSignRepEnhancingSelfSupervised2025} argues that the
-modality choice is a false dichotomy. Its downstream model consumes RGB
-only, but its masked pretraining predicts pose-derived targets from the
-RGB input: normalised keypoints, hand and body joint angles,
-inter-landmark distances, and signer activity, with the pose decoder
-discarded after pretraining. Pose there acts as supervision rather than
-input: the skeleton tells the RGB encoder which structures in the frame
-carry the signing, while the encoder keeps the appearance-borne
-linguistic detail (facial expression, mouthing, fine handshape) that
-sparse keypoints drop and pose-estimation errors corrupt. The resulting
-frozen features outperform prior skeleton-based methods on isolated
-benchmarks, including state-of-the-art frozen-feature dictionary
-retrieval on ASL Citizen (Table~\ref{tab:backbone_ft_retrieval}). Two of
-its design details matter for this thesis. Its pose targets are
-normalised to a canonical body shape (median bone lengths), precisely so
-that person-specific proportions do not leak into the supervision; and it
-needs an adversarial style loss, a discriminator on Gram-matrix style
-statistics of the embeddings, to suppress background and appearance
-information. Both choices concede the premise of this thesis: an RGB
-sign representation drifts toward appearance unless actively
-constrained. SignRep constrains it with an inferred style statistic; our
-counterfactuals supply the constraint as data.
-
 \subsection{Single-stream scope}
 A natural alternative is
 to combine RGB and pose in hybrid architectures, e.g.\ a two-stream
 network~\cite{chenTwoStreamNetworkSign}; we do not pursue this, preferring a
 single-stream RGB approach for its lower inference cost and simpler
 pipeline, considerations that real-time sign language processing makes
-explicit~\cite{moryossefRealTimeMultilingualSign2024}.\todome{ADDITION 11.08: efficiency anchor for the single-stream choice (candidates Tier 3 \#12); drop if you find the fit loose} Throughout this thesis we therefore consider \emph{single-stream}
+explicit~\cite{moryossefRealTimeMultilingualSign2024}. Throughout this thesis we therefore consider \emph{single-stream}
 methods only: every backbone we train, probe, or compare consumes one input
 stream (RGB video or pose), and multi-stream or hybrid architectures are
 out of scope on compute and inference-cost grounds.
@@ -304,13 +267,11 @@ those that have so far been unable to exploit the full potential of
 synthetic video, as generated human motion suffers from uncanny
 artefacts~\cite{knapp2025synthetic}; this thesis addresses that gap.
 
-\todome{ADDITION START (Claude 11.08): general-vision diffusion-augmentation lineage, candidates \#8}
 In general vision, generative augmentation is itself an established
 line: DA-Fusion edits real training images with a diffusion model and
 improves few-shot classification, while cautioning that the gains are
 task- and regime-dependent~\cite{trabuccoEffectiveDataAugmentation2024},
 a caveat our two-regime result echoes in the sign domain.
-\todome{ADDITION END}
 
 \subsection{Sign language data augmentation approaches}
 Walsh et al.\ show that sign language production can generate useful
@@ -323,7 +284,7 @@ a Gaussian-splatting renderer
 and mixed improvements, with GAN artefacts sometimes degrading
 performance~\cite{walshUsingSignLanguage2025}. Diffusion-based sign
 production continues this photo-realistic generation
-line~\cite{SignDiff}.\todome{ADDITION 11.08: SignDiff was in the bib, uncited (candidates Tier 3 \#9)}
+line~\cite{SignDiff}.
 % Verified against the paper (2026-07-11): pose-vs-RGB contrast confirmed,
 % but the RGB methods compared are SignGAN + SignSplat — NOT diffusion.
 % Story point 8 says "(Gaussian splatting, diffusion) don't work as well";
@@ -339,7 +300,7 @@ this as a limitation. We use the same consistency-objective family as one of
 our backbone-fine-tuning ablations (\S\ref{sec:method-objectives}) and
 return to the comparison in our Discussion (\S\ref{sec:discussion-regimes}):
 SDDA's positive result is on a studio-recorded, lower-signer-diversity
-corpus, closer to our low-data NGT744 regime than to our high-data ASL Citizen
+corpus, closer to our low-diversity NGT744 regime than to our high-diversity ASL Citizen
 regime, which we argue explains why the same idea saturates in one setting
 and helps in the other.
 
@@ -370,9 +331,7 @@ Prior work has built gesture-producing virtual avatar systems using Unreal
 Engine and motion capture~\cite{messinaModularSignLanguage2025}, and has
 used Unreal-rendered virtual agents, animated from mocap and varied in
 skin tone, lighting, background, and camera angle, as a scalable source
-of training data for gesture recognition~\cite{loyVirtualAgentsScalable};
-general-purpose Unreal-based synthetic-data generation frameworks make
-this machinery broadly accessible~\cite{Unrealgensyn}.\todome{ADDITION 11.08: Unrealgensyn was in the bib, uncited (candidates Tier 3 \#10)}
+of training data for gesture recognition~\cite{loyVirtualAgentsScalable}.
 
 What our work adds to this line is the counterfactual construction and
 its controlled evaluation. Prior avatar pipelines generate synthetic
