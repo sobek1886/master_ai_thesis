@@ -1090,10 +1090,6 @@ apart~\cite{ovodovLogosWellTemperedPretrain2025}. A backbone
 pre-trained this way is not merely agnostic about form-similar pairs;
 collapsing them is part of its supervision, and that metric bias
 travels with the frozen features from RSL to our ASL inputs.
-\todome{ADDITION START (Claude 12.08): iconicity subsection body. Numbers
-recomputed from the buckets\_*.npz artifacts on the cluster (dose-5 means
-raw 0.179 / SDDA 0.126 / CE 0.089; Spearman .064/.034/.002; 2,178 pairs);
-they match the appendix and the presentation figure.}
 To test what that bias does to an ASL space we need a description of sign
 form that is independent of it. ASL-LEX~2.0 provides
 one~\cite{sehyrASLLEX2021,caselliASLLEX2017}: a linguistic database that
@@ -1140,16 +1136,13 @@ climbs from $0.01$ at zero shared features to $0.18$ at five (Spearman
 $\rho=.06$ over all pairs, $n{=}2{,}178$ at dose five). Fine-tuning the
 backbone flattens that response, and plain cross-entropy flattens it
 most ($0.09$ at dose five, $\rho=.00$), with SDDA retaining about half
-the frozen slope ($0.13$, $\rho=.03$); the same holds for the two
-recipes not shown here, aug-as-data and cosine consistency
-($\rho=.01$ each, Appendix~\ref{sec:results-iconicity}). Training a head
+the frozen slope ($0.13$, $\rho=.03$). Training a head
 with the counterfactuals as explicit positives does the reverse and
 overshoots the frozen level, more so with more positives per item
 ($0.25$ at $K{=}3$, $\rho=.09$; $0.39$ at $K{=}5$, $\rho=.16$).
 
 Figure~\ref{fig:form_dose_rho} reduces every space we trained to the same
-single number and shows the split is systematic, not particular to the
-three recipes above. All four backbone fine-tunes fall below the frozen
+single number and shows the split is systematic, not particular to the recipes above. All four backbone fine-tunes fall below the frozen
 level, and the plain one falls furthest. Text-aligned SignCLIP heads on
 the frozen backbone stay close to it, and heads built on already
 fine-tuned backbones inherit the flattening rather than recovering from
@@ -1176,24 +1169,6 @@ while taking the form response to zero. Neither extreme is the goal:
 form organisation is what makes an embedding space look semantic on
 iconic vocabulary, and it is also what makes form-similar signs hard to
 tell apart.
-
-That first half deserves stating plainly, because it bounds what any
-embedding-space evaluation in this literature can claim. For a highly
-iconic sign, looking alike and meaning alike are the same thing: whatever
-groups HAMMER with hammering-like motion needs no concept of hammering.
-A purely visual space will therefore appear semantic when probed on
-iconic vocabulary, and only on arbitrary signs, where form and meaning
-come apart, does the distinction become testable. Reports of
-``semantically meaningful'' neighbourhoods in sign-video embedding spaces
-are hard to interpret unless iconicity is controlled, and the spread is
-wide enough to matter: within ASL Citizen's vocabulary, ASL-LEX rates
-EYEGLASSES at $6.77$ and SCISSORS at $6.03$, against NEPHEW at $1.14$ and
-COMPUTER at $1.84$. A matched-pair test on iconicity itself
-(Appendix~\ref{sec:results-iconicity}, 248 pairs balanced for lexical
-class and frequency) points the same way as the form-dose result, but its
-effects are small and only the location-overlap contrasts survive
-multiple comparisons, so we treat it as corroborating rather than
-load-bearing.
 
 \begin{figure*}[t]
 \centering
