@@ -410,12 +410,11 @@ The em-dash inside the no-extra-limbs clause is kept because these are quoted
 prompts, not prose; say the word and I will swap it for a comma.}
 \section{Generative appearance-edit prompts}
 \label{app:flux_prompts}
-This section reproduces the prompts used to generate the appearance
-counterfactuals of \S\ref{sec:method-diffusion}, verbatim from the
-generation code. Four clauses are shared across prompts and are factored
-out here exactly as they are in the implementation; each edit prompt below
-names the clauses it appends. Placeholders in braces are filled per source
-video from the vocabularies listed at the end of the section.
+The prompts used to generate the appearance counterfactuals of
+\S\ref{sec:method-diffusion}, verbatim from the generation code. Shared
+clauses are factored out as in the implementation, and each edit prompt
+names the clauses it appends; braced placeholders are filled per video
+from the vocabularies below.
 
 \paragraph{Clause L (no extra limbs), appended to every prompt.}
 \begin{quote}\small\itshape
@@ -482,12 +481,11 @@ apparent age, gender presentation and clothing to match that description.
 \end{quote}
 
 \paragraph{Vocabularies.}
-The \emph{shirt} colour is drawn from: bright red, royal blue, forest
-green, deep purple, bright orange, hot pink, navy blue, crimson, teal,
-golden yellow. The \emph{skin-tone} tier is drawn from tiers $5$--$10$ of
-the Monk scale, with the descriptions and reference values used in the
-prompt given in Table~\ref{tab:mst_tiers}. The \emph{signer-swap} identity
-is drawn from ten descriptions: an elderly Black woman in her 70s with
+\emph{Shirt} colours: bright red, royal blue, forest green, deep purple,
+bright orange, hot pink, navy blue, crimson, teal, golden yellow.
+\emph{Skin-tone} tiers and their prompt wording are given in
+Table~\ref{tab:mst_tiers}. The ten \emph{signer-swap} identities are: an
+elderly Black woman in her 70s with
 short grey natural hair and thin gold-rimmed glasses, wearing a plum
 cardigan; a young East Asian man in his 20s with short straight black
 hair, clean-shaven, wearing a plain charcoal t-shirt; a middle-aged South

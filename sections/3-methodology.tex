@@ -154,11 +154,31 @@ cross-signer.
 \label{sec:method-diffusion}
 
 
+\todome{REORDER START (Claude 12.08): this subsection moved ahead of
+generative appearance editing so \S\ref{sec:method-diffusion} and
+\S\ref{sec:setup-generation} share one order, and its opener no longer ties
+the route to one corpus by definition. Resolves the 03.08 proposal.}
+\subsection{Motion-locked re-renders}
+The first route is motion-capture-driven: the captured 3D motion of a real
+signer is retargeted onto synthetic avatars and re-rendered under multiple
+camera viewpoints (\S\ref{sec:setup-generation}). Because it starts from
+ground-truth motion rather than a 2D image edit, the signing motion is
+preserved by construction (the renders are \emph{motion-locked}), and it
+varies camera viewpoint as well as appearance, an axis a 2D edit cannot
+reach from a single input view. It requires motion-capture recordings, so
+it applies only where capture is controlled.
+\todome{REORDER END}
+
 \subsection{Generative appearance editing}
-We generate appearance counterfactuals for the isolated-benchmark corpus
-by editing real training videos frame-by-frame with an open generative
-image editor; the model, compute, and the statistics of the edited
-subset are given in \S\ref{sec:setup-generation}. Rather than
+\todome{REWRITE START (Claude 12.08): opener no longer binds this route to
+the isolated corpus; it also ran on NGT744, and Setup says which route ran
+where. Resolves the 03.08 proposal.}
+The second route edits real training videos frame-by-frame with an open
+generative image editor. It needs nothing beyond the RGB video, so it
+applies to any corpus; the model, compute and edited-subset statistics are
+given in \S\ref{sec:setup-generation}.
+\todome{REWRITE END}
+Rather than
 augmenting a uniform sample, targets are chosen worst-first
 at the class level: every gloss is ranked by its number of distinct training
 signers (ascending), with ties broken by a difficulty proxy (per-class
@@ -166,17 +186,6 @@ nearest-centroid gloss accuracy computed on the from-scratch contrastive
 baseline's test embeddings, a clustering measure that degrades precisely when
 embeddings organise by signer rather than by sign), and entire classes are
 taken in rank order until the budget fills.
-\todome{REWRITE PROPOSAL (03.08): the opener above binds the diffusion
-route to ``the isolated-benchmark corpus'', but Setup and Results apply
-Flux to NGT too (stride-4 NGT edits in \S\ref{sec:setup-generation}; the
-single-view ladder arms E4/E6/E7/E10 are Flux-on-NGT) --- the binding is
-false and it also makes the route-vs-corpus framing in the abstract too
-clean. Proposed replacement for the first sentence: ``The first route
-edits real training videos frame-by-frame with an open image diffusion
-model; it requires nothing beyond the RGB video itself, so it applies to
-any corpus. The model, compute, and edited-subset statistics are given in
-\S\ref{sec:setup-generation}.'' Let Setup alone say which route ran
-where. Same issue in the avatar subsection below.}
 We propose a taxonomy of four independent appearance edit types
 (Fig.~\ref{fig:aug_examples}); for each
 selected source video we generate up to four edits, applied frame-by-frame:
@@ -201,85 +210,41 @@ Counts and the "no anchoring in the shipped runs" claim are verified against
 the code; the one thing to confirm from memory is whether the two anchoring
 variants were only piloted or never run at all.}
 \paragraph{Edit vocabularies.}
-Three of the four edit types are parametric, and each draws from a fixed
-vocabulary. \emph{Shirt} recolours the garment to one of ten saturated
-colours. \emph{Skin tone} targets one of six tiers of the ten-point Monk
-scale, tiers $5$--$10$ (light tan through very deep brown); the light end
-of the scale is deliberately excluded because lighter tones are already
-over-represented among the corpus signers, so the diversity that synthetic
-coverage can add lies at the darker end. \emph{Signer swap} replaces the
-person with one of ten fully specified target identities that vary age,
-gender presentation, ethnicity, hair, eyewear, facial hair and clothing;
-the descriptions are deliberately detailed, because underspecified
-identities drift more between independently edited frames.
-\emph{Glasses} is the one non-parametric edit, a single fixed
-thin-framed addition.
-Each source video is assigned one value per attribute by hashing its video
-identifier, so the assignment is reproducible without storing a mapping and
-a given video always receives the same target. Assigning per video rather
-than per frame is what makes the result a counterfactual instead of a
-random perturbation: the same intervention holds across the whole clip,
-and only the appearance attribute named in the prompt is intended to move.
+Three of the four edit types are parametric. \emph{Shirt} recolours the
+garment to one of ten saturated colours; \emph{skin tone} targets one of
+six Monk-scale tiers ($5$--$10$, the light end excluded because lighter
+tones are already over-represented among the corpus signers); and
+\emph{signer swap} substitutes one of ten target identities, each
+specified in detail over age, gender presentation, ethnicity, hair,
+eyewear and clothing, since underspecified identities drift more between
+independently edited frames. \emph{Glasses} is a single fixed edit. Each
+video draws one value per attribute by hashing its identifier, so the
+target is reproducible and constant across the clip: the intervention is
+a counterfactual, not a per-frame perturbation.
 
 \paragraph{Prompt design.}
-Every prompt pairs the requested change with an explicit preservation
-clause enumerating what must not change: the shape and position of every
-finger and hand, wrist angles, arm trajectories, facial expression, gaze
-direction, mouth shape, body posture and the background. Each prompt also
-carries a clause forbidding the model to add, duplicate or complete any
-hand, arm or finger. That clause was added in response to an observed
-failure mode: asked to edit appearance, the editor tends to ``complete''
-a natural standing pose, hallucinating raised hands in frames where the
-hands are lowered, occluded, or outside the frame. This is the most
-damaging error available to it here, since it silently changes the
-articulators that carry the label. The two identity-bearing edits relax
-the clause exactly where they must: the skin-tone prompt permits skin
-colour to change while holding geometry and identity fixed, and the
-signer-swap prompt permits face, hair and clothing to change while
-requiring the signing motion and the facial expression of the current
-frame to be preserved. The full prompt texts are given in
-Appendix~\ref{app:flux_prompts}.
+Every prompt pairs the requested change with a clause enumerating what
+must not change (the shape and position of every finger and hand, wrist
+angles, arm trajectories, facial expression, gaze, mouth shape, posture
+and background) and a clause forbidding the model to add, duplicate or
+complete any hand or arm. The latter addresses an observed failure mode:
+the editor ``completes'' a natural standing pose, hallucinating raised
+hands in frames where the hands are lowered or out of frame, and so
+silently alters the articulators that carry the label. The skin-tone and
+signer-swap prompts relax the preservation clause only where the edit
+requires it. Full texts are given in Appendix~\ref{app:flux_prompts}.
 
 \paragraph{Frame conditioning.}
-The edits are applied to each frame independently: the editor is never
-conditioned on the preceding frame, nor on any previously edited frame.
-Temporal coherence therefore rests entirely on two things, the
-determinism of the per-video prompt and the shared content of the source
-frames, and not on any explicit consistency mechanism. The trade-off is
-deliberate in one direction and a limitation in the other. Because no
-frame conditions on its predecessor, a poor edit cannot propagate along
-the clip and there is no error accumulation; but nothing actively ties
-consecutive frames together either, which is the direct cause of the
-residual inter-frame flicker discussed in
-\S\ref{sec:limitations}. Two anchoring alternatives were implemented and
-piloted but are not used for the corpus reported here. The first passes
-the first edited frame to every later frame as a second reference image,
-cropped to the torso so that no face can leak and accompanied by a clause
-restricting its use to garment colour and texture. The second, for the
-signer swap, generates a small bank of text-to-image portraits per target
-identity and passes those to every frame, pinning identity both within and
-across videos. Both buy appearance stability with facial-motion fidelity,
-the frame-0 anchor most visibly, as it tends to pull expression back
-toward the first frame. For a task in which mouthing and facial expression
-are linguistically contrastive, that is the wrong side of the trade, so
-the reported corpus uses unanchored per-frame editing throughout.
+Frames are edited independently: no frame is conditioned on its
+predecessor or on any previously edited frame. Cross-frame coherence
+therefore rests only on the fixed per-video prompt, which is what produces
+the residual flicker reported in \S\ref{sec:limitations}; the compensating
+property is that a bad edit cannot propagate along the clip. Two anchoring
+schemes were implemented and piloted but are not used here, a frame-0
+reference image and a per-identity portrait bank, because both stabilise
+appearance at the cost of facial motion, which is linguistically
+contrastive.
 \todome{ADDITION END}
-
-\subsection{Motion-locked re-renders}
-For the continuous corpus we propose a second, motion-capture-driven
-route: the captured 3D motion of a real signer is retargeted onto
-synthetic avatars and re-rendered under multiple camera viewpoints
-(\S\ref{sec:setup-generation}). Because this route starts from
-ground-truth motion rather than a 2D image edit, the signing motion is
-preserved by construction (the renders are \emph{motion-locked}),
-and the route can vary camera viewpoint as well as appearance, an axis a 2D edit cannot reach from a single
-input view.
-\todome{REWRITE PROPOSAL (03.08), same corpus-binding issue as above:
-``For the continuous corpus'' ties the avatar route to NGT by
-definition. Propose opening with ``The second route is
-motion-capture-driven: ...'' (rest verbatim) and closing with ``Unlike
-the diffusion route it requires motion-capture recordings, so it applies
-only where capture is controlled.''}
 
 \section{Counterfactual-aware training objectives}
 \label{sec:method-objectives}
@@ -652,16 +617,67 @@ short or left mostly in warmup.
 
 \section{Counterfactual generation}
 \label{sec:setup-generation}
-\todo{make into separate subsections, matching 3.2.1 and 3.2.2}
-\todo{reorder: unreal engine goes first}
 This section instantiates the two counterfactual routes of
-\S\ref{sec:method-diffusion}.
+\S\ref{sec:method-diffusion}, in the same order.
 
-For ASL Citizen we generate appearance counterfactuals with
+\todome{RESTRUCTURE START (Claude 12.08): 3.6 split into two subsections
+mirroring 3.2, motion-locked first, resolving both standing todos. The
+pipeline details are read off the Unreal project
+(Custom\_from\_FBX.uproject, render\_palmer\_260316.py,
+render\_digits\_260316.py); ``Character Creator 5'' is on your word, the
+project files record only ``CC''.}
+\subsection{Motion-locked re-renders}
+Real signers are recorded in motion-capture suits, and the captured motion
+is retargeted onto two Character Creator 5 characters, ``Palmer'' and
+``Digits''. Both are driven by the same take and rendered in Unreal
+Engine~5.7~\cite{UnrealEngine57} through its Movie Render Queue at
+$224\times224$ and $15$\,fps, matching the downstream input (sequences are
+authored at $30$\,fps and resampled on output). Each character is rendered
+from three cameras (left, middle, right), giving six synthetic views per
+sentence alongside the three real camera views: $K=9$ views per recording,
+against $K=3$ for the real-only baseline.
+
+Appearance varies per rendered clip by tinting the character's skin and
+garment material instances, one of three skin tones and one of six garment
+colours drawn at random, so eighteen appearance combinations per character.
+The two characters also differ in build and garment cut (a fitted shirt and
+a turtleneck), so apparent identity varies alongside colour.
+Fig.~\ref{fig:unreal_examples} shows one training sentence through this
+pipeline.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=.8\textwidth]{unreal_examples_grid.png}
+\caption[Motion-locked re-renders of an NGT744 sentence]{Motion-locked re-renders for one NGT744
+training sentence (M20241210\_0257, session 251126, take 0). Top block:
+four aligned frames of the front-camera view, with indices on the common
+15\,fps timeline below the columns (the 60\,fps real recording is sampled
+at its temporally aligned frames); the top row shows the real recording of
+the mocap-suited signer, and the two rows below show the ``Palmer'' and
+``Digits'' avatars driven by the motion captured in that same take.
+Because the avatars are animated by retargeting the recorded mocap onto
+the avatar skeleton, the signing motion is identical across rows by
+construction, unlike the generative edits of Fig.~\ref{fig:aug_examples},
+whose motion preservation is an empirical property that must be verified. Bottom strip: the same avatar and
+frame rendered from the three camera positions, the viewpoint axis that
+this route adds and that a 2D image edit cannot reach from a single input
+view; clothing colour additionally varies across the rendered views.}
+\label{fig:unreal_examples}
+\end{figure*}
+
+\todo{Fig.~\ref{fig:unreal_examples} now covers the signer axis (real vs
+Palmer/Digits) and the synthetic camera axis; still missing from it are the
+three \emph{real} camera views and a held-out Bushuis-studio frame, which
+together would make the full K=3 vs K=9 setup and the cross-studio eval gap
+visible in one strip --- extend the figure or add a companion strip if wanted
+(sources: Data/obs\_right\_export\_cropped/ real views, Data/ Bushuis crops}
+\todome{RESTRUCTURE END}
+
+\subsection{Generative appearance editing}
+We generate appearance counterfactuals with
 FLUX.2-klein-9B~\cite{blackforestlabsFLUX2Klein2026}, an open
 rectified-flow transformer image editor, run on a single 48\,GB L40S GPU
-(or, when available, a shared H100 partition). We augment a targeted subset
-of the training data, $6{,}000$ source videos ($14.9\%$ of the 40k-video
+(or, when available, a shared H100 partition). On ASL Citizen we augment a
+targeted subset of the training data, $6{,}000$ source videos ($14.9\%$ of the 40k-video
 training set) yielding $24{,}000$ augmented clips, rather than the full
 corpus. The primary reason is the generation compute budget:
 frame-by-frame editing of all 40k source videos was beyond the GPU
@@ -688,7 +704,7 @@ used in training.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=.8\textwidth]{aug_examples_grid.png}
-\caption[Flux appearance edit types on an ASL Citizen video]{The four Flux appearance edit types on one ASL Citizen video.
+\caption[Generative appearance edits on an ASL Citizen video]{The four generative appearance edit types on one ASL Citizen video.
 Each column is one of four aligned frames (indices below the columns);
 the top row shows the original video and the remaining rows its four
 edits (\emph{+ shirt}, \emph{+ glasses}, \emph{+ signer swap},
@@ -715,7 +731,7 @@ augmented with original frames.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=.85\textwidth]{flux_resolution_sweep.png}
-\caption[Flux-edited frame at three generation resolutions]{The same Flux-edited frame generated at 224, 512, and 1024\,px
+\caption[Edited frame at three generation resolutions]{The same edited frame generated at 224, 512, and 1024\,px
 longest side (top row), with a zoom inset on the face-and-hand region
 (bottom row). At 224\,px the editor visibly degrades face and glasses
 detail (detail the 224-input downstream model still depends on),
@@ -724,45 +740,6 @@ whereas the 512\,px output is visually indistinguishable from 1024\,px;
 resolution.}
 \label{fig:flux_res_sweep}
 \end{figure*}
-
-For NGT744 we propose a different, motion-capture-driven pipeline: real signers
-are recorded in mocap suits, and the captured motion is retargeted onto two
-CharacterCreator avatars (``Digits'' and ``Palmer'') and rendered in
-Unreal Engine~\cite{UnrealEngine57}\todome{ADDITION 11.08: engine doc-cite (candidates Tier 3 \#11); the MetaHuman doc entry stays uncited since this pipeline uses CharacterCreator} under three camera angles, giving six synthetic views per sentence in
-addition to the three real camera views ($K=9$ views total per sign, versus
-$K=3$ for the real-only baseline). Because this route starts from ground-truth
-3D motion rather than a 2D image edit, it can vary camera viewpoint as well
-as appearance, a capability the 2D generative-edit route does not have from a
-single input view. Fig.~\ref{fig:unreal_examples} shows one training
-sentence through this pipeline: the same mocap take as the real
-front-camera recording and as both avatar renders, together with the
-three camera viewpoints for one of the avatars.
-\begin{figure*}[t]
-\centering
-\includegraphics[width=.8\textwidth]{unreal_examples_grid.png}
-\caption[Unreal Engine motion-preserving counterfactuals]{Motion-preserving Unreal Engine counterfactuals for one NGT744
-training sentence (M20241210\_0257, session 251126, take 0). Top block:
-four aligned frames of the front-camera view, with indices on the common
-15\,fps timeline below the columns (the 60\,fps real recording is sampled
-at its temporally aligned frames); the top row shows the real recording of
-the mocap-suited signer, and the two rows below show the ``Palmer'' and
-``Digits'' avatars driven by the motion captured in that same take.
-Because the avatars are animated by retargeting the recorded mocap onto
-the avatar skeleton, the signing motion is identical across rows by
-construction, unlike the Flux edits of Fig.~\ref{fig:aug_examples},
-whose motion preservation is an empirical property that must be verified. Bottom strip: the same avatar and
-frame rendered from the three camera positions, the viewpoint axis that
-this route adds and that a 2D image edit cannot reach from a single input
-view; clothing colour additionally varies across the rendered views.}
-\label{fig:unreal_examples}
-\end{figure*}
-
-\todo{Fig.~\ref{fig:unreal_examples} now covers the signer axis (real vs
-Palmer/Digits) and the synthetic camera axis; still missing from it are the
-three \emph{real} camera views and a held-out Bushuis-studio frame, which
-together would make the full K=3 vs K=9 setup and the cross-studio eval gap
-visible in one strip --- extend the figure or add a companion strip if wanted
-(sources: Data/obs\_right\_export\_cropped/ real views, Data/ Bushuis crops}
 
 \section{Evaluation protocols}
 \label{sec:eval-protocols}

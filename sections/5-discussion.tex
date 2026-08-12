@@ -12,7 +12,7 @@ research~\cite{atwellStudyingMitigatingBiases2024}, appearance
 interventions bought
 little: +1.1 R@1 on a frozen-feature head, nothing at the backbone. In the
 low-data NGT744 setting, where the model must bridge a real signer gap from a
-handful of recordings, motion-preserving synthetic counterfactuals produced
+handful of recordings, motion-locked synthetic counterfactuals produced
 a clear gain. The simplest reading is that appearance invariance is not a
 property a model has or lacks in the abstract; it is relative to the
 diversity already present in training. The Logos checkpoint we
@@ -59,7 +59,7 @@ the full synthetic-appearance intervention to bridge the NGT744 signer gap.
 
 This reading also explains why our ASL Citizen null differs from SDDA's positive
 result~\cite{fuSignerDiversitydrivenData2024b} on Phoenix2014T: their
-diffusion-augmented contrastive setup operates on a studio-recorded corpus
+generatively augmented contrastive setup operates on a studio-recorded corpus
 with far less signer variety than ASL Citizen (PHOENIX-2014T contains nine signers in
 total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT744
 % Nine signers verified 2026-07-12 in three independent sources: Camgoz et
