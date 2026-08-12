@@ -578,10 +578,9 @@ two blocks train the same head recipes on \emph{fine-tuned} rather than
 frozen features, tagged by how that backbone was fine-tuned: CE-FT is
 cross-entropy on the real videos, aug-FT adds the synthetic edits as data,
 and SDDA-FT adds the SDDA invariance term (\S\ref{sec:method-losses}).
-Those two blocks use \texttt{logos\_native} preprocessing where the rows
-above use \texttt{direct224}, so the ``Scratch on native (frozen)'' row is
-included as the matched control that separates the preprocessing change
-from the effect of fine-tuning the backbone.
+Those two blocks were generated with a different frame preprocessing
+from the rows above, so each carries its own frozen-backbone row as the
+matched control and is read within the block.
 
 The head is worth adding, and the edits help it a little. On frozen Logos
 features a head trained from scratch already reaches $0.750$ R@1, far
@@ -590,13 +589,22 @@ SignCLIP models ($0.39$--$0.60$). Fine-tuning the head lifts this to
 $0.789$, and adding the synthetic edits as extra training pairs to
 $0.800$, the best configuration on frozen features; training on the edits
 alone is worse than training on the real videos ($0.760$ against
-$0.789$). Carrying the same recipe onto fine-tuned backbones adds a
-little more, peaking at $0.818$. Every one of these differences is
-between one and three points. The pair-SupCon rows are the exception and
-the largest effect in the table: the same edits, entering as explicit
-positives instead of as data, cost $0.233$ R@1 at $K{=}3$ and $0.386$ at
-$K{=}5$ against the $0.800$ they support as data
-(\S\ref{sec:results-iconicity-main} returns to why).
+$0.789$). All of these differences are one to three points.
+
+The last two blocks search for the best combination, putting a head on
+backbones we had already fine-tuned. Their answer is that the two do not
+stack. A from-scratch head does gain from a fine-tuned backbone ($0.744$
+on the matched frozen control against $0.772$--$0.782$), but the best head
+recipe does not: it scores highest on the frozen backbone ($0.818$) and
+slightly lower on every fine-tuned one ($0.809$--$0.812$). Whatever
+backbone fine-tuning has to contribute at this point, the head has
+already contributed.
+
+The pair-SupCon rows are the exception and the largest effect in the
+table: the same edits, entering as explicit positives instead of as data,
+cost $0.233$ R@1 at $K{=}3$ and $0.386$ at $K{=}5$ against the $0.800$
+they support as data (\S\ref{sec:results-iconicity-main} returns to
+why).
 
 % TABLE CONVENTION (updated 2026-08-05 per Piotr):
 % - \textbf on a data cell = best value in that metric column within its
@@ -622,37 +630,41 @@ SignCLIP from scratch        & Pose (MediaPipe) & 0.39 & 0.71 & 0.84 & 2 \\
 SignCLIP fine-tuned          & Pose (MediaPipe) & 0.46 & 0.77 & 0.84 & 2 \\
 SignCLIP fine-tuned + linear & Pose (MediaPipe) & \textbf{0.60} & \textbf{0.84} & \textbf{0.89} & 1 \\
 \midrule
-From scratch          & RGB (I3D, WLASL)                  & 0.32  & 0.63  & 0.73  & 3 \\
-From scratch          & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.750 & 0.950 & 0.970 & 1 \\
-From scratch $+$ synth.\ data & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.756 & 0.955 & 0.970 & 1 \\
-Fine-tuned            & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.789 & 0.962 & 0.975 & 1 \\
-Fine-tuned, synth.\ data only & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.760 & 0.957 & 0.971 & 1 \\
-Fine-tuned $+$ synth.\ data & RGB (MViTv2-S, Logos+AUTSL+WLASL) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
+From scratch          & RGB (I3D)                  & 0.32  & 0.63  & 0.73  & 3 \\
+From scratch          & RGB (Logos) & 0.750 & 0.950 & 0.970 & 1 \\
+From scratch $+$ synth.\ data & RGB (Logos) & 0.756 & 0.955 & 0.970 & 1 \\
+Fine-tuned            & RGB (Logos) & 0.789 & 0.962 & 0.975 & 1 \\
+Fine-tuned, synth.\ data only & RGB (Logos) & 0.760 & 0.957 & 0.971 & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (Logos) & \textbf{0.800} & \textbf{0.964} & \textbf{0.976} & 1 \\
 \midrule
-\multicolumn{6}{l}{\textit{From-scratch head (real data only) on a \emph{fine-tuned} MViTv2-S backbone}$^{\ddagger}$} \\
-Scratch on native (frozen) & RGB (MViTv2-S, native)   & 0.744 & \textbf{0.966} & \textbf{0.977} & 1 \\
-Scratch on CE-FT           & RGB (MViTv2-S, CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
-Scratch on aug-FT          & RGB (MViTv2-S, aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
-Scratch on SDDA-FT         & RGB (MViTv2-S, SDDA-FT)  & \textbf{0.782} & 0.958 & 0.970 & 1 \\
+\multicolumn{6}{l}{\textit{From-scratch head, varying the backbone underneath}$^{\ddagger}$} \\
+From scratch              & RGB (Logos, frozen)   & 0.744 & \textbf{0.966} & \textbf{0.977} & 1 \\
+From scratch              & RGB (Logos, CE-FT)    & 0.772 & 0.929 & 0.944 & 1 \\
+From scratch              & RGB (Logos, aug-FT)   & 0.781 & 0.927 & 0.943 & 1 \\
+From scratch              & RGB (Logos, SDDA-FT)  & \textbf{0.782} & 0.958 & 0.970 & 1 \\
 \midrule
-\multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone}$^{\ddagger}$} \\
+\multicolumn{6}{l}{\textit{Best head recipe, varying the backbone underneath}$^{\ddagger}$} \\
 \rowcolor{rowhl}
-FT$+$synth.\ recipe on native   & RGB (MViTv2-S, native)   & \tbest{\textbf{0.818}} & \tbest{\textbf{0.972}} & \tbest{\textbf{0.982}} & 1 \\
-FT$+$synth.\ recipe on CE-FT    & RGB (MViTv2-S, CE-FT)    & 0.809 & 0.946 & 0.957 & 1 \\
-FT$+$synth.\ recipe on aug-FT   & RGB (MViTv2-S, aug-FT)   & 0.812 & 0.942 & 0.954 & 1 \\
-FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.810 & 0.964 & 0.974 & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (Logos, frozen)   & \tbest{\textbf{0.818}} & \tbest{\textbf{0.972}} & \tbest{\textbf{0.982}} & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (Logos, CE-FT)    & 0.809 & 0.946 & 0.957 & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (Logos, aug-FT)   & 0.812 & 0.942 & 0.954 & 1 \\
+Fine-tuned $+$ synth.\ data & RGB (Logos, SDDA-FT)  & 0.810 & 0.964 & 0.974 & 1 \\
 \midrule
 \multicolumn{6}{l}{\textit{Pair-SupCon head (fine-tune; synth.\ edits as explicit positives)}} \\
-$K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (MViTv2-S, Logos) & 0.567 & 0.887 & 0.934 & 1 \\
-$K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & RGB (MViTv2-S, Logos) & 0.414 & 0.767 & 0.858 & 2 \\
+$K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (Logos) & 0.567 & 0.887 & 0.934 & 1 \\
+$K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & RGB (Logos) & 0.414 & 0.767 & 0.858 & 2 \\
 \bottomrule
 \end{tabular}
 \caption[Video-to-text retrieval on ASL Citizen]{Video-to-text
 retrieval on ASL Citizen (random-baseline Median R $=1366$, 2731 unique
-glosses); row naming and the backbone tags marked $^{\ddagger}$ are
-explained in the text. Bold marks the best value in a column within its
-block, a blue cell the best in the whole column, and the shaded row the
-strongest configuration overall.}
+glosses). The \textbf{Features} column names the backbone the head is
+trained on and, where relevant, how that backbone was itself fine-tuned;
+row naming is explained in the text. $^{\ddagger}$These two blocks were
+generated with a different frame preprocessing from the rows above, so
+they should be read within the block, against their own frozen-backbone
+row, rather than against the earlier numbers. Bold marks the best value in
+a column within its block, a blue cell the best in the column overall, and
+the shaded row the strongest single configuration.}
 \label{tab:asl_citizen_retrieval}
 \end{table*}
 
@@ -672,11 +684,10 @@ $0.871$ to $0.895$, synthetic data alone adds little ($0.883$ from
 scratch, $0.884$ as the only fine-tuning data), and the combination is
 the strongest configuration on every metric (P@1 $0.919$, Mean~R
 $1.128$). Carried onto the fine-tuned backbones, the same recipe reaches
-P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour. Which of
-those backbones leads does depend on the direction, however: the recipe on
-native features is strongest video-to-text ($0.818$ against $0.809$ on
-CE-FT) while CE-FT is strongest text-to-video ($0.935$ against $0.925$),
-so the shaded row differs between the two tables.
+P@1 $0.925$--$0.935$, mirroring its video-to-text behaviour. Which backbone leads does depend on the direction, however: the frozen
+backbone is strongest video-to-text ($0.818$ against $0.809$ on CE-FT)
+while CE-FT is strongest text-to-video ($0.935$ against $0.925$), so the
+shaded row differs between the two tables.
 \todome{DRAFT PROPOSAL END. Interpretive reading (why T2V moves more
 than V2T --- the anchor-neighbourhood argument) was cut in the 03.08
 cleanup; reconnect it here or leave the paragraph descriptive.}
@@ -689,18 +700,18 @@ cleanup; reconnect it here or leave the paragraph descriptive.}
   \toprule
   \textbf{Setup} & \textbf{Features} & \textbf{P@1} & \textbf{P@5} & \textbf{P@10} & \textbf{Mean R} \\
   \midrule
-  From scratch          & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.871 & 0.854 & 0.786 & 1.228 \\
-  From scratch $+$ synth.\ data    & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.883 & 0.861 & 0.790 & 1.213 \\
-  Fine-tuned           & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.895 & 0.876 & 0.808 & 1.166 \\
-  Fine-tuned, synth.\ data only & RGB (MViTv2-S, Logos+AUTSL+WLASL) & 0.884 & 0.863 & 0.796 & 1.216 \\
-  Fine-tuned $+$ synth.\ data      & RGB (MViTv2-S, Logos+AUTSL+WLASL) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
+  From scratch          & RGB (Logos) & 0.871 & 0.854 & 0.786 & 1.228 \\
+  From scratch $+$ synth.\ data    & RGB (Logos) & 0.883 & 0.861 & 0.790 & 1.213 \\
+  Fine-tuned           & RGB (Logos) & 0.895 & 0.876 & 0.808 & 1.166 \\
+  Fine-tuned, synth.\ data only & RGB (Logos) & 0.884 & 0.863 & 0.796 & 1.216 \\
+  Fine-tuned $+$ synth.\ data      & RGB (Logos) & \textbf{0.919} & \textbf{0.896} & \textbf{0.829} & \textbf{1.128} \\
   \midrule
   \multicolumn{6}{l}{\textit{Best head recipe (fine-tuned $+$ synth.\ data) on a fine-tuned backbone} }\\
 
-  FT$+$synth.\ recipe on native   & RGB (MViTv2-S, native)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
-  FT$+$synth.\ recipe on CE-FT    & RGB (MViTv2-S, CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
-  FT$+$synth.\ recipe on aug-FT   & RGB (MViTv2-S, aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
-  FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
+  Fine-tuned $+$ synth.\ data & RGB (Logos, frozen)   & 0.925 & 0.902 & \tbest{\textbf{0.850}} & 1.129 \\
+  Fine-tuned $+$ synth.\ data & RGB (Logos, CE-FT)    & \tbest{\textbf{0.935}} & 0.909 & 0.844 & 1.106 \\
+  Fine-tuned $+$ synth.\ data & RGB (Logos, aug-FT)   & 0.930 & \tbest{\textbf{0.910}} & 0.848 & \tbest{\textbf{1.099}} \\
+  Fine-tuned $+$ synth.\ data & RGB (Logos, SDDA-FT)  & 0.928 & 0.906 & 0.849 & 1.112 \\
   \bottomrule
   \end{tabular}
   }
