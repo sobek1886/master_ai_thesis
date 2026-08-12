@@ -4,15 +4,13 @@
 \section{Two regimes, two answers}
 \label{sec:discussion-regimes}
 Our central empirical pattern is a contrast between regimes. In the high-diversity regime, on
-ASL Citizen~\cite{aslcitizen}, a large, signer-independent benchmark
-(crowdsourced, 52 signers) whose training split already exposes the model
-to many signers, the appearance interventions returned a null: no
+ASL Citizen~\cite{aslcitizen},  the appearance interventions returned a null: no
 objective family beats plain cross-entropy at matched depth, and the
 frozen backbone's linear probe stays the best in
 Table~\ref{tab:backbone_ft_retrieval} on every probe metric, so nothing we
 trained made the task more accessible than the untouched representation
 already made it. In the
-low-data NGT744 setting, where the model must bridge a real signer gap from a
+low-diversity NGT744 setting, where the model must bridge a real signer gap from a
 handful of recordings, motion-locked synthetic counterfactuals produced
 a clear gain. The simplest reading is that appearance invariance is not a
 property a model has or lacks in the abstract; it is relative to the
@@ -66,19 +64,6 @@ total~\cite{fuSignerDiversitydrivenData2024b}), i.e.\ closer to our NGT744
 % paper's comparison table. Cited to SDDA since it is already in the bib and
 % is the paper whose corpus is being discussed.
 regime than to our ASL Citizen regime.
-The SDDA authors flag the low visual realism of their synthesised signers
-as a limitation. We draw no realism comparison against them: this thesis
-measures no image-quality metric, and the one geometric readout we do have
-runs the other way, since our edited clips stay near-perfectly separable
-from real video (\S\ref{sec:results-aug-geometry}).
-% Piotr's question (2026-07-12): "could we directly compare to SDDA by
-% training the model on Phoenix?" Answer, per the resolution report: not as
-% a small job — SDDA is a sign language TRANSLATION result (BLEU/ROUGE on
-% continuous PHOENIX-2014T), so a like-for-like comparison needs the full
-% continuous-recognition/SLT stack this thesis scopes out; our Flux pipeline
-% could generate the augmentations, but the training/eval harness does not
-% exist in this project. Left out of the draft text; revisit as Future Work
-% if desired.
 
 Recording conditions are held fixed (one studio, one camera
 setup, one weather-forecast register), so the shift their augmentation has
