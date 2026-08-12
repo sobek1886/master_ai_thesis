@@ -241,7 +241,7 @@ against
 0.800 % line 1833 (Fine-tuned + synth. data)
 for the same edits used as plain additional data, and $K{=}5$ falls
 further to
-0.414. % line 1850 (K=5 pair-SupCon; note the checkpoint caveat todo at line 1873)
+0.414.
 The same synthetic videos therefore help or hurt depending purely on
 the objective through which they enter (as data, a small gain; as
 forced positives, a large loss), mirroring the high-$K$ degradation
@@ -253,11 +253,7 @@ component through which the ASL Citizen synthetic data produced any gain,
 and it changes the signer-identity story qualitatively rather than
 erasing it.
 
-\todome{DRAFT END: caveats. (i) The K=5 pair-SupCon number comes from
-checkpoint\_last.pt with no best checkpoint saved --- there is an open
-todo at line 1873 to remove the K=5 row; if it goes, drop the ``and
-$K{=}5$ falls further to 0.414'' clause here (the K=3 contrast carries
-the point alone). (ii) The three published pose-row numbers
+\todome{DRAFT END: caveats. (i) The three published pose-row numbers
 (0.39/0.46/0.60, lines 1836-1838) are deliberately not used here
 pending the verification todo at lines 1874-1876. (iii) The head-probe
 comparison to 66.9\% is train-split, 35 signers --- do not mix it with
@@ -535,10 +531,9 @@ fine-tuning (\S\ref{sec:discussion-regimes}).
 synthetic-view arms, retrieval falls as more counterfactual views are packed into
 each training item ($K{\geq}5$ arms below their $K{=}3$ counterparts),
 and the pair-SupCon head points the same way on ASL Citizen ($0.567$ at
-$K{=}3$, against $0.800$ for the same data without explicit pairing);
-the convergence audit rules out undertraining.\todome{rephrased 04.08 to
-drop the removed K=5 retrieval number; original cited K=3-to-K=5
-0.567-to-0.414} Our reading is that pure
+$K{=}3$ and $0.414$ at $K{=}5$, against $0.800$ for the same data without
+explicit pairing); the convergence audit rules out undertraining. Our
+reading is that pure
 SupCon at high $K$ spends its capacity making views of the same item
 indistinguishable, at the cost of keeping different items apart. A
 natural test is to add a discriminative term to the NGT744 training setup

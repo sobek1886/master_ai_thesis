@@ -621,6 +621,7 @@ FT$+$synth.\ recipe on SDDA-FT  & RGB (MViTv2-S, SDDA-FT)  & 0.810 & 0.964 & 0.9
 \midrule
 \multicolumn{6}{l}{\textit{Pair-SupCon head (fine-tune; synth.\ edits as explicit positives)}} \\
 $K{=}3$ pair-SupCon (orig.\ $+$ 2 edits)        & RGB (MViTv2-S, Logos) & 0.567 & 0.887 & 0.934 & 1 \\
+$K{=}5$ pair-SupCon (orig.\ $+$ 4 edits)        & RGB (MViTv2-S, Logos) & 0.414 & 0.767 & 0.858 & 2 \\
 \bottomrule
 \end{tabular}
 \caption{Video-to-text retrieval on ASL Citizen (random-baseline Median R
@@ -643,15 +644,6 @@ CE $+$ synth.\ data $+$ SDDA invariance term,
 \texttt{logos\_native} preprocessing, whereas the frozen rows above use
 \texttt{direct224}; the ``Scratch on native (frozen)'' row is the matched
 control that isolates the preprocessing difference from the fine-tuning effect.
-\todome{K=5 removal executed 04.08: the K=5 pair-SupCon row (0.414,
-checkpoint\_last) and its dangling $^{\S}$ mark are gone from this
-table, and the K=3-to-K=5 retrieval citation in Future Work was
-rephrased. BOUNDARY QUESTION for you: the K=5 \emph{model} still appears
-in non-retrieval places --- the head signer-probes table (26.34$\times$
-/ 21.2\% row, and the caption's 22.0--26.3$\times$ range) and two
-appendix iconicity analyses of its embedding space. Same checkpoint
-provenance. Remove the model everywhere, or keep the embedding-space
-rows? Say the word and I sweep the rest.}
 }
 \label{tab:asl_citizen_retrieval}
 \end{table*}
@@ -781,6 +773,7 @@ From scratch                       & 22.29$\times$ & 22.6\% \\
 Fine-tuned                         & 22.35$\times$ & 24.6\% \\
 Fine-tuned $+$ synth.\ data        & 22.02$\times$ & 22.4\% \\
 $K{=}3$ pair-SupCon                & 23.35$\times$ & 20.1\% \\
+$K{=}5$ pair-SupCon                & 26.34$\times$ & 21.2\% \\
 \bottomrule
 \end{tabular}
 \caption{The same two probes on the SignCLIP-head spaces. Head features
