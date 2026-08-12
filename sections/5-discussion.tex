@@ -193,6 +193,46 @@ read as a proxy for the other. What can be said flatly is that text
 alignment did not remove signer structure (no objective in this
 thesis did); it moved where that structure is measurable.
 
+\todome{ADDITION START (Claude 12.08): your hypothesis about why co-training
+beat fine-tuning for the Logos authors. Framed as an explicitly unverifiable
+conjecture. Checked against the Logos paper: they never claim fine-tuning
+costs anything, and their fine-tune does beat their frozen encoder, so the
+paragraph is careful not to put that claim in their mouths. The 1,075-gloss
+overlap is the ASL Citizen authors' own published figure (\S5.2), not ours.}
+\paragraph{A conjecture about the pretraining literature.}
+The form-organisation result (\S\ref{sec:results-iconicity-main}) suggests
+a reading of one finding in the Logos paper that its authors do not
+themselves offer. They report that multi-dataset co-training transfers
+better to a low-resource target than conventional fine-tuning from their
+pretrained checkpoint, and they motivate this only by the resulting
+accuracy and by the convenience of a single
+model~\cite{ovodovLogosWellTemperedPretrain2025}. Their evaluation is
+target-set accuracy throughout, so a fine-tune that raises accuracy while
+eroding the structure of the representation would be invisible to it,
+which is precisely what we measure here: cross-entropy fine-tuning buys
+$2.4$ retrieval points over the frozen backbone
+(Table~\ref{tab:backbone_ft_retrieval}) and takes the space's form
+organisation to zero on the way. Co-training keeps the source objective
+alive and would not pay that price.
+Two things make the conjecture worth stating and neither makes it safe to
+assert. It is consistent with an observation they report but leave
+unexplained, that training on ungrouped visually-similar labels degrades
+accuracy even for classes that are not themselves visually similar, which
+is what a globally reorganised space would produce. But their own numbers
+show fine-tuning \emph{beating} their frozen encoder on the target, so
+nothing here says fine-tuning is harmful in their setting; and their
+setting differs from ours in a way that matters. They fine-tune a
+Russian-language pretrain onto a language it has never seen, where the
+target vocabulary is genuinely new. Our checkpoint is the co-trained
+Logos$+$AUTSL$+$WLASL model, so it has already been trained on ASL, and
+ASL Citizen shares $1{,}075$ glosses with
+WLASL by the ASL Citizen authors' own count~\cite{aslcitizen}. A
+substantial part of our target vocabulary was therefore already covered
+before fine-tuning began, which is one reading of why the gain is small
+while the structural cost is not. Testing this properly needs the
+intermediate checkpoints of a co-training run, which are not public.
+\todome{ADDITION END}
+
 The clearest ``hurt'' is not the text alignment itself but what happens
 when the counterfactuals are pushed into the head as explicit
 positives: pair-SupCon at $K{=}3$ drops V2T R@1 to
@@ -415,6 +455,24 @@ corpora~\cite{yuSignAvatarsLargeScale3D2025} make this increasingly
 practical, though driving avatars from estimated~\cite{kanazawaEndtoEndRecoveryHuman2018} or generated SMPL-X
 parameters remains harder than working directly with recorded motion
 capture, as our pipeline does.
+
+\todome{ADDITION START (Claude 12.08): future-work counterpart of the
+co-training conjecture in the discussion.}
+\textbf{Does co-training preserve what fine-tuning flattens?} The
+conjecture raised in \S\ref{sec:discussion-regimes}, that co-training
+transfers better than fine-tuning partly because it preserves the
+pretrained form organisation, is directly testable without any new data.
+Starting from the same pretrained checkpoint, train one target model by
+fine-tuning and one by co-training with the source objective retained,
+then measure both target accuracy and the form-dose response
+(\S\ref{sec:results-iconicity}) at matched accuracy. The conjecture
+predicts that the two reach comparable accuracy while only the fine-tuned
+space loses its form organisation. Running it across pretrain and target
+pairs of varying vocabulary overlap would also separate the two
+explanations we cannot currently distinguish, whether the small in-domain
+gain reflects a target vocabulary already covered by pretraining or a
+ceiling on what fine-tuning can add at all.
+\todome{ADDITION END}
 
 \textbf{Signer identity persists through the synthetic-avatar swap.}
 \todome{moved here from Limitations 04.08 per your todo; the second half
