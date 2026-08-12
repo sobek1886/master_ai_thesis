@@ -402,3 +402,127 @@ and compactness), washed out in the text-aligned heads, partially
 restored by the pair-trained heads.}
 \label{fig:iconicity_contrast}
 \end{figure}
+
+
+\todome{ADDITION START (Claude 12.08): appendix section with the generative
+appearance-edit prompts, transcribed verbatim from flux\_augment/config.py.
+The em-dash inside the no-extra-limbs clause is kept because these are quoted
+prompts, not prose; say the word and I will swap it for a comma.}
+\section{Generative appearance-edit prompts}
+\label{app:flux_prompts}
+This section reproduces the prompts used to generate the appearance
+counterfactuals of \S\ref{sec:method-diffusion}, verbatim from the
+generation code. Four clauses are shared across prompts and are factored
+out here exactly as they are in the implementation; each edit prompt below
+names the clauses it appends. Placeholders in braces are filled per source
+video from the vocabularies listed at the end of the section.
+
+\paragraph{Clause L (no extra limbs), appended to every prompt.}
+\begin{quote}\small\itshape
+Do NOT add, invent, duplicate, complete or remove any hand, arm or finger.
+The output must contain exactly the same hands and arms, in exactly the
+same positions, as this input frame --- and no others. If a hand or arm is
+lowered, occluded, or outside the frame here, it MUST remain absent: never
+raise or draw a hand that is not clearly visible in this input frame.
+\end{quote}
+
+\paragraph{Clause P (appearance preservation), used by the clothing and glasses edits.}
+\begin{quote}\small\itshape
+You MUST NOT change ANY of the following: the exact shape and position of
+every finger and hand, wrist angles, arm positions and trajectory, facial
+expression, eye gaze direction, mouth shape, body posture, skin tone,
+hair, and the background. Only the clothing appearance changes. [Clause L]
+\end{quote}
+
+\paragraph{Clause G (geometry preservation), used by the skin-tone edit.}
+\begin{quote}\small\itshape
+You MUST NOT change ANY of the following: the exact shape and position of
+every finger and hand, wrist angles, arm positions and trajectory, facial
+expression, eye gaze direction, mouth shape, body posture, hair, clothing,
+and the background. Keep the person's identity and all motion identical.
+[Clause L]
+\end{quote}
+
+\paragraph{Clause M (motion and expression preservation), used by the signer swap.}
+\begin{quote}\small\itshape
+You MUST NOT change ANY of the following: the exact shape and position of
+every finger and hand, wrist angles, both arms' positions and trajectory,
+body posture, head pose, and the facial EXPRESSION --- eyebrow position,
+eye openness, gaze direction and mouth shape, exactly as they appear in
+this frame. Keep the background, camera framing and lighting unchanged.
+[Clause L]
+\end{quote}
+
+\paragraph{Shirt.}
+\begin{quote}\small\itshape
+Edit this image: change the person's shirt or top to solid \{color\}.
+[Clause P]
+\end{quote}
+
+\paragraph{Glasses.}
+\begin{quote}\small\itshape
+Edit this image: add a pair of thin-framed glasses on the person's face.
+Do not change the clothing, hair, skin tone, or background. [Clause P]
+\end{quote}
+
+\paragraph{Skin tone.}
+\begin{quote}\small\itshape
+Edit this image: change ONLY the person's skin tone to a \{description\}
+complexion (Monk skin tone tier \{tier\}, approx \{hex\}). Apply the same
+tone naturally and consistently to the face, neck, arms and both hands,
+matching the original lighting and shading. [Clause G]
+\end{quote}
+
+\paragraph{Signer swap.}
+\begin{quote}\small\itshape
+Edit this image: completely change the person's appearance so they look
+like \{identity\}. Change their face shape and features, skin tone, hair,
+apparent age, gender presentation and clothing to match that description.
+[Clause M]
+\end{quote}
+
+\paragraph{Vocabularies.}
+The \emph{shirt} colour is drawn from: bright red, royal blue, forest
+green, deep purple, bright orange, hot pink, navy blue, crimson, teal,
+golden yellow. The \emph{skin-tone} tier is drawn from tiers $5$--$10$ of
+the Monk scale, with the descriptions and reference values used in the
+prompt given in Table~\ref{tab:mst_tiers}. The \emph{signer-swap} identity
+is drawn from ten descriptions: an elderly Black woman in her 70s with
+short grey natural hair and thin gold-rimmed glasses, wearing a plum
+cardigan; a young East Asian man in his 20s with short straight black
+hair, clean-shaven, wearing a plain charcoal t-shirt; a middle-aged South
+Asian man with a full black beard, wearing a grey collared shirt; a young
+white woman in her 20s with long blonde hair tied back, light freckles,
+wearing a maroon sweater; a heavyset older white man in his 60s, bald with
+a short grey beard, wearing a blue plaid flannel shirt; a Black man in his
+30s with short cropped hair and a neatly trimmed beard, wearing a black
+hoodie; a Latina woman in her 40s with shoulder-length wavy dark-brown
+hair and gold hoop earrings, wearing a forest-green blouse; a
+Middle-Eastern woman in her 30s wearing a navy headscarf and a
+long-sleeved beige top; an older East Asian woman in her 60s with short
+permed grey-black hair and rectangular glasses, wearing a lavender knit
+cardigan; and a teenage boy with short curly dark hair and a faint
+moustache, wearing a bright red crewneck sweatshirt.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{ccl}
+\toprule
+\textbf{Tier} & \textbf{Reference} & \textbf{Prompt description} \\
+\midrule
+5  & \#d7bd96 & light tan \\
+6  & \#a07e56 & tan brown \\
+7  & \#825c43 & medium-dark brown \\
+8  & \#604134 & dark brown \\
+9  & \#3a312a & deep brown \\
+10 & \#292420 & very deep ebony brown \\
+\bottomrule
+\end{tabular}
+\caption[Monk skin tone tiers used by the skin-tone edit]{The six Monk
+Skin Tone tiers used by the skin-tone edit, with the reference value and
+the wording passed to the editor. Tiers $1$--$4$ are excluded: lighter
+tones are already well represented among the corpus signers.}
+\label{tab:mst_tiers}
+\end{table}
+\todome{ADDITION END}

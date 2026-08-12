@@ -188,11 +188,81 @@ eyes), \emph{skin tone} (the highest-risk edit for hallucination, e.g.\
 occasional extra or malformed hand shapes), and \emph{signer swap} (a full
 identity change, carrying the highest potential benefit for a
 signer-independent task alongside the highest hallucination risk).
-\todome{ADDITION START (Claude 11.08): methodological anchor for the skin-tone edit, candidates \#7; VERIFY this matches the pipeline's skin\_mst bins before keeping}
+\todome{ADDITION START (Claude 11.08): methodological anchor for the skin-tone edit, candidates \#7. VERIFIED 12.08 against flux\_augment/config.py: the pipeline does use Monk tiers, restricted to 5--10.}
 The skin-tone edit follows the motivation of the Monk Skin Tone scale
 for inclusive coverage of apparent skin
 tones~\cite{heldrethWhichSkinTone2024,
 schumannConsensusSubjectivitySkin2023}.
+\todome{ADDITION END}
+
+\todome{ADDITION START (Claude 12.08): edit vocabularies, prompt design and
+frame-conditioning, read off flux\_augment/config.py and augment\_flux.py.
+Counts and the "no anchoring in the shipped runs" claim are verified against
+the code; the one thing to confirm from memory is whether the two anchoring
+variants were only piloted or never run at all.}
+\paragraph{Edit vocabularies.}
+Three of the four edit types are parametric, and each draws from a fixed
+vocabulary. \emph{Shirt} recolours the garment to one of ten saturated
+colours. \emph{Skin tone} targets one of six tiers of the ten-point Monk
+scale, tiers $5$--$10$ (light tan through very deep brown); the light end
+of the scale is deliberately excluded because lighter tones are already
+over-represented among the corpus signers, so the diversity that synthetic
+coverage can add lies at the darker end. \emph{Signer swap} replaces the
+person with one of ten fully specified target identities that vary age,
+gender presentation, ethnicity, hair, eyewear, facial hair and clothing;
+the descriptions are deliberately detailed, because underspecified
+identities drift more between independently edited frames.
+\emph{Glasses} is the one non-parametric edit, a single fixed
+thin-framed addition.
+Each source video is assigned one value per attribute by hashing its video
+identifier, so the assignment is reproducible without storing a mapping and
+a given video always receives the same target. Assigning per video rather
+than per frame is what makes the result a counterfactual instead of a
+random perturbation: the same intervention holds across the whole clip,
+and only the appearance attribute named in the prompt is intended to move.
+
+\paragraph{Prompt design.}
+Every prompt pairs the requested change with an explicit preservation
+clause enumerating what must not change: the shape and position of every
+finger and hand, wrist angles, arm trajectories, facial expression, gaze
+direction, mouth shape, body posture and the background. Each prompt also
+carries a clause forbidding the model to add, duplicate or complete any
+hand, arm or finger. That clause was added in response to an observed
+failure mode: asked to edit appearance, the editor tends to ``complete''
+a natural standing pose, hallucinating raised hands in frames where the
+hands are lowered, occluded, or outside the frame. This is the most
+damaging error available to it here, since it silently changes the
+articulators that carry the label. The two identity-bearing edits relax
+the clause exactly where they must: the skin-tone prompt permits skin
+colour to change while holding geometry and identity fixed, and the
+signer-swap prompt permits face, hair and clothing to change while
+requiring the signing motion and the facial expression of the current
+frame to be preserved. The full prompt texts are given in
+Appendix~\ref{app:flux_prompts}.
+
+\paragraph{Frame conditioning.}
+The edits are applied to each frame independently: the editor is never
+conditioned on the preceding frame, nor on any previously edited frame.
+Temporal coherence therefore rests entirely on two things, the
+determinism of the per-video prompt and the shared content of the source
+frames, and not on any explicit consistency mechanism. The trade-off is
+deliberate in one direction and a limitation in the other. Because no
+frame conditions on its predecessor, a poor edit cannot propagate along
+the clip and there is no error accumulation; but nothing actively ties
+consecutive frames together either, which is the direct cause of the
+residual inter-frame flicker discussed in
+\S\ref{sec:limitations}. Two anchoring alternatives were implemented and
+piloted but are not used for the corpus reported here. The first passes
+the first edited frame to every later frame as a second reference image,
+cropped to the torso so that no face can leak and accompanied by a clause
+restricting its use to garment colour and texture. The second, for the
+signer swap, generates a small bank of text-to-image portraits per target
+identity and passes those to every frame, pinning identity both within and
+across videos. Both buy appearance stability with facial-motion fidelity,
+the frame-0 anchor most visibly, as it tends to pull expression back
+toward the first frame. For a task in which mouthing and facial expression
+are linguistically contrastive, that is the wrong side of the trade, so
+the reported corpus uses unanchored per-frame editing throughout.
 \todome{ADDITION END}
 
 \subsection{Motion-locked re-renders}
