@@ -426,7 +426,7 @@ $S$ (signers) & real arm & $+$Unreal arm & $\Delta(S)$ \\
 3 & 0.244\pmsd{0.037} & 0.523\pmsd{0.030} & $+0.279$ \\
 4 & 0.239\pmsd{0.029} & 0.538\pmsd{0.035} & $+0.299$ \\
 \midrule
-\multicolumn{4}{l}{\textbf{Appearance over real viewpoints}: 3 real $\to$ $+$6 avatars \;(E2)} \\
+\multicolumn{4}{l}{\textbf{Appearance over real viewpoints}: 3 real $\to$ $+$6 avatars \;(E2 $\to$ E2$+$av.)} \\
 \midrule
 \multicolumn{4}{l}{\textit{Test $\to$ Train}} \\
 1 & 0.269\pmsd{0.028} & 0.378\pmsd{0.005} & $+0.109$ \\
@@ -451,7 +451,9 @@ in what the avatars are free to add: identity alone at a fixed camera
 (\emph{appearance $+$ viewpoint}), or identity on top of a baseline that
 already has real viewpoint diversity (\emph{appearance over real
 viewpoints}); arm codes refer to
-Table~\ref{tab:ngt_synthetic_views}. Per-seed exact McNemar (364 paired
+Table~\ref{tab:ngt_synthetic_views}, except E2$+$av., the E2 arm carrying
+the same six avatar views ($K{=}9$), which has no counterpart
+there. Per-seed exact McNemar (364 paired
 queries), $p<0.05$: appearance-only in $3/3$ seeds for every $S$ and
 direction; appearance $+$ viewpoint $3/3$ except $S{=}4$
 test$\to$train ($2/3$); appearance over real viewpoints $3/3/2/3$
