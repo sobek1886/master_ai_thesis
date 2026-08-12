@@ -374,21 +374,17 @@ sentences outside a given condition's 180-sentence training pool and, for
 $S{<}4$, gallery videos of signers absent from that condition's training.
 
 
-Table~\ref{tab:ngt_signer_count} shows both outcomes at once, split by arm.
-The real-only baseline moves little with $S$: adding real signers at a
-fixed 180-sentence budget does not by itself improve cross-signer retrieval
-(R@1 $0.21$--$0.24$ test$\to$train throughout). The full-Unreal gain
-behaves as the two-regime account predicts: $\Delta(S)$ shrinks from
-$+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train; $+0.160$ to
-$+0.134$ train$\to$test), and the appearance-over-real-viewpoints panel repeats
-the pattern from a stronger real baseline, with smaller gains throughout.
-The appearance-only arm does not: it is the strongest configuration at every
-$S$ (R@1 $0.450$--$0.527$ test$\to$train, $0.523$--$0.557$
-train$\to$test), its gain is two to three times the full-Unreal gain
-($+0.238$ to $+0.299$), it is significant in $3/3$ seeds for every cell,
-and it declines only weakly with $S$ in one direction ($+0.289$ to
-$+0.257$, non-monotone) and not at all in the other (flat around
-$+0.29$).
+Table~\ref{tab:ngt_signer_count} shows both outcomes at once. The
+real-only baseline barely moves with $S$: at a fixed 180-sentence budget,
+adding real signers does not by itself improve cross-signer retrieval
+(R@1 $0.21$--$0.24$ test$\to$train). The avatar gain does move, and in the
+direction the two-regime account predicts: appearance $+$ viewpoint
+shrinks from $+0.145$ at $S{=}1$ to $+0.081$ at $S{=}4$ (test$\to$train),
+and appearance over real viewpoints repeats the pattern from a stronger
+real baseline with smaller gains throughout. Appearance only stands apart
+in size: it is the strongest configuration at every $S$ (R@1
+$0.450$--$0.527$ test$\to$train), two to three times the appearance $+$
+viewpoint gain, and significant in $3/3$ seeds in every cell.
 
 \begin{table}[t]
 \centering
